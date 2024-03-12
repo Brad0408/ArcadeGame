@@ -1,0 +1,3 @@
+-- SFMLProject Dependencies
+
+IncludeDir = {}
