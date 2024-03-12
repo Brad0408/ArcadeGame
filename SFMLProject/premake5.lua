@@ -18,7 +18,7 @@ project "SFMLProject"
     includedirs
     {
         "src",
-        "%{prj.location}/vendor/SFML-2.6.0/inlcude",
+        "%{prj.location}/vendor/SFML-2.6.0/include",
     }
 
     libdirs
@@ -41,7 +41,7 @@ project "SFMLProject"
     }
 
     filter "system:windows"
-        systemversion "lastest"
+        systemversion "latest"
 
     filter "configurations:Debug"
         defines { "_DEBUG" }
