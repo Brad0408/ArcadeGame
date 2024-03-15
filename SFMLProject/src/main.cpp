@@ -1,12 +1,12 @@
 #include <SFML/Graphics.hpp>
 
-/
 int main()
 {
 	//Create window of resolution and app name
-	sf::RenderWindow window(sf::VideoMode(200, 200), "SFML Works");
+	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");
 
-	//Create a circle shape of size 100
+	
+	//Create a circle shape of radius size 100
 	sf::CircleShape shape(100.0f);
 
 	//Fill the circle in green
