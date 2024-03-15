@@ -130,22 +130,35 @@ namespace ArcadeGame
 	inline bool operator != (Vector2<T>& lhs, const Vector2<T>& rhs) { return !(lhs == rhs); }
 
 	//Static const values
+	//zero
 	template<typename T> requires arithmetic<T>
 	const Vector2<T> Vector2<T>::zero(static_cast<T>(0), static_cast<T>(0));
 
+	//one
 	template<typename T> requires arithmetic<T>
 	const Vector2<T> Vector2<T>::one(static_cast<T>(1), static_cast<T>(1));
 
+	//up
 	template<typename T> requires arithmetic<T>
-	const Vector2<T> Vector2<T>::up(static_cast<T>(), static_cast<T>());
+	const Vector2<T> Vector2<T>::up(static_cast<T>(0), static_cast<T>(1));
+
+	//down
+	template<typename T> requires arithmetic<T>
+	const Vector2<T> Vector2<T>::down(static_cast<T>(0), static_cast<T>(-1));
+
+	//left
+	template<typename T> requires arithmetic<T>
+	const Vector2<T> Vector2<T>::left(static_cast<T>(-1), static_cast<T>(0));
+
+	//right
+	template<typename T> requires arithmetic<T>
+	const Vector2<T> Vector2<T>::right(static_cast<T>(1), static_cast<T>(0));
 
 
 	//typedefs
-	typedef Vector2<int> Vector2i;
-	typedef Vector2<unsigned int> Vector2u;
-	typedef Vector2<double> Vector2d;
-			
-
-
+	typedef Vector2<int>			Vector2i;
+	typedef Vector2<unsigned int>	Vector2u;
+	typedef Vector2<double>			Vector2d;
+		
 }
 
