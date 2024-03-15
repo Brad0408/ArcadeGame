@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 
-
+/
 int main()
 {
 	//Create window of resolution and app name
