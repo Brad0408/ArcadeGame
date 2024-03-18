@@ -21,9 +21,10 @@ namespace ArcadeGame
 		//Copy constructor
 		Vector2(const Vector2&) = default;
 
+		//Paramitzed constructor
 		Vector2(T _x, T _y) : x(_x), y(_y) {}
 
-		//New template U
+		//Template constructor
 		template<typename T> requires arithmetic<U>
 		explicit Vector2(const Vector2<U>& in) : 
 			x(static_cast<T>(in.x)), y(static_cast<T>(in.y)) {}
@@ -33,20 +34,20 @@ namespace ArcadeGame
 		//Squared Magnitude
 		float GetSqarMagnitude() { return x * X + y * y; }
 
-		//Regular Magnitude
+		//Regular Magnitude - The length
 		float GetMagnitude() { return sqrt(GetSqarMagnitude()); }
 
-		//Normalise
+		//Normalise - Unit vector (Has magnitude of 1 but points in the same direction as the original vector)
 		Vector2<T>& Normalise() { *this /= GetMagnitude(); return *this; }
 
 		//Normalised
 		Vector2<T> Normalised() { return *this / GetMagnitude(); }
 
-		//Dot Product
+		//Dot Product - return scalar value (how much one vector is 'projecting' on to the other) by multiplying the corresponding components of the vectors and then summing up the results
 		static float Dot(const Vector2<T>& lhs, const Vector2<T>& rhs)
 			{ return (float)(lhs.x * rhs.x + rhs.x * rhs.y); }
 
-		//Angle in Rads
+		//Angle in Rads - Angle between the two vectors
 		static float Angle(const Vector2<T>& lhs, const Vector2<T>& rhs)
 			{ return acos(Dot(lhs.Normalised(), rhs.Normalised())); }
 
@@ -61,34 +62,34 @@ namespace ArcadeGame
 
 	};
 
-	//Negation - returns opposite 
+	//Negation(means opposite) - of a vector - in this case X is reversed and Y remains the same i.e (3, 4 ) -> (-3,4)
 	template<typename T> requires arithmetic<T>
 	Vector2<T> operator-(const Vector2<T>& rhs) { return Vector2<T>(-rhs.x, rhs.y); }
 
 	//Adding
-	//+=
+	//+= - Used to add the componenets of two vectors together - then stores the result back into the first vector
 	template<typename T> requires arithmetic<T>
 	Vector2<T>& operator+=(Vector2<T>& lhs, const Vector2<T>& rhs) { lhs.x += rhs.x; lhs.y += rhs.y; return lhs; }
 
-	//+
+	//+ - Used to add two Vector2 and return a Vector2 that stores the sum of that calculation
 	template<typename T> requires arithmetic<T>
 	Vector2<T> operator+(Vector2<T> lhs, const Vector2<T>& rhs) { return lhs += rhs; }
 
 
 
 	//Subtract
-	//-=
+	//-= - Used to subtract the componenets of two vectors together - then stores the result back into the first vector
 	template<typename T> requires arithmetic<T>
 	Vector2<T>& operator-=(Vector2<T>& lhs, const Vector2<T>& rhs) { lhs.x -= rhs.x; lhs.y -= rhs.y; return lhs; }
 
-	//-
+	//-  - Used to subtract two Vector2 and return a Vector2 that stores the sum of that calculation
 	template<typename T> requires arithmetic<T>
 	Vector2<T> operator-(Vector2<T> lhs, const Vector2<T>& rhs) { return lhs -= rhs; }
 
 
 
 	//Mutliply
-	//*=
+	//*=  - Used to multiply each component of a Vector2 object by a scalar value and store the result in the original vector - does scalar multiplication on vectors
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
 	Vector2<T>& operator*=(Vector2<T>& v, const U a) { v.x *= a; v.y *= a; return v;}
 
@@ -102,7 +103,7 @@ namespace ArcadeGame
 
 
 	//Divide
-	//  div=
+	//  div=    - Used to divide each component of a Vector2 object by a scalar value and store the result in the original vector - does scalar division on vectors
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
 	Vector2<T>& operator/=(Vector2<T>& v, const U a) { v.x /= a; v.y /= a; return v; }
 
@@ -155,7 +156,7 @@ namespace ArcadeGame
 	const Vector2<T> Vector2<T>::right(static_cast<T>(1), static_cast<T>(0));
 
 
-	//typedefs
+	//typedefs - typedefs used to provide an alternative name for an existing variable data type
 	typedef Vector2<int>			Vector2i;
 	typedef Vector2<unsigned int>	Vector2u;
 	typedef Vector2<double>			Vector2d;

@@ -1,4 +1,6 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <chrono>
 
 int main()
 {
@@ -11,6 +13,9 @@ int main()
 
 	//Fill the circle in green
 	shape.setFillColor(sf::Color::Green);
+
+	//Get the start time before entering the loop
+	auto startTime = std::chrono::high_resolution_clock::now();
 
 	while (window.isOpen())
 	{
@@ -37,6 +42,13 @@ int main()
 			}
 		}
 
+
+		// Calculate the delta time
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<float> deltaTime = currentTime - startTime;
+		startTime = currentTime; // Update the start time for the next frame
+
+
 		window.clear();
 
 		//Actually add the circle to the screen
@@ -45,7 +57,14 @@ int main()
 		//Display whats actually been rendered
 		window.display();
 
+
+
+
+
+		std::cout << "Delta Time: " << deltaTime.count() << " seconds" << std::endl;
 	}
+
+	
 
 
 	return 0;
