@@ -1,7 +1,8 @@
 #pragma once
 #include <arithmetic_concept.h>
+#include <SFML/Graphics.hpp>
 
-namespace ArcadeGame
+namespace AG
 {
 
 	template<typename T> requires arithmetic<T> 
@@ -25,14 +26,23 @@ namespace ArcadeGame
 		Vector2(T _x, T _y) : x(_x), y(_y) {}
 
 		//Template constructor
-		template<typename T> requires arithmetic<U>
+		template<typename U> requires arithmetic<U>
 		explicit Vector2(const Vector2<U>& in) : 
 			x(static_cast<T>(in.x)), y(static_cast<T>(in.y)) {}
+
+		//SFML version of Vector2
+		template<typename U> requires arithmetic<U>
+		explicit Vector2(const sf::Vector2<U>& in) :
+			x(static_cast<T>(in.x)), y(static_cast<T>(in.y)) {}
+
+		//Convert between SFML and our Vector2
+		template<typename U> requires arithmetic<U>
+		operator sf::Vector2<U>() { return sf::Vector2<U>(static_cast<U>(x), static_cast<U>(y)); }
 
 #pragma endregion
 
 		//Squared Magnitude
-		float GetSqarMagnitude() { return x * X + y * y; }
+		float GetSqarMagnitude() { return x * x + y * y; }
 
 		//Regular Magnitude - The length
 		float GetMagnitude() { return sqrt(GetSqarMagnitude()); }
@@ -43,14 +53,14 @@ namespace ArcadeGame
 		//Normalised
 		Vector2<T> Normalised() { return *this / GetMagnitude(); }
 
-		//Dot Product - return scalar value (how much one vector is 'projecting' on to the other) by multiplying the corresponding components of the vectors and then summing up the results
+		//Dot Product - return scalar value (how much one vector is 'projecting' on to the other) by multiplying the corresponding components 
+		//of the vectors and then summing up the results
 		static float Dot(const Vector2<T>& lhs, const Vector2<T>& rhs)
 			{ return (float)(lhs.x * rhs.x + rhs.x * rhs.y); }
 
 		//Angle in Rads - Angle between the two vectors
 		static float Angle(const Vector2<T>& lhs, const Vector2<T>& rhs)
 			{ return acos(Dot(lhs.Normalised(), rhs.Normalised())); }
-
 
 
 		static const Vector2 zero;
@@ -95,7 +105,7 @@ namespace ArcadeGame
 
 	//* Vector on left
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
-	Vector2<T> operator*(Vector2<T>& v, const U a) { return v *= a; }
+	Vector2<T> operator*(Vector2<T> v, const U a) { return v *= a; }
 
 	//* Vector on right
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
@@ -109,7 +119,7 @@ namespace ArcadeGame
 
 	//   div Vector on left
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
-	Vector2<T> operator/(Vector2<T>& v, const U a) { return v /= a; }
+	Vector2<T> operator/(Vector2<T> v, const U a) { return v /= a; }
 
 	//  div Vector on right
 	template<typename T, typename U> requires arithmetic<T> and arithmetic<U>
@@ -141,19 +151,19 @@ namespace ArcadeGame
 
 	//up
 	template<typename T> requires arithmetic<T>
-	const Vector2<T> Vector2<T>::up(static_cast<T>(0), static_cast<T>(1));
+	const Vector2<T> Vector2<T>::up(static_cast<T>(1), static_cast<T>(0));
 
 	//down
 	template<typename T> requires arithmetic<T>
-	const Vector2<T> Vector2<T>::down(static_cast<T>(0), static_cast<T>(-1));
+	const Vector2<T> Vector2<T>::down(static_cast<T>(1), static_cast<T>(0));
 
 	//left
 	template<typename T> requires arithmetic<T>
-	const Vector2<T> Vector2<T>::left(static_cast<T>(-1), static_cast<T>(0));
+	const Vector2<T> Vector2<T>::left(static_cast<T>(0), static_cast<T>(1));
 
 	//right
 	template<typename T> requires arithmetic<T>
-	const Vector2<T> Vector2<T>::right(static_cast<T>(1), static_cast<T>(0));
+	const Vector2<T> Vector2<T>::right(static_cast<T>(0), static_cast<T>(1));
 
 
 	//typedefs - typedefs used to provide an alternative name for an existing variable data type
