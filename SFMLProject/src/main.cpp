@@ -10,30 +10,56 @@ int main()
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");
 
-	//Define the size of rect
+	//Define the size of rectangle
 	AG::Vector2<float> rectSize = AG::Vector2<float>::one * 100;
 
-	//Define the postion of the rect
+	//Define the postion of the rectangle
 	AG::Vector2<float> rectPos = AG::Vector2<float>(900, 450);
 
 	//Load the texture
-	sf::Texture rectTex; rectTex.loadFromFile("Textures/robotronsprites.jpg");
-	AG::Vector2i spritesInTex(21, 10);
-	AG::Vector2i rectTextSize(rectTex.getSize());
-	sf::IntRect rectTexUV(0, (rectTextSize.y / spritesInTex.y) * 5, rectTextSize.x / spritesInTex.x, rectTextSize.y / spritesInTex.y);
+	sf::Texture rectTexture; rectTexture.loadFromFile("Textures/robotronsprites.jpg");
+
+
+	const int rows = 10;
+	const int colums = 21;
+
+	//Number of sprites in the texture 
+	AG::Vector2i spritesInSpriteSheet(colums, rows);
+
+	//Returns size of texture (608x512)
+	AG::Vector2i rectTextureSize(rectTexture.getSize());
+
+
+
+										         // 512/10 * 5 = 256							// 608/21 = 28.9							// 512/10 = 51.2
+	//sf::IntRect rectTextureUV(0, (rectTextureSize.y / spritesInSpriteSheet.y) * 5, rectTextureSize.x / spritesInSpriteSheet.x, rectTextureSize.y / spritesInSpriteSheet.y);
+	sf::IntRect rectTextureUV(0, 0, 24, 24);
+	sf::IntRect altrectTextureUV(35, 0, 24, 24);
+	// (0,256 ) are the coordinates on the texture/sprite sheet
+	//(28.9, 51.2 ) is the size of how much you want to cookie cutter out of the sprite sheet
 
 	//Create a rectangle
 	sf::RectangleShape shape(rectSize);
 
-	//Set texture in rectangle
-	shape.setTexture(&rectTex);
-	shape.setTextureRect(rectTexUV);
+
+
+
+
+
+	//Set texture to be the whole sprite sheet
+	shape.setTexture(&rectTexture);
+
+	//Set the texture to the cookie cutter section of the sprite sheet
+	shape.setTextureRect(rectTextureUV);
 
 	//Set Rect to the middle
 	shape.setOrigin(rectSize / 2);
 
 	//Set the postion of the rect
 	shape.setPosition(rectPos);
+
+	shape.setOutlineThickness(3);
+	shape.setOutlineColor(sf::Color(255, 255, 255));
 
 
 	//Get the time before getting the 
@@ -57,14 +83,14 @@ int main()
 			}
 
 
-			//if (event.type == sf::Event::MouseButtonPressed)
-			//{
-			//	shape.setFillColor(sf::Color::Blue);
-			//}
-			//else if (event.type == sf::Event::MouseButtonReleased)
-			//{
-			//	shape.setFillColor(sf::Color::Green);
-			//}
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				shape.setTextureRect(altrectTextureUV);
+			}
+			else if (event.type == sf::Event::MouseButtonReleased)
+			{
+				shape.setTextureRect(rectTextureUV);
+			}
 
 		}
 
@@ -89,11 +115,12 @@ int main()
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
 
-			std::cout << "timeSincePhysicsStep: " << timeSincePhysicsStep << std::endl;
+			//std::cout << "timeSincePhysicsStep: " << timeSincePhysicsStep << std::endl;
 
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
+
 
 		
 
