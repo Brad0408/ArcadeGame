@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <UUID.h>
 
-class UUID;
 
 class Object
 {
@@ -12,7 +12,7 @@ public:
 	//Copy Constructor, copies uuid from the source object to the destination object
 	Object(const Object&) = default;
 
-	UUID uuid;
+	AG::UUID uuid;
 
 	//Compares two Object instances, compares the uuids by casting them to a uint_64, returns true if two Objects are equal
 	inline bool operator==(const Object& rhs) { return (uint64_t)this->uuid == (uint64_t)rhs.uuid; }
