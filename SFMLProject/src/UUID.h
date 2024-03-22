@@ -8,6 +8,7 @@ namespace AG
 	class UUID
 	{
 	public:
+		//Constructor class
 		UUID();
 		UUID(uint64_t uuid);
 		UUID(const UUID&) = default;

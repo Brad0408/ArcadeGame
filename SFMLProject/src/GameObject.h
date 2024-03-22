@@ -1,5 +1,5 @@
 #pragma once
-#include <Object.h>
+//#include <Object.h>
 #include <isComponent.h>
 
 class Transform;
@@ -46,7 +46,7 @@ public:
 	template<class T> requires isComponent<T> bool RemoveComponent(T* comp);
 
 private:
-	//Basic information for the GameObject
+	//Basic attributes for the GameObject
 	std::string m_Name;
 	bool m_Active;
 	std::string m_Tag;

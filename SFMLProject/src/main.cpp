@@ -2,11 +2,53 @@
 #include <iostream>
 #include <chrono>
 #include <Vector2.h>
+#include <Event.h>
+
 
 #define FIXEDFRAMERATE 0.025f
 
+class TestB
+{
+
+public:
+	AG::Event<int> OnSomething;
+
+	void BroadcastOnSomething(int arg1)
+	{
+		OnSomething(arg1);
+	}
+};
+
+class TestA
+{
+
+private:
+	TestB* other;
+
+public:
+	TestA(TestB* _other) : other(_other) { other->OnSomething += std::bind(&TestA::Handle_ThangSomething, this, std::placeholders::_1); }
+
+	void Handle_ThangSomething(int in)
+	{
+		std::cout << in << std::endl;
+		other->OnSomething -= std::bind(&TestA::Handle_ThangSomething, this, std::placeholders::_1);
+	}
+
+	void OnSomething();
+
+
+};
+
+
+
+
 int main()
 {
+	TestB a;
+	TestA b(&a);
+
+	
+
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");
 
@@ -35,15 +77,12 @@ int main()
 	//sf::IntRect rectTextureUV(0, (rectTextureSize.y / spritesInSpriteSheet.y) * 5, rectTextureSize.x / spritesInSpriteSheet.x, rectTextureSize.y / spritesInSpriteSheet.y);
 	sf::IntRect rectTextureUV(0, 0, 24, 24);
 	sf::IntRect altrectTextureUV(35, 0, 24, 24);
+
 	// (0,256 ) are the coordinates on the texture/sprite sheet
 	//(28.9, 51.2 ) is the size of how much you want to cookie cutter out of the sprite sheet
 
 	//Create a rectangle
 	sf::RectangleShape shape(rectSize);
-
-
-
-
 
 
 	//Set texture to be the whole sprite sheet
@@ -107,6 +146,12 @@ int main()
 
 		//Display whats actually been rendered
 		window.display();
+
+		
+		AG::Event<int, int>eventTest;
+
+		eventTest(5, 6);
+
 
 
 		//std::cout << "Delta Time: " << deltaTime << " seconds" << std::endl;

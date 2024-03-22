@@ -7,7 +7,7 @@
 
 namespace AG
 {
-	//template that accepts multiple types as arguments
+	//template that accepts multiple types as arguments, as many arguments you want
 	template<typename... T>
 	struct Binding
 	{
