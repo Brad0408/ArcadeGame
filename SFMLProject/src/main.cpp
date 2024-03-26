@@ -3,49 +3,18 @@
 #include <chrono>
 #include <Vector2.h>
 #include <Event.h>
+#include <GameObject.h>
 
 
-#define FIXEDFRAMERATE 0.025f
-
-class TestB
-{
-
-public:
-	AG::Event<int> OnSomething;
-
-	void BroadcastOnSomething(int arg1)
-	{
-		OnSomething(arg1);
-	}
-};
-
-class TestA
-{
-
-private:
-	TestB* other;
-
-public:
-	TestA(TestB* _other) : other(_other) { other->OnSomething += std::bind(&TestA::Handle_ThangSomething, this, std::placeholders::_1); }
-
-	void Handle_ThangSomething(int in)
-	{
-		std::cout << in << std::endl;
-		other->OnSomething -= std::bind(&TestA::Handle_ThangSomething, this, std::placeholders::_1);
-	}
-
-	void OnSomething();
-
-
-};
+#define FIXEDFRAMERATE 0.020f
 
 
 
 
 int main()
 {
-	TestB a;
-	TestA b(&a);
+
+	GameObject* Player;
 
 	
 
@@ -129,6 +98,11 @@ int main()
 			else if (event.type == sf::Event::MouseButtonReleased)
 			{
 				shape.setTextureRect(rectTextureUV);
+			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+			{	
+				std::cout << "A pressed" << std::endl;
 			}
 
 		}

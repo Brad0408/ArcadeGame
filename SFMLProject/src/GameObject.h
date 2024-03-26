@@ -1,8 +1,7 @@
 #pragma once
-//#include <Object.h>
 #include <isComponent.h>
+#include <Transform.h>
 
-class Transform;
 
 class GameObject : public Object
 {
@@ -14,8 +13,13 @@ public:
 	//Copy Constructor
 	GameObject(const GameObject&) = default;
 
+	//Deconstructor
+	virtual ~GameObject() {}
+
 	//Define the GameObjects transform
 	Transform* transform;
+
+	
 
 	//Set the Name of the GameObject
 	inline void SetName(std::string newName) { m_Name = newName; }
@@ -50,6 +54,8 @@ private:
 	std::string m_Name;
 	bool m_Active;
 	std::string m_Tag;
+
+	//1 pointer, if gameObject is gone, so does the component, all memory is wiped
 	std::vector<std::unique_ptr<Component>> m_Components;
 
 public:
@@ -58,6 +64,8 @@ public:
 
 	//Compares two GameObject instances, return true if they dont match
 	inline bool operator!=(const GameObject& other) { return !(*this == other); }
+
+
 
 };
 
