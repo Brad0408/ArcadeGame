@@ -1,6 +1,10 @@
 #include "GameObject.h"
 
 
+GameObject::GameObject()
+{
+}
+
 template<class T> requires isComponent<T>
 T* GameObject::GetComponent()
 {
@@ -32,7 +36,7 @@ T* GameObject::AddComponent()
 	m_Components.push_back(std::move(newComp));
 
 	//Returns a pointer to the newly added component
-	return static_cast<T*>(m_Components[m_Components.size()].get());
+	return static_cast<T*>(m_Components[m_Components.size() - 1].get());
 }
 
 template<class T> requires isComponent<T>

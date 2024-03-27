@@ -8,6 +8,8 @@ class Component : public Object
 {
 public:
 
+	Component();
+
 	//Constructor, initalizes _GameObject with pointer
 	Component(GameObject* owner) : _GameObject(owner) {}
 
