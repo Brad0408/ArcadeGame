@@ -17,7 +17,7 @@ int main()
 
 	Transform* PlayerTransformComponent = Player->AddComponent<Transform>();
 
-
+	//PlayerTransformComponent->SetActorLocation();
 
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");

@@ -42,26 +42,21 @@ T* GameObject::AddComponent()
 template<class T> requires isComponent<T>
 bool GameObject::RemoveComponent(T* comp)
 {
-	//Look through the vector and compare it to comp.
-	//Once found remove it from the vector.
-
-	//Return true if it was removed or false if it failed
-
-
-	// Search for the component in the m_Components vector
+	//Search for the component in the m_Components vector
 	auto it = std::find_if(m_Components.begin(), m_Components.end(), [comp](const std::unique_ptr<Component>& ptr) 
 	{
 		return dynamic_cast<T*>(ptr.get()) == comp;
 	});
 
-	// If the component is found, remove it
-	if (it != m_Components.end()) {
+	//If the component is found, remove it
+	if (it != m_Components.end()) 
+	{
 		m_Components.erase(it);
-		return true; // Component successfully removed
+		return true;
 	}
 
-	return false; // Component not found or not removed
-
+	//Component not found or not removed
+	return false; 
 
 
 }
