@@ -1,9 +1,6 @@
 #include "GameObject.h"
 
 
-GameObject::GameObject()
-{
-}
 
 template<class T> requires isComponent<T>
 T* GameObject::GetComponent()

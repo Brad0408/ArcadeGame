@@ -3,6 +3,7 @@
 #include <chrono>
 #include <Vector2.h>
 #include <Event.h>
+#include <GameObject.cpp>
 #include <GameObject.h>
 
 
@@ -15,9 +16,18 @@ int main()
 
 	GameObject* Player = new GameObject();
 
-	Transform* PlayerTransformComponent = Player->AddComponent<Transform>();
+	Player->transform = Player->AddComponent<Transform>();
 
-	//PlayerTransformComponent->SetActorLocation();
+	AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
+
+	Player->transform->SetActorLocation(PlayerLocation);
+
+
+
+
+
+
+
 
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");
@@ -26,7 +36,7 @@ int main()
 	AG::Vector2<float> rectSize = AG::Vector2<float>::one * 100;
 
 	//Define the postion of the rectangle
-	AG::Vector2<float> rectPos = AG::Vector2<float>(900, 450);
+	AG::Vector2<float> rectPos = Player->transform->GetActorLocation();
 
 	//Load the texture
 	sf::Texture rectTexture; rectTexture.loadFromFile("Textures/robotronsprites.jpg");
