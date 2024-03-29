@@ -3,10 +3,6 @@
 
 
 
-Component::Component()
-{
-}
-
 void Component::Start()
 {
 	std::cout << "Start was called" << std::endl;

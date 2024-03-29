@@ -16,11 +16,11 @@ int main()
 
 	GameObject* Player = new GameObject();
 
-	Player->transform = Player->AddComponent<Transform>();
+	Transform* PlayerTransformComponent = Player->AddComponent<Transform>();
 
-	AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
+	//AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
 
-	Player->transform->SetActorLocation(PlayerLocation);
+	PlayerTransformComponent->SetActorLocation(0.0f, 0.0f);
 
 
 
@@ -36,7 +36,7 @@ int main()
 	AG::Vector2<float> rectSize = AG::Vector2<float>::one * 100;
 
 	//Define the postion of the rectangle
-	AG::Vector2<float> rectPos = Player->transform->GetActorLocation();
+	AG::Vector2<float> rectPos = PlayerTransformComponent->GetActorLocation();
 
 	//Load the texture
 	sf::Texture rectTexture; rectTexture.loadFromFile("Textures/robotronsprites.jpg");

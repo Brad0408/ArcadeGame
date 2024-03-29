@@ -1,15 +1,6 @@
 #include "Transform.h"
 
-Transform::Transform()
+void Transform::SetActorLocation(float x, float y)
 {
 }
-
-Transform::~Transform()
-{
-}
-
-void Transform::SetActorLocation(AG::Vector2<float>& newLocation)
-{
-}
-
 

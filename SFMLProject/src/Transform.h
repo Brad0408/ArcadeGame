@@ -7,10 +7,11 @@ class Transform : public Component
 {
 
 public:
-	Transform();
+	Transform(GameObject* owner) : Component(owner) {}
 
 
-	~Transform();
+
+	~Transform() {}
 
 
 	AG::Vector2<float> GameObjectPosition;
@@ -19,7 +20,11 @@ public:
 
 
 	AG::Vector2<float> GetActorLocation() { return GameObjectPosition; }
-	void SetActorLocation(AG::Vector2<float>& newLocation);;
+	
+	
+	
+	//void SetActorLocation(AG::Vector2<float>& newLocation);
+	void SetActorLocation(float x, float y);
 
 
 	// GetActorRotation() { return GameObjectRotation; }

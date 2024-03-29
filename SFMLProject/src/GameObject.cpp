@@ -57,3 +57,7 @@ bool GameObject::RemoveComponent(T* comp)
 
 
 }
+
+GameObject::GameObject()
+{
+}
