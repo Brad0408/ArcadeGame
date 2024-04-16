@@ -16,11 +16,9 @@ int main()
 
 	GameObject* Player = new GameObject();
 
-	Transform* PlayerTransformComponent = Player->AddComponent<Transform>();
 
-	//AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
 
-	PlayerTransformComponent->SetActorLocation(0.0f, 0.0f);
+	AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
 
 
 
@@ -36,10 +34,11 @@ int main()
 	AG::Vector2<float> rectSize = AG::Vector2<float>::one * 100;
 
 	//Define the postion of the rectangle
-	AG::Vector2<float> rectPos = PlayerTransformComponent->GetActorLocation();
+	AG::Vector2<float> rectPos = PlayerLocation;
 
 	//Load the texture
-	sf::Texture rectTexture; rectTexture.loadFromFile("Textures/robotronsprites.jpg");
+	sf::Texture rectTexture; 
+	rectTexture.loadFromFile("Textures/robotronsprites.jpg");
 
 
 	const int rows = 10;
@@ -92,7 +91,6 @@ int main()
 		//Declare event
 		sf::Event event;
 
-
 		while (window.pollEvent(event))
 		{
 			//if the event type if closing the window - close the window
@@ -111,9 +109,34 @@ int main()
 				shape.setTextureRect(rectTextureUV);
 			}
 
+
+
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{	
-				std::cout << "A pressed" << std::endl;
+			{
+				//std::cout << "A pressed" << std::endl;
+				std::cout << PlayerLocation.x << std::endl;
+
+				PlayerLocation.x -= 10.0f;
+
+				shape.setPosition(PlayerLocation);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+			{
+				PlayerLocation.x += 10.0f;
+
+				shape.setPosition(PlayerLocation);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+			{
+				PlayerLocation.y -= 10.0f;
+
+				shape.setPosition(PlayerLocation);
+			}
+			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+			{
+				PlayerLocation.y += 10.0f;
+
+				shape.setPosition(PlayerLocation);
 			}
 
 		}
@@ -126,16 +149,13 @@ int main()
 		//Clear
 		window.clear();
 
-		//Actually add the circle to the screen
+		//Actually add the shape to the screen
 		window.draw(shape);
 
 		//Display whats actually been rendered
 		window.display();
 
 		
-		AG::Event<int, int>eventTest;
-
-		eventTest(5, 6);
 
 
 

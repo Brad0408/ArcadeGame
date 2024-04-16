@@ -1,6 +1,6 @@
 #pragma once
 #include <isComponent.h>
-#include <Transform.h>
+#include <SFML/Graphics.hpp>
 
 
 class GameObject : public Object
@@ -8,7 +8,7 @@ class GameObject : public Object
 
 public:
 	//Construtor
-	GameObject();
+	GameObject() : Object() {}
 
 	//Copy Constructor
 	GameObject(const GameObject&) = default;
@@ -17,9 +17,7 @@ public:
 	virtual ~GameObject() {}
 
 	//Define the GameObjects transform
-	Transform* transform;
-
-	
+	sf::Transform* transform;
 
 	//Set the Name of the GameObject
 	inline void SetName(std::string newName) { m_Name = newName; }
