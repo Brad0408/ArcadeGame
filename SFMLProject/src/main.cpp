@@ -3,7 +3,6 @@
 #include <chrono>
 #include <Vector2.h>
 #include <Event.h>
-#include <GameObject.cpp>
 #include <GameObject.h>
 
 
@@ -16,7 +15,7 @@ int main()
 
 	GameObject* Player = new GameObject();
 
-
+	std::cout << Player << std::endl;
 
 	AG::Vector2<float> PlayerLocation(900.0f, 450.0f);
 
@@ -26,9 +25,8 @@ int main()
 
 
 
-
 	//Create window of resolution
-	sf::RenderWindow window(sf::VideoMode(1920, 1080), "SFML Works");
+	sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works");
 
 	//Define the size of rectangle
 	AG::Vector2<float> rectSize = AG::Vector2<float>::one * 100;
@@ -114,11 +112,13 @@ int main()
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 			{
 				//std::cout << "A pressed" << std::endl;
-				std::cout << PlayerLocation.x << std::endl;
+				//std::cout << PlayerLocation.x << std::endl;
 
 				PlayerLocation.x -= 10.0f;
 
 				shape.setPosition(PlayerLocation);
+
+				
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 			{
@@ -170,10 +170,6 @@ int main()
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
-
-
-		
-
 	}
 
 	return 0;

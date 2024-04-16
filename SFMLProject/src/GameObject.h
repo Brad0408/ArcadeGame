@@ -8,7 +8,7 @@ class GameObject : public Object
 
 public:
 	//Construtor
-	GameObject() : Object() {}
+	GameObject();
 
 	//Copy Constructor
 	GameObject(const GameObject&) = default;
