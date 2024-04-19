@@ -43,7 +43,7 @@ sf::IntRect GameObject::GetTextureRect()
 	return m_SpriteShape.getTextureRect();
 }
 
-void GameObject::SetRectangleShape(sf::RectangleShape shape)
+void GameObject::SetRectangleShape(sf::RectangleShape &shape)
 {
 	m_SpriteShape = shape;
 }

@@ -109,6 +109,7 @@ int main()
 		//Clear
 		window.clear();
 
+		//Test shape thats squished
 		sf::RectangleShape TestShape(sf::Vector2f(100, 50));
 		TestShape.setFillColor(sf::Color::Green);
 		TestShape.setPosition(200, 200);

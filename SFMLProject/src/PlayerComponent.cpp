@@ -67,14 +67,14 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 
 	//Actually set it
-	_GameObject->SetRectangleShape(PlayerShapeRectangle);
+	_GameObject->SetRectangleShape(_GameObject->GetRectangleShape());
 
 
 	const sf::IntRect* textureRectPtr = &_GameObject->GetRectangleShape().getTextureRect();
 	std::cout << "Texture Rect Address: " << static_cast<const void*>(textureRectPtr) << std::endl;
 
-	sf::IntRect textureRect = _GameObject->GetTextureRect();
 
+	sf::IntRect textureRect = _GameObject->GetTextureRect();
 	std::cout << "Texture Rect: left=" << textureRect.left << ", top=" << textureRect.top << ", width=" << textureRect.width << ", height=" << textureRect.height << std::endl;
 
 }

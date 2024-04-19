@@ -45,7 +45,7 @@ public:
 	sf::IntRect GetTextureRect();
 
 	//Sets and Gets RectangleShapes
-	void SetRectangleShape(sf::RectangleShape shape);
+	void SetRectangleShape(sf::RectangleShape &shape);
 	sf::RectangleShape& GetRectangleShape();
 
 	//Sets and get locations
