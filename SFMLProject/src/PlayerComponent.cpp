@@ -37,6 +37,8 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	//Set texture to be the whole sprite sheet
 	PlayerShapeRectangle.setTexture(&WholeSpriteSheet);
 
+	std::cout << PlayerShapeRectangle.getTexture()->getSize().x << std::endl;
+	std::cout << PlayerShapeRectangle.getTexture()->getSize().y << std::endl;
 
 	//Set the texture to the cookie cutter section of the sprite sheet
 	PlayerShapeRectangle.setTextureRect(PlayerTextureUV);
@@ -55,7 +57,7 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 	
 	//Set textures within the gameObject
-	//_GameObject->SetTexture(&WholeSpriteSheet);
+	_GameObject->SetTexture(&WholeSpriteSheet);
 	//_GameObject->SetTextureRect(PlayerTextureUV);
 
 	//Get the gameobject texture values and set it back to this local PlayerShape
@@ -63,14 +65,15 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	//PlayerShapeRectangle.setTextureRect(_GameObject->GetTextureRect());
 
 
-	_GameObject->DrawOutlines(PlayerShapeRectangle);
+	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
-
+	std::cout << PlayerShapeRectangle.getTexture()->getSize().x << std::endl;
+	std::cout << PlayerShapeRectangle.getTexture()->getSize().y << std::endl;
 
 	//Actually set it
 	_GameObject->SetRectangleShape(PlayerShapeRectangle);
 
-	_GameObject->AddComponent<BoxCollider>();
+	//_GameObject->AddComponent<BoxCollider>();
 
 	const sf::IntRect* textureRectPtr = &_GameObject->GetRectangleShape().getTextureRect();
 	std::cout << "Texture Rect Address: " << static_cast<const void*>(textureRectPtr) << std::endl;

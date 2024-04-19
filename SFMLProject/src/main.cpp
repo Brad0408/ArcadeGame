@@ -19,7 +19,7 @@ int main()
 
 	Player->AddComponent<PlayerComponent>();
 
-	sf::Texture testTex = Player->GetTexture();
+	const sf::Texture* testTex = Player->GetTexture();
 
 	//Player->SetTexture(&rectTexture);
 
@@ -62,6 +62,8 @@ int main()
 	float timeSincePhysicsStep = 0.0f;
 
 
+	sf::RectangleShape TestShape(sf::Vector2f(100, 50));
+
 	while (window.isOpen())
 	{
 		//Declare event
@@ -85,7 +87,6 @@ int main()
 		window.clear();
 
 		//Test shape thats squished
-		sf::RectangleShape TestShape(sf::Vector2f(100, 50));
 		TestShape.setFillColor(sf::Color::Green);
 		TestShape.setPosition(200, 200);
 

@@ -39,7 +39,7 @@ public:
 
 	//Sets and Get textures
 	void SetTexture(sf::Texture *texture);
-	sf::Texture GetTexture();
+	const sf::Texture* GetTexture();
 
 	//Set and get TextureUVs
 	void SetTextureRect(sf::IntRect &textureRect);
@@ -93,7 +93,7 @@ public:
 		for (int i = 0; i < m_Components.size(); i++)
 		{
 			//Cast to type T and set returnComp will point to the component of type T
-			returnComp = static_cast<T*>(m_Components[i].get());
+			returnComp = dynamic_cast<T*>(m_Components[i].get());
 			if (returnComp != nullptr)
 			{
 				//Break if T has been found

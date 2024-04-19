@@ -28,9 +28,9 @@ void GameObject::SetTexture(sf::Texture* texture)
 	//std::cout << "Texture Address: " << m_SpriteShape.getTexture() << std::endl;
 }
 
- sf::Texture GameObject::GetTexture()
+const sf::Texture* GameObject::GetTexture()
 {
-	return *m_SpriteShape.getTexture();
+	return m_SpriteShape.getTexture();
 }
 
 void GameObject::SetTextureRect(sf::IntRect &textureRect)
