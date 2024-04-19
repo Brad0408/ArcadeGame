@@ -10,16 +10,19 @@
 
 int main()
 {
+	//Load the texture
+	sf::Texture rectTexture;
+	rectTexture.loadFromFile("Textures/robotronsprites.jpg");
+
 
 	GameObject* Player = new GameObject();
 
-	std::cout << "Player value " << Player << std::endl;
-
-
-
-
-
 	Player->AddComponent<PlayerComponent>();
+
+	sf::Texture testTex = Player->GetTexture();
+
+	//Player->SetTexture(&rectTexture);
+
 
 
 	//Create window of resolution
@@ -27,32 +30,14 @@ int main()
 
 	//Define the size of rectangle
 	AG::Vector2<float> BoxSize = AG::Vector2<float>::one * 100;
-
-
-	AG::Vector2<float> TestBoxLocation(350.0f, 400.0f);
-	AG::Vector2<float> BoxPos = TestBoxLocation;
-
-
-	//Load the texture
-	sf::Texture rectTexture; 
-	rectTexture.loadFromFile("Textures/robotronsprites.jpg");
+	AG::Vector2<float> BoxPos = AG::Vector2<float>(350.0f, 400.0f);;
 
 
 
-	//const int rows = 10;
-	//const int colums = 21;
 
-	//Number of sprites in the texture 
-	//AG::Vector2i spritesInSpriteSheet(colums, rows);
 
-	//Returns size of texture (608x512)
-	//AG::Vector2i rectTextureSize(rectTexture.getSize());
 
-										         // 512/10 * 5 = 256							// 608/21 = 28.9							// 512/10 = 51.2
-	//sf::IntRect rectTextureUV(0, (rectTextureSize.y / spritesInSpriteSheet.y) * 5, rectTextureSize.x / spritesInSpriteSheet.x, rectTextureSize.y / spritesInSpriteSheet.y);
 
-	// (0,256 ) are the coordinates on the texture/sprite sheet
-	//(28.9, 51.2 ) is the size of how much you want to cookie cutter out of the sprite sheet
 
 
 	sf::IntRect altrectTextureUV(35, 0, 24, 24);
@@ -89,16 +74,6 @@ int main()
 			{
 				window.close();
 			}
-
-
-			//if (event.type == sf::Event::MouseButtonPressed)
-			//{
-			//	shape.setTextureRect(altrectTextureUV);
-			//}
-			//else if (event.type == sf::Event::MouseButtonReleased)
-			//{
-			//	shape.setTextureRect(rectTextureUV);
-			//}	
 		}
 
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -116,6 +91,7 @@ int main()
 
 
 
+
 		//Actually add the shape to the screen
 		window.draw(Player->GetRectangleShape());
 		window.draw(Boxshape);
@@ -124,42 +100,21 @@ int main()
 		//Display whats actually been rendered
 		window.display();
 
-		
+
+
+		Player->GetComponent<PlayerComponent>()->Move();
 
 		
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
 
+	
+			
 			//std::cout << "timeSincePhysicsStep: " << timeSincePhysicsStep << std::endl;
 			//std::cout << "Player Location: (" << Player->location.x << ", " << Player->location.y << ")" << std::endl;
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			{
-				Player->GetLocation().x -= 1.0f;
 
-				Player->GetRectangleShape().setPosition(Player->GetLocation());
-
-
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			{
-				Player->GetLocation().x += 1.0f;
-
-				Player->GetRectangleShape().setPosition(Player->GetLocation());
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			{
-				Player->GetLocation().y -= 1.0f;
-
-				Player->GetRectangleShape().setPosition(Player->GetLocation());
-			}
-			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			{
-				Player->GetLocation().y += 1.0f;
-
-				Player->GetRectangleShape().setPosition(Player->GetLocation());
-			}
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
@@ -167,5 +122,3 @@ int main()
 
 	return 0;
 }
-
-

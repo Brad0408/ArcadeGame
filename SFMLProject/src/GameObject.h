@@ -1,6 +1,7 @@
 #pragma once
 #include <isComponent.h>
 #include <PlayerComponent.h>
+#include <BoxCollider.h>
 
 class GameObject : public Object
 {
@@ -38,7 +39,7 @@ public:
 
 	//Sets and Get textures
 	void SetTexture(sf::Texture *texture);
-	const sf::Texture& GetTexture();
+	sf::Texture GetTexture();
 
 	//Set and get TextureUVs
 	void SetTextureRect(sf::IntRect &textureRect);

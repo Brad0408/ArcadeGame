@@ -12,4 +12,6 @@ public:
 	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 100;
 
 	sf::RectangleShape PlayerShapeRectangle;
+
+	void Move();
 };

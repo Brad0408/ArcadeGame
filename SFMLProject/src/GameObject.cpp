@@ -25,10 +25,10 @@ void GameObject::SetTexture(sf::Texture* texture)
 {
 	m_SpriteShape.setTexture(texture);
 
-	std::cout << "Texture Address: " << m_SpriteShape.getTexture() << std::endl;
+	//std::cout << "Texture Address: " << m_SpriteShape.getTexture() << std::endl;
 }
 
-const sf::Texture& GameObject::GetTexture()
+ sf::Texture GameObject::GetTexture()
 {
 	return *m_SpriteShape.getTexture();
 }
