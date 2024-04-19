@@ -7,8 +7,6 @@ class GameObject;
 class Component : public Object
 {
 public:
-
-
 	//Constructor, initalizes _GameObject with pointer
 	Component(GameObject* owner) : _GameObject(owner) {}
 
