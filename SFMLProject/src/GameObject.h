@@ -1,5 +1,6 @@
 #pragma once
 #include <isComponent.h>
+#include <ResourceManager.h>
 #include <PlayerComponent.h>
 #include <BoxCollider.h>
 
@@ -9,6 +10,9 @@ class GameObject : public Object
 public:
 	//Construtor
 	GameObject();
+
+	//Deconstructor
+	~GameObject();
 
 	//Copy Constructor
 	GameObject(const GameObject&) = default;
@@ -53,9 +57,10 @@ public:
 	void SetLocation(float x, float y);
 	AG::Vector2<float>& GetLocation();
 
+	//Draw an outline around the gameObject
 	void DrawOutlines(sf::RectangleShape &shape);
 
-
+	void CheckCollisions(GameObject* other);
 
 private:
 	//Basic attributes for the GameObject

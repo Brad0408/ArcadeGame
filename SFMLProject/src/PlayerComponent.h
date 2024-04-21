@@ -14,4 +14,7 @@ public:
 	sf::RectangleShape PlayerShapeRectangle;
 
 	void Move();
+
+private:
+	float m_MovementSpeed = 0.05f;
 };

@@ -4,6 +4,9 @@
 #include <UUID.h>
 #include <iostream>
 #include <Vector2.h>
+#include <unordered_map>
+#include <string>
+#include <memory>
 
 
 class Object
