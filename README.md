@@ -1,5 +1,7 @@
 CURRENTLY A WIP
 
+For code go to (SFMLProject -> src)
+
 Recreating the arcade game "Robotron 2084" (https://youtu.be/l800GL6NQPY?t=205) through the SFML library
 
 This project is aiming to recreating the game but through a modern day ECS design
