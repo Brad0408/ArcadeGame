@@ -61,3 +61,10 @@ sf::Texture& ResourceManager::GetTexture(const std::string& TextureName)
 	//If the texture already existed just return it
 	return Textures.at(TextureName);
 }
+
+
+//Stops memory error when the program is terminated
+void ResourceManager::ClearTextureMap()
+{
+	Textures.clear();
+}

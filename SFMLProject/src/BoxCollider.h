@@ -6,7 +6,13 @@ class BoxCollider : public ColliderComponent
 
 public:
 	BoxCollider(GameObject* owner);
+
+	~BoxCollider();
+
 	bool CheckCollision(const ColliderComponent& other) const override;
+
+
+
 
 	//Draw an outline around the Box
 	void DrawOutlines(sf::RectangleShape& shape);

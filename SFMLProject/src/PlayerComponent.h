@@ -8,6 +8,9 @@ class PlayerComponent : public Component
 
 public:
 	PlayerComponent(GameObject* owner);
+	~PlayerComponent();
+
+
 
 	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 100;
 

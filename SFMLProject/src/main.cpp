@@ -81,9 +81,9 @@ int main()
 
 
 	//Test shape thats squished
-	sf::RectangleShape TestShape(sf::Vector2f(100, 50));
-	TestShape.setFillColor(sf::Color::Green);
-	TestShape.setPosition(200, 200);
+	//sf::RectangleShape TestShape(sf::Vector2f(100, 50));
+	//TestShape.setFillColor(sf::Color::Green);
+	//TestShape.setPosition(200, 200);
 
 	while (window.isOpen())
 	{
@@ -102,21 +102,6 @@ int main()
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
-
-
-		//Clear
-		window.clear();
-
-
-
-		//Actually add the shape to the screen
-		window.draw(Player->GetRectangleShape());
-		window.draw(Wall->GetRectangleShape());
-		window.draw(TestShape);
-
-		//Display whats actually been rendered
-		window.display();
-
 
 		Player->GetComponent<PlayerComponent>()->Move();
 
@@ -145,12 +130,6 @@ int main()
 			}
 		}
 
-		
-
-
-
-
-
 
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
@@ -159,7 +138,24 @@ int main()
 			//std::cout << "Player Location: (" << Player->location.x << ", " << Player->location.y << ")" << std::endl;
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
+
+		//Clear
+		window.clear();
+
+
+
+		//Actually add the shape to the screen
+		window.draw(Player->GetRectangleShape());
+		window.draw(Wall->GetRectangleShape());
+		//window.draw(TestShape);
+
+		//Display whats actually been rendered
+		window.display();
+
 	}
+
+	//Memory Cleanup
+	ResourceManager::ClearTextureMap();
 
 	return 0;
 }

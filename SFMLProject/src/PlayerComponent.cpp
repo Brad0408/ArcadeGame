@@ -51,6 +51,11 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 }
 
+PlayerComponent::~PlayerComponent()
+{
+
+}
+
 
 void PlayerComponent::Move()
 {

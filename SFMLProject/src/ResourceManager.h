@@ -12,7 +12,8 @@ public:
 	//Get Texture
 	static sf::Texture& GetTexture(const std::string& TextureName);
 
-
+	//Clears map 'Textures'
+	static void ClearTextureMap();
 
 private:
 	//A Map that has a string matched to a file path

@@ -4,6 +4,10 @@ BoxCollider::BoxCollider(GameObject* owner) : ColliderComponent (owner)
 {
 }
 
+BoxCollider::~BoxCollider()
+{
+}
+
 
 
 

@@ -3,3 +3,7 @@
 ColliderComponent::ColliderComponent(GameObject* owner) : Component(owner)
 {
 }
+
+ColliderComponent::~ColliderComponent()
+{
+}
