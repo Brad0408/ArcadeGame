@@ -34,13 +34,12 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	PlayerShapeRectangle.setPosition(_GameObject->GetLocation());
 
 
-	_GameObject->DrawOutlines(PlayerShapeRectangle);
+	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
 
 	//Actually set it
 	_GameObject->SetRectangleShape(PlayerShapeRectangle);
 
-	_GameObject->AddComponent<BoxCollider>();
 
 
 

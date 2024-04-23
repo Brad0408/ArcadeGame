@@ -60,7 +60,8 @@ public:
 	//Draw an outline around the gameObject
 	void DrawOutlines(sf::RectangleShape &shape);
 
-	void CheckCollisions(GameObject* other);
+	bool HasBoxCollider(GameObject* GameObject);
+
 
 private:
 	//Basic attributes for the GameObject

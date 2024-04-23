@@ -10,17 +10,31 @@
 
 int main()
 {
-
+	//Vector that stores all the created gameObjects
+	std::vector<GameObject*> gameObjects;
 
 
 	GameObject* Player = new GameObject();
 	GameObject* Wall = new GameObject();
 
+	//Put newly made gameObjects on the vector
+	gameObjects.push_back(Player);
+	gameObjects.push_back(Wall);
+
+
+	Player->SetName("Player");
+	Wall->SetName("Wall");
+	for (GameObject* object : gameObjects)
+	{
+		std::cout << object->GetName() << std::endl;
+	}
+
+
 	Player->AddComponent<PlayerComponent>();
+	Player->AddComponent<BoxCollider>();
+
+	Player->GetComponent<BoxCollider>()->DrawOutlines(Player->GetRectangleShape());
 	Wall->AddComponent<BoxCollider>();
-
-
-
 
 
 
@@ -47,10 +61,13 @@ int main()
 
 	Boxshape.setPosition(BoxPos);
 
-	Boxshape.setOutlineThickness(3);
-	Boxshape.setOutlineColor(sf::Color(255, 255, 255));
+	//Boxshape.setOutlineThickness(3);
+	//Boxshape.setOutlineColor(sf::Color(255, 255, 255));
 
 	Wall->SetRectangleShape(Boxshape);
+
+
+	Wall->GetComponent<BoxCollider>()->DrawOutlines(Wall->GetRectangleShape());
 
 #pragma endregion
 
@@ -90,8 +107,6 @@ int main()
 		//Clear
 		window.clear();
 
-		Player->CheckCollisions(Wall);
-		Wall->CheckCollisions(Player);
 
 
 		//Actually add the shape to the screen
@@ -106,19 +121,42 @@ int main()
 		Player->GetComponent<PlayerComponent>()->Move();
 
 
+		//Check for collisions between game objects
+		for (size_t i = 0; i < gameObjects.size(); ++i) 
+		{
+			for (size_t j = i + 1; j < gameObjects.size(); ++j) 
+			{
+				if (gameObjects[i]->HasBoxCollider(gameObjects[i]) && gameObjects[j]->HasBoxCollider(gameObjects[j]))
+				{
+					BoxCollider* colliderA = gameObjects[i]->GetComponent<BoxCollider>();
+					BoxCollider* colliderB = gameObjects[j]->GetComponent<BoxCollider>();
+
+					sf::FloatRect boundsA = gameObjects[i]->GetRectangleShape().getGlobalBounds();
+					sf::FloatRect boundsB = gameObjects[j]->GetRectangleShape().getGlobalBounds();
+
+					colliderA->SetBounds(boundsA);
+					colliderA->SetBounds(boundsB);
+
+					if (colliderA->CheckCollision(*colliderB)) 
+					{
+						std::cout << "Collision" << std::endl;
+					}
+				}
+			}
+		}
+
 		
+
+
+
+
+
+
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-
-	
-			
 			//std::cout << "timeSincePhysicsStep: " << timeSincePhysicsStep << std::endl;
 			//std::cout << "Player Location: (" << Player->location.x << ", " << Player->location.y << ")" << std::endl;
-
-
-
-
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
 	}

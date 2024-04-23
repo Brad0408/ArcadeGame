@@ -7,6 +7,8 @@ class ColliderComponent : public Component
 
 public:
 	ColliderComponent(GameObject* owner);
-	virtual void OnCollision(ColliderComponent* otherCollider) = 0;
+	virtual bool CheckCollision(const ColliderComponent& other) const = 0;
+
+	virtual sf::FloatRect GetGlobalBounds() const = 0;
 
 };

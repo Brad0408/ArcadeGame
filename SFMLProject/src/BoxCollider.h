@@ -6,10 +6,14 @@ class BoxCollider : public ColliderComponent
 
 public:
 	BoxCollider(GameObject* owner);
-	virtual void OnCollision(ColliderComponent* otherCollider) override;
+	bool CheckCollision(const ColliderComponent& other) const override;
+
+	//Draw an outline around the Box
+	void DrawOutlines(sf::RectangleShape& shape);
 
 
-	const sf::FloatRect& GetBounds() const;
+	void SetBounds(sf::FloatRect &bounds);
+	sf::FloatRect GetGlobalBounds() const override;
 
 private:
 	sf::FloatRect m_Bounds;
