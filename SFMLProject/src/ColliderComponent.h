@@ -11,8 +11,8 @@ public:
 	~ColliderComponent();
 
 
-	virtual bool CheckCollision(const ColliderComponent& other) const = 0;
+	virtual bool CheckCollision(GameObject* objectOne, GameObject* objectTwo);
 
-	virtual sf::FloatRect GetGlobalBounds() const = 0;
+	virtual sf::FloatRect GetGlobalBounds();
 
 };

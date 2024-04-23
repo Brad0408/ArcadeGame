@@ -9,7 +9,7 @@ public:
 
 	~BoxCollider();
 
-	bool CheckCollision(const ColliderComponent& other) const override;
+	bool CheckCollision(GameObject* objectOne, GameObject* objectTwo)  override;
 
 
 
@@ -18,8 +18,8 @@ public:
 	void DrawOutlines(sf::RectangleShape& shape);
 
 
-	void SetBounds(sf::FloatRect &bounds);
-	sf::FloatRect GetGlobalBounds() const override;
+	void SetGlobalBounds(sf::FloatRect &bounds);
+	sf::FloatRect GetGlobalBounds() override;
 
 private:
 	sf::FloatRect m_Bounds;

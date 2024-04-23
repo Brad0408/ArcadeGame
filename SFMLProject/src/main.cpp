@@ -119,13 +119,14 @@ int main()
 					sf::FloatRect boundsA = gameObjects[i]->GetRectangleShape().getGlobalBounds();
 					sf::FloatRect boundsB = gameObjects[j]->GetRectangleShape().getGlobalBounds();
 
-					colliderA->SetBounds(boundsA);
-					colliderA->SetBounds(boundsB);
+					colliderA->SetGlobalBounds(boundsA);
+					colliderB->SetGlobalBounds(boundsB);
 
-					if (colliderA->CheckCollision(*colliderB)) 
-					{
-						std::cout << "Collision" << std::endl;
-					}
+
+					//if (colliderA->CheckCollision(*colliderB)) 
+					//{
+						//std::cout << "Collision" << std::endl;
+					//}
 				}
 			}
 		}

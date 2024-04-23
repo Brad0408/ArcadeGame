@@ -11,22 +11,20 @@ BoxCollider::~BoxCollider()
 
 
 
-
-bool BoxCollider::CheckCollision(const ColliderComponent& other) const
+bool BoxCollider::CheckCollision(GameObject* objectOne, GameObject* objectTwo)
 {
-	//std::cout << "Box Collider On Collision Called " << std::endl;
 
-	// Downcast the other collider to BoxCollider
-	const BoxCollider* otherBoxCollider = dynamic_cast<const BoxCollider*>(&other);
-	if (otherBoxCollider) 
-	{
-		// Use SFML's intersects method to check collision
-		return m_Bounds.intersects(otherBoxCollider->GetGlobalBounds());
 
-		std::cout << "There has been an intersection" << std::endl;
-	}
-	return false; // Return false if the other collider is not a BoxCollider
+
+
+	return false;
 }
+
+
+
+
+
+
 
 
 void BoxCollider::DrawOutlines(sf::RectangleShape& shape)
@@ -39,12 +37,12 @@ void BoxCollider::DrawOutlines(sf::RectangleShape& shape)
 
 
 
-void BoxCollider::SetBounds(sf::FloatRect &bounds) 
+void BoxCollider::SetGlobalBounds(sf::FloatRect &bounds) 
 {
 	m_Bounds = bounds;
 }
 
-sf::FloatRect BoxCollider::GetGlobalBounds() const
+sf::FloatRect BoxCollider::GetGlobalBounds()
 {
 	return m_Bounds;
 }
