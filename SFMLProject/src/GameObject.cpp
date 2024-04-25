@@ -79,25 +79,29 @@ void GameObject::DrawOutlines(sf::RectangleShape &shape)
 	shape.setOutlineColor(sf::Color(255, 0, 255));
 }
 
-void GameObject::CheckCollisions(GameObject* other)
+bool GameObject::HasBoxCollider(GameObject* GameObject)
 {
-	//std::cout << "Check was called " << std::endl;
+	BoxCollider* boxCollider = GameObject->GetComponent<BoxCollider>();
 
-	ColliderComponent* collider1 = GetComponent<ColliderComponent>();
-	ColliderComponent* collider2 = other->GetComponent<ColliderComponent>();
+	return (boxCollider != nullptr);
+}
 
-	// Check if both GameObjects have colliders
-	if (collider1 && collider2) {
-		// Check if the colliders intersect
-		if (dynamic_cast<BoxCollider*>(collider1) && dynamic_cast<BoxCollider*>(collider2)) {
-			BoxCollider* boxCollider1 = static_cast<BoxCollider*>(collider1);
-			BoxCollider* boxCollider2 = static_cast<BoxCollider*>(collider2);
+AG::Vector2<float> &GameObject::GetMoveDirection()
+{
+	return m_MoveDirection;
+}
 
-			if (boxCollider1->GetBounds().intersects(boxCollider2->GetBounds())) {
-				// Handle collision
-				collider1->OnCollision(collider2);
-				collider2->OnCollision(collider1);
-			}
-		}
-	}
+void GameObject::SetIsWall(bool isWall)
+{
+	m_IsWall = isWall;
+}
+
+bool GameObject::GetIsWall()
+{
+	return m_IsWall;
+}
+
+void GameObject::Destroy()
+{
+	delete this;
 }
