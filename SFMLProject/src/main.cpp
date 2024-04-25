@@ -53,9 +53,11 @@ int main()
 
 	Player->AddComponent<PlayerComponent>();
 	Player->AddComponent<BoxCollider>();
-
 	Player->GetComponent<BoxCollider>()->DrawOutlines(Player->GetRectangleShape());
+
+
 	Enemy->AddComponent<BoxCollider>();
+	Enemy->AddComponent<EnemyComponent>();
 
 
 	for (int i = 0; i < 4; ++i) 
@@ -97,49 +99,6 @@ int main()
 #pragma endregion
 
 #pragma region Walls
-
-	//std::vector<sf::RectangleShape> wallShapes(4);
-
-	//float paddings[4] = { 20.0f, 20.0f, 960.0f, 960.0f };
-
-	//AG::Vector2<float> sizes[2] = 
-	//{
-	//	AG::Vector2<float>(15, 1000),   //Vertical wall size
-	//	AG::Vector2<float>(1000, 15),	//Horizontal wall size
-	//};
-
-	//sf::Color colors[4] =
-	//{
-	//	sf::Color::Green,
-	//	sf::Color::Blue,
-	//	sf::Color::Magenta,
-	//	sf::Color::Yellow
-	//};
-
-	//// Define the positions of the walls
-	//AG::Vector2<float> positions[4] = 
-	//{
-	//	AG::Vector2<float>(0.0f, paddings[0]),               // Top wall position
-	//	AG::Vector2<float>(paddings[1], 0.0f),               // Left wall position
-	//	AG::Vector2<float>(0.0f, paddings[2]),				 // Bottom wall position
-	//	AG::Vector2<float>(paddings[3], 0.0f)				 // Right wall position
-	//};
-
-
-
-	//for (int i = 0; i < 4; ++i)
-	//{
-	//	wallShapes[i].setSize(sizes[i/2]);
-	//	wallShapes[i].setFillColor(colors[i]);
-	//	wallShapes[i].setPosition(positions[i]);
-
-	//	wallShapes[i].setOutlineThickness(3);
-	//	wallShapes[i].setOutlineColor(sf::Color(255, 255, 255));
-
-	//	// Set the rectangle shape for the corresponding wall object
-	//	walls[i]->SetRectangleShape(wallShapes[i]);
-	//}
-
 
 	float TopPadding = 20.0f;
 	float LeftPadding = 20.0f;
@@ -219,6 +178,18 @@ int main()
 			{
 				window.close();
 			}
+
+			// Check for left mouse button press event
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				Player->SetIsShooting(true);
+			}
+
+			// Check for left mouse button release event
+			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			{
+				Player->SetIsShooting(false);
+			}
 		}
 
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -226,6 +197,13 @@ int main()
 		lastTime = now;
 
 		Player->GetComponent<PlayerComponent>()->Move();
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting();
+		}
+
+
+		Enemy->GetComponent<EnemyComponent>()->Move();
 
 
 		//Retrieve the vector of GameObjects from the GameManager
@@ -262,7 +240,7 @@ int main()
 
 							for (GameObject* wall : walls)
 							{
-								BoxCollider::WallCollision(Player, wall);
+								BoxCollider::WallCollision(objectA, objectB);
 							}
 
 						}

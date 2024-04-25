@@ -101,6 +101,16 @@ bool GameObject::GetIsWall()
 	return m_IsWall;
 }
 
+void GameObject::SetIsShooting(bool isShooting)
+{
+	m_IsShooting = isShooting;
+}
+
+bool GameObject::GetIsShooting()
+{
+	return m_IsShooting;
+}
+
 void GameObject::Destroy()
 {
 	delete this;

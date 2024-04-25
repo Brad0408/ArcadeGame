@@ -11,15 +11,17 @@ public:
 	~PlayerComponent();
 
 
-
-	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 50;
-
-	sf::RectangleShape PlayerShapeRectangle;
-
-	sf::IntRect PlayerTextureUV;
-
 	void Move();
 
+	void Shooting();
+
 private:
+	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 50;
+
+	sf::RectangleShape m_PlayerShapeRectangle;
+
+	sf::IntRect m_PlayerTextureUV;
+
 	float m_MovementSpeed = 0.1f;
+
 };

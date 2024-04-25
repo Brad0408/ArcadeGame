@@ -24,7 +24,7 @@ void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
 	//Loop to just output the names of all created gameObject
 	for (GameObject* gameobject : GameObjectsVector)
 	{
-		std::cout << gameobject->GetName() << std::endl;
+		std::cout << "Stored GameObjects on the vector : " << gameobject->GetName() << std::endl;
 	}
 }
 

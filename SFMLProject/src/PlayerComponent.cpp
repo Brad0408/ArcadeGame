@@ -14,30 +14,30 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 
 	//Cookie cutter part of sprite sheet (0,0 = Coordinates, 24, 24 = Size of rectangle)
-	PlayerTextureUV = sf::IntRect(210, 164, 24, 24);
+	m_PlayerTextureUV = sf::IntRect(210, 164, 24, 24);
 
-	PlayerShapeRectangle.setSize(PlayerSize);
+	m_PlayerShapeRectangle.setSize(m_PlayerSize);
 
 
 
 	//Set texture to be the whole sprite sheet
-	PlayerShapeRectangle.setTexture(&ResourceManager::GetTexture("Player"));
+	m_PlayerShapeRectangle.setTexture(&ResourceManager::GetTexture("Player"));
 
 
 	//Set the texture to the cookie cutter section of the sprite sheet
-	PlayerShapeRectangle.setTextureRect(PlayerTextureUV);
+	m_PlayerShapeRectangle.setTextureRect(m_PlayerTextureUV);
 
 
 	//Set Rect to the middle / position
-	PlayerShapeRectangle.setOrigin(PlayerSize / 2);
-	PlayerShapeRectangle.setPosition(_GameObject->GetLocation());
+	m_PlayerShapeRectangle.setOrigin(m_PlayerSize / 2);
+	m_PlayerShapeRectangle.setPosition(_GameObject->GetLocation());
 
 
 	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
 
 	//Actually set it
-	_GameObject->SetRectangleShape(PlayerShapeRectangle);
+	_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 
 
 
@@ -90,4 +90,9 @@ void PlayerComponent::Move()
 	_GameObject->GetMoveDirection() = direction;
 
 	_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
+}
+
+void PlayerComponent::Shooting()
+{
+		std::cout << "mouse clicked" << std::endl;
 }
