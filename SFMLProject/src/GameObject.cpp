@@ -85,3 +85,23 @@ bool GameObject::HasBoxCollider(GameObject* GameObject)
 
 	return (boxCollider != nullptr);
 }
+
+AG::Vector2<float> &GameObject::GetMoveDirection()
+{
+	return m_MoveDirection;
+}
+
+void GameObject::SetIsWall(bool isWall)
+{
+	m_IsWall = isWall;
+}
+
+bool GameObject::GetIsWall()
+{
+	return m_IsWall;
+}
+
+void GameObject::Destroy()
+{
+	delete this;
+}

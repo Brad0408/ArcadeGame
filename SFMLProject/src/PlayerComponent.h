@@ -12,12 +12,14 @@ public:
 
 
 
-	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 100;
+	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 50;
 
 	sf::RectangleShape PlayerShapeRectangle;
+
+	sf::IntRect PlayerTextureUV;
 
 	void Move();
 
 private:
-	float m_MovementSpeed = 0.05f;
+	float m_MovementSpeed = 0.1f;
 };

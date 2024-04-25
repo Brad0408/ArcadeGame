@@ -1,5 +1,6 @@
 #pragma once
-#include<ColliderComponent.h>
+#include <ColliderComponent.h>
+#include <GameObject.h>
 
 class BoxCollider : public ColliderComponent
 {
@@ -11,7 +12,7 @@ public:
 
 	bool CheckCollision(GameObject* objectOne, GameObject* objectTwo)  override;
 
-
+	static bool WallCollision(GameObject* objectOne, GameObject* objectTwo);
 
 
 	//Draw an outline around the Box

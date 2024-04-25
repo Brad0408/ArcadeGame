@@ -14,7 +14,7 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 
 	//Cookie cutter part of sprite sheet (0,0 = Coordinates, 24, 24 = Size of rectangle)
-	sf::IntRect PlayerTextureUV(210, 164, 24, 24);
+	PlayerTextureUV = sf::IntRect(210, 164, 24, 24);
 
 	PlayerShapeRectangle.setSize(PlayerSize);
 
@@ -26,7 +26,6 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 	//Set the texture to the cookie cutter section of the sprite sheet
 	PlayerShapeRectangle.setTextureRect(PlayerTextureUV);
-
 
 
 	//Set Rect to the middle / position
@@ -59,28 +58,36 @@ PlayerComponent::~PlayerComponent()
 
 void PlayerComponent::Move()
 {
+	AG::Vector2<float> direction(0.0f, 0.0f);
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		_GameObject->GetLocation().x -= m_MovementSpeed;
 
-		_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
+		direction.x = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		_GameObject->GetLocation().x += m_MovementSpeed;
 
-		_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
+		direction.x = 1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
 		_GameObject->GetLocation().y -= m_MovementSpeed;
 
-		_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
+		direction.y = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		_GameObject->GetLocation().y += m_MovementSpeed;
 
-		_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
+		direction.y = 1.0f;
 	}
+
+	direction.Normalise();
+
+	_GameObject->GetMoveDirection() = direction;
+
+	_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
 }

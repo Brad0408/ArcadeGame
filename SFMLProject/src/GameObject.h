@@ -61,17 +61,24 @@ public:
 	void DrawOutlines(sf::RectangleShape &shape);
 
 	bool HasBoxCollider(GameObject* GameObject);
+	AG::Vector2<float>& GetMoveDirection();
 
+	void SetIsWall(bool isWall);
+	bool GetIsWall();
+
+	void Destroy();
 
 private:
 	//Basic attributes for the GameObject
 	std::string m_Name;
 	bool m_Active;
 	std::string m_Tag;
+	bool m_IsWall = false;
 
 	AG::Vector2<float> m_location;
+	AG::Vector2<float> m_MoveDirection;
 	sf::RectangleShape m_SpriteShape;
-	sf::RectangleShape m_hitbox;
+	
 
 
 	//1 pointer, if gameObject is gone, so does the component, all memory is wiped
