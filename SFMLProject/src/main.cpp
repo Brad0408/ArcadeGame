@@ -3,7 +3,6 @@
 #include <Vector2.h>
 #include <Event.h>
 #include <GameObject.h>
-#include <GameManager.h>
 
 #define FIXEDFRAMERATE 0.025f
 
@@ -19,6 +18,8 @@ int main()
 	GameObject* Enemy = new GameObject();
 	std::array<GameObject*, 4> walls;
 
+	
+
 	for (int i = 0; i < 4; ++i)
 	{
 		walls[i] = new GameObject();
@@ -27,7 +28,6 @@ int main()
 	//Put newly made gameObjects on the vector
 	GameManager::AddGameObject(Player);
 	GameManager::AddGameObject(Enemy);
-
 
 
 	for (int i = 0; i < 4; ++i) 
@@ -58,7 +58,7 @@ int main()
 
 	Enemy->AddComponent<BoxCollider>();
 	Enemy->AddComponent<EnemyComponent>();
-
+	Enemy->GetComponent<BoxCollider>()->DrawOutlines(Enemy->GetRectangleShape());
 
 	for (int i = 0; i < 4; ++i) 
 	{
@@ -69,34 +69,7 @@ int main()
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works");
 
-#pragma region TestSqaure
 
-	//Define the size of rectangle
-	AG::Vector2<float> BoxSize = AG::Vector2<float>::one * 50;
-	AG::Vector2<float> BoxPos = AG::Vector2<float>(350.0f, 400.0f);
-
-	sf::IntRect altrectTextureUV(148, 235, 24, 24);
-
-	//Create a rectangle
-	sf::RectangleShape Boxshape(BoxSize);
-
-	//Set texture to be the whole sprite sheet
-	Boxshape.setTexture(&ResourceManager::GetTexture("Player"));
-
-	//Set the texture to the cookie cutter section of the sprite sheet
-	Boxshape.setTextureRect(altrectTextureUV);
-
-	Boxshape.setPosition(BoxPos);
-
-	//Boxshape.setOutlineThickness(3);
-	//Boxshape.setOutlineColor(sf::Color(255, 255, 255));
-
-	Enemy->SetRectangleShape(Boxshape);
-
-
-	Enemy->GetComponent<BoxCollider>()->DrawOutlines(Enemy->GetRectangleShape());
-
-#pragma endregion
 
 #pragma region Walls
 
@@ -165,6 +138,7 @@ int main()
 	sf::RectangleShape TestShape(sf::Vector2f(100, 50));
 	TestShape.setFillColor(sf::Color::Green);
 	TestShape.setPosition(200, 200);
+	
 
 	while (window.isOpen())
 	{
@@ -196,7 +170,8 @@ int main()
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
 
-		Player->GetComponent<PlayerComponent>()->Move();
+		Player->GetComponent<PlayerComponent>()->Move(deltaTime);
+
 		if (Player->GetIsShooting())
 		{
 			Player->GetComponent<PlayerComponent>()->Shooting();

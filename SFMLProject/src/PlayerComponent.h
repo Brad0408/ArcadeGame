@@ -11,7 +11,7 @@ public:
 	~PlayerComponent();
 
 
-	void Move();
+	void Move(float deltaTime);
 
 	void Shooting();
 
@@ -22,7 +22,6 @@ private:
 
 	sf::IntRect m_PlayerTextureUV;
 
-	//float m_MovementSpeed = 0.1f;
-	float m_MovementSpeed = 3.1f;		//for uni pcs, works slower
-
+	float m_MovementSpeed = 37.0f;
+	//float m_MovementSpeed = 3.1f;		//for uni pcs, works slower
 };

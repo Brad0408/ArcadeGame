@@ -1,6 +1,7 @@
 #pragma once
 #include <isComponent.h>
 #include <ResourceManager.h>
+#include <GameManager.h>
 #include <PlayerComponent.h>
 #include <EnemyComponent.h>
 #include <BoxCollider.h>
@@ -70,6 +71,7 @@ public:
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting();
 
+	GameObject* Instantiate(GameObject* Object);
 	void Destroy();
 
 private:

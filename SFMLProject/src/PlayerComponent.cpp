@@ -56,31 +56,31 @@ PlayerComponent::~PlayerComponent()
 }
 
 
-void PlayerComponent::Move()
+void PlayerComponent::Move(float deltaTime)
 {
 	AG::Vector2<float> direction(0.0f, 0.0f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
-		_GameObject->GetLocation().x -= m_MovementSpeed;
+		_GameObject->GetLocation().x -= m_MovementSpeed * deltaTime;
 
 		direction.x = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
-		_GameObject->GetLocation().x += m_MovementSpeed;
+		_GameObject->GetLocation().x += m_MovementSpeed * deltaTime;
 
 		direction.x = 1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
 	{
-		_GameObject->GetLocation().y -= m_MovementSpeed;
+		_GameObject->GetLocation().y -= m_MovementSpeed * deltaTime;
 
 		direction.y = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
-		_GameObject->GetLocation().y += m_MovementSpeed;
+		_GameObject->GetLocation().y += m_MovementSpeed * deltaTime;
 
 		direction.y = 1.0f;
 	}
@@ -94,5 +94,8 @@ void PlayerComponent::Move()
 
 void PlayerComponent::Shooting()
 {
-		std::cout << "mouse clicked" << std::endl;
+	GameObject* bullet = new GameObject();
+	bullet->Instantiate(bullet);
+
+	std::cout << "mouse clicked" << std::endl;
 }

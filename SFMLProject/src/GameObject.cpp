@@ -111,7 +111,15 @@ bool GameObject::GetIsShooting()
 	return m_IsShooting;
 }
 
+GameObject* GameObject::Instantiate(GameObject* Object)
+{
+	Object = new GameObject();
+	return Object;
+}
+
 void GameObject::Destroy()
 {
+	GameManager::ClearGameObjectVector();
 	delete this;
+	
 }
