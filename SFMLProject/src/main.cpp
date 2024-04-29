@@ -252,6 +252,8 @@ int main()
 		{
 			window.draw(gameObject->GetRectangleShape());
 		}
+
+		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
 		//window.draw(TestShape);
 		

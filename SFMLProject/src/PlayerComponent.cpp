@@ -1,5 +1,6 @@
 #include "PlayerComponent.h"
 
+
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
 	
@@ -35,6 +36,7 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 
 	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
+	CreateFiringPoint();
 
 	//Actually set it
 	_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
@@ -92,10 +94,42 @@ void PlayerComponent::Move(float deltaTime)
 	_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
 }
 
+
+
+void PlayerComponent::CreateFiringPoint()
+{
+	m_FiringPoint.setSize(m_FiringPointSize);
+	m_FiringPoint.setFillColor(sf::Color::Red);
+	m_FiringPoint.setOrigin(m_FiringPoint.getSize().x / 2.0f, m_FiringPoint.getSize().y / 2.0f);
+
+	std::cout << "firing poi9nt created" << std::endl;
+}
+
+void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
+{
+	//Calculate angle between player and mouse cursor
+	AG::Vector2<float>  mousePosition = AG::Vector2<float>(sf::Mouse::getPosition(window));
+	AG::Vector2<float>  delta = mousePosition - _GameObject->GetLocation();
+	m_angle = std::atan2(delta.y, delta.x);
+
+	//Calculate position of firing point
+	AG::Vector2<float>  orbitPosition;
+	orbitPosition.x = _GameObject->GetLocation().x + m_orbitRadius * std::cos(m_angle);
+	orbitPosition.y = _GameObject->GetLocation().y + m_orbitRadius * std::sin(m_angle);
+
+	//Set poisition based of the orbit
+	m_FiringPoint.setPosition(orbitPosition);
+
+	std::cout << "Firing Point Location: (" << m_FiringPoint.getPosition().x << ", " << m_FiringPoint.getPosition().y << ")" << std::endl;
+
+	//Draw the rotating rectangle here - not adding it to the gameobject vector as a seprate gameObject so just draw it here. 
+	//Also avoid any collision detections because its a rectangle shape that would be on the vector
+	window.draw(m_FiringPoint);
+}
+
 void PlayerComponent::Shooting()
 {
-	GameObject* bullet = new GameObject();
-	bullet->Instantiate(bullet);
+	//Bullet* bullet;
 
 	std::cout << "mouse clicked" << std::endl;
 }
