@@ -21,7 +21,7 @@ const std::string& ResourceManager::GetTexturePath(const std::string& TextureNam
 	//Check if the texture name exists in the map
 	if (TexturePaths.find(TextureName) != TexturePaths.end()) 
 	{
-		std::cout << "Texture path was found of key: " << TextureName << std::endl;
+		//std::cout << "Texture path was found of key: " << TextureName << std::endl;
 		return TexturePaths.at(TextureName);
 	}
 	else

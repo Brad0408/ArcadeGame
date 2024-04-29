@@ -2,6 +2,7 @@
 #include <Component.h>
 #include <GameObject.h>
 
+class Bullet;
 
 class PlayerComponent : public Component
 {
@@ -11,15 +12,26 @@ public:
 	~PlayerComponent();
 
 
+	void Move(float deltaTime);
 
-	AG::Vector2<float> PlayerSize = AG::Vector2<float>::one * 50;
+	void CreateFiringPoint();
+	void CalculateFiringPointRotation(sf::RenderWindow &window);
 
-	sf::RectangleShape PlayerShapeRectangle;
-
-	sf::IntRect PlayerTextureUV;
-
-	void Move();
+	void Shooting();
 
 private:
-	float m_MovementSpeed = 0.1f;
+	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 50;
+	AG::Vector2<float> m_FiringPointSize = AG::Vector2<float>::one * 10;
+
+	sf::RectangleShape m_PlayerShapeRectangle;
+	sf::RectangleShape m_FiringPoint;
+
+	sf::IntRect m_PlayerTextureUV;
+
+	float m_MovementSpeed = 37.0f;
+	float m_orbitRadius = 50.0f;
+	float m_angle;
+
+
+
 };

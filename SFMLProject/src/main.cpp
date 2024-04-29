@@ -3,7 +3,6 @@
 #include <Vector2.h>
 #include <Event.h>
 #include <GameObject.h>
-#include <GameManager.h>
 
 #define FIXEDFRAMERATE 0.025f
 
@@ -19,6 +18,8 @@ int main()
 	GameObject* Enemy = new GameObject();
 	std::array<GameObject*, 4> walls;
 
+	
+
 	for (int i = 0; i < 4; ++i)
 	{
 		walls[i] = new GameObject();
@@ -27,7 +28,6 @@ int main()
 	//Put newly made gameObjects on the vector
 	GameManager::AddGameObject(Player);
 	GameManager::AddGameObject(Enemy);
-
 
 
 	for (int i = 0; i < 4; ++i) 
@@ -53,10 +53,12 @@ int main()
 
 	Player->AddComponent<PlayerComponent>();
 	Player->AddComponent<BoxCollider>();
-
 	Player->GetComponent<BoxCollider>()->DrawOutlines(Player->GetRectangleShape());
-	Enemy->AddComponent<BoxCollider>();
 
+
+	Enemy->AddComponent<BoxCollider>();
+	Enemy->AddComponent<EnemyComponent>();
+	Enemy->GetComponent<BoxCollider>()->DrawOutlines(Enemy->GetRectangleShape());
 
 	for (int i = 0; i < 4; ++i) 
 	{
@@ -67,79 +69,9 @@ int main()
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works");
 
-#pragma region TestSqaure
 
-	//Define the size of rectangle
-	AG::Vector2<float> BoxSize = AG::Vector2<float>::one * 50;
-	AG::Vector2<float> BoxPos = AG::Vector2<float>(350.0f, 400.0f);
-
-	sf::IntRect altrectTextureUV(148, 235, 24, 24);
-
-	//Create a rectangle
-	sf::RectangleShape Boxshape(BoxSize);
-
-	//Set texture to be the whole sprite sheet
-	Boxshape.setTexture(&ResourceManager::GetTexture("Player"));
-
-	//Set the texture to the cookie cutter section of the sprite sheet
-	Boxshape.setTextureRect(altrectTextureUV);
-
-	Boxshape.setPosition(BoxPos);
-
-	//Boxshape.setOutlineThickness(3);
-	//Boxshape.setOutlineColor(sf::Color(255, 255, 255));
-
-	Enemy->SetRectangleShape(Boxshape);
-
-
-	Enemy->GetComponent<BoxCollider>()->DrawOutlines(Enemy->GetRectangleShape());
-
-#pragma endregion
 
 #pragma region Walls
-
-	//std::vector<sf::RectangleShape> wallShapes(4);
-
-	//float paddings[4] = { 20.0f, 20.0f, 960.0f, 960.0f };
-
-	//AG::Vector2<float> sizes[2] = 
-	//{
-	//	AG::Vector2<float>(15, 1000),   //Vertical wall size
-	//	AG::Vector2<float>(1000, 15),	//Horizontal wall size
-	//};
-
-	//sf::Color colors[4] =
-	//{
-	//	sf::Color::Green,
-	//	sf::Color::Blue,
-	//	sf::Color::Magenta,
-	//	sf::Color::Yellow
-	//};
-
-	//// Define the positions of the walls
-	//AG::Vector2<float> positions[4] = 
-	//{
-	//	AG::Vector2<float>(0.0f, paddings[0]),               // Top wall position
-	//	AG::Vector2<float>(paddings[1], 0.0f),               // Left wall position
-	//	AG::Vector2<float>(0.0f, paddings[2]),				 // Bottom wall position
-	//	AG::Vector2<float>(paddings[3], 0.0f)				 // Right wall position
-	//};
-
-
-
-	//for (int i = 0; i < 4; ++i)
-	//{
-	//	wallShapes[i].setSize(sizes[i/2]);
-	//	wallShapes[i].setFillColor(colors[i]);
-	//	wallShapes[i].setPosition(positions[i]);
-
-	//	wallShapes[i].setOutlineThickness(3);
-	//	wallShapes[i].setOutlineColor(sf::Color(255, 255, 255));
-
-	//	// Set the rectangle shape for the corresponding wall object
-	//	walls[i]->SetRectangleShape(wallShapes[i]);
-	//}
-
 
 	float TopPadding = 20.0f;
 	float LeftPadding = 20.0f;
@@ -206,6 +138,7 @@ int main()
 	sf::RectangleShape TestShape(sf::Vector2f(100, 50));
 	TestShape.setFillColor(sf::Color::Green);
 	TestShape.setPosition(200, 200);
+	
 
 	while (window.isOpen())
 	{
@@ -219,13 +152,33 @@ int main()
 			{
 				window.close();
 			}
+
+			// Check for left mouse button press event
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				Player->SetIsShooting(true);
+			}
+
+			// Check for left mouse button release event
+			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+			{
+				Player->SetIsShooting(false);
+			}
 		}
 
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
 
-		Player->GetComponent<PlayerComponent>()->Move();
+		Player->GetComponent<PlayerComponent>()->Move(deltaTime);
+
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting();
+		}
+
+
+		Enemy->GetComponent<EnemyComponent>()->Move();
 
 
 		//Retrieve the vector of GameObjects from the GameManager
@@ -262,7 +215,7 @@ int main()
 
 							for (GameObject* wall : walls)
 							{
-								BoxCollider::WallCollision(Player, wall);
+								BoxCollider::WallCollision(objectA, objectB);
 							}
 
 						}
@@ -299,6 +252,8 @@ int main()
 		{
 			window.draw(gameObject->GetRectangleShape());
 		}
+
+		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
 		//window.draw(TestShape);
 		

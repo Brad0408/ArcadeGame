@@ -1,7 +1,9 @@
 #pragma once
 #include <isComponent.h>
 #include <ResourceManager.h>
+#include <GameManager.h>
 #include <PlayerComponent.h>
+#include <EnemyComponent.h>
 #include <BoxCollider.h>
 
 class GameObject : public Object
@@ -66,6 +68,10 @@ public:
 	void SetIsWall(bool isWall);
 	bool GetIsWall();
 
+	void SetIsShooting(bool isShooting);
+	bool GetIsShooting();
+
+	GameObject* Instantiate(GameObject* Object);
 	void Destroy();
 
 private:
@@ -74,10 +80,12 @@ private:
 	bool m_Active;
 	std::string m_Tag;
 	bool m_IsWall = false;
+	bool m_IsShooting = false;
 
 	AG::Vector2<float> m_location;
 	AG::Vector2<float> m_MoveDirection;
 	sf::RectangleShape m_SpriteShape;
+
 	
 
 
@@ -127,7 +135,7 @@ public:
 		//Move this newly created component into the vector
 		m_Components.push_back(std::move(newComp));
 
-		std::cout << "Component attached: " << typeid(T).name() << std::endl;
+		std::cout << "Component attached: " << typeid(T).name() << " to " << GetName() << std::endl;
 
 		//Returns a pointer to the newly added component
 		return static_cast<T*>(m_Components[m_Components.size() - 1].get());
