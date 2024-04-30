@@ -60,6 +60,16 @@ sf::RectangleShape& GameObject::GetRectangleShape()
 	return m_SpriteShape;
 }
 
+void GameObject::SetCircleShape(sf::CircleShape& shape)
+{
+	m_CircleShape = shape;
+}
+
+sf::CircleShape& GameObject::GetCircleShape()
+{
+	return m_CircleShape;
+}
+
 void GameObject::SetLocation(float x, float y)
 {
 	m_location.x = x;
@@ -86,9 +96,23 @@ bool GameObject::HasBoxCollider(GameObject* GameObject)
 	return (boxCollider != nullptr);
 }
 
+bool GameObject::HasCircleCollider(GameObject* GameObject)
+{
+	CircleCollider* circleCollider = GameObject->GetComponent<CircleCollider>();
+
+	return (circleCollider != nullptr);
+}
+
 AG::Vector2<float> &GameObject::GetMoveDirection()
 {
 	return m_MoveDirection;
+}
+
+AG::Vector2<float> GameObject::GetSize()
+{
+	sf::RectangleShape& rect = GetRectangleShape();
+	sf::Vector2f size = rect.getSize();
+	return AG::Vector2<float>(size.x, size.y);
 }
 
 void GameObject::SetIsWall(bool isWall)
@@ -99,6 +123,16 @@ void GameObject::SetIsWall(bool isWall)
 bool GameObject::GetIsWall()
 {
 	return m_IsWall;
+}
+
+void GameObject::SetIsPlayer(bool isPlayer)
+{
+	m_IsPlayer = isPlayer;
+}
+
+bool GameObject::GetIsPlayer()
+{
+	return m_IsPlayer;
 }
 
 void GameObject::SetIsShooting(bool isShooting)

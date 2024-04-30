@@ -1,9 +1,11 @@
 #include "PlayerComponent.h"
+#include "Bullet.h"
 
 
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
-	
+	_GameObject->SetIsPlayer(true);
+
 	//std::cout << "PlayerCompont Constructed" << std::endl;
 	//std::cout << "GameObject value in PlayerComponent : " << _GameObject << std::endl;
 
@@ -101,8 +103,6 @@ void PlayerComponent::CreateFiringPoint()
 	m_FiringPoint.setSize(m_FiringPointSize);
 	m_FiringPoint.setFillColor(sf::Color::Red);
 	m_FiringPoint.setOrigin(m_FiringPoint.getSize().x / 2.0f, m_FiringPoint.getSize().y / 2.0f);
-
-	std::cout << "firing poi9nt created" << std::endl;
 }
 
 void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
@@ -112,6 +112,7 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	AG::Vector2<float>  delta = mousePosition - _GameObject->GetLocation();
 	m_angle = std::atan2(delta.y, delta.x);
 
+
 	//Calculate position of firing point
 	AG::Vector2<float>  orbitPosition;
 	orbitPosition.x = _GameObject->GetLocation().x + m_orbitRadius * std::cos(m_angle);
@@ -120,16 +121,24 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	//Set poisition based of the orbit
 	m_FiringPoint.setPosition(orbitPosition);
 
-	std::cout << "Firing Point Location: (" << m_FiringPoint.getPosition().x << ", " << m_FiringPoint.getPosition().y << ")" << std::endl;
+	//std::cout << "Firing Point Location: (" << m_FiringPoint.getPosition().x << ", " << m_FiringPoint.getPosition().y << ")" << std::endl;
 
 	//Draw the rotating rectangle here - not adding it to the gameobject vector as a seprate gameObject so just draw it here. 
 	//Also avoid any collision detections because its a rectangle shape that would be on the vector
 	window.draw(m_FiringPoint);
 }
 
+const AG::Vector2<float> &PlayerComponent::GetFirePointLocation()
+{
+	m_FiringPointLocation = AG::Vector2<float>(m_FiringPoint.getPosition().x, m_FiringPoint.getPosition().y);
+	return m_FiringPointLocation;
+}
+
 void PlayerComponent::Shooting()
 {
-	//Bullet* bullet;
+	Bullet* newBullet = new Bullet(GetFirePointLocation());
 
-	std::cout << "mouse clicked" << std::endl;
+
+
+	GameManager::AddBulletObject(newBullet);
 }
