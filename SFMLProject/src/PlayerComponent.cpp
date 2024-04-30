@@ -1,4 +1,5 @@
 #include "PlayerComponent.h"
+#include "Bullet.h"
 
 
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
@@ -120,7 +121,7 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	//Set poisition based of the orbit
 	m_FiringPoint.setPosition(orbitPosition);
 
-	std::cout << "Firing Point Location: (" << m_FiringPoint.getPosition().x << ", " << m_FiringPoint.getPosition().y << ")" << std::endl;
+	//std::cout << "Firing Point Location: (" << m_FiringPoint.getPosition().x << ", " << m_FiringPoint.getPosition().y << ")" << std::endl;
 
 	//Draw the rotating rectangle here - not adding it to the gameobject vector as a seprate gameObject so just draw it here. 
 	//Also avoid any collision detections because its a rectangle shape that would be on the vector
@@ -129,7 +130,7 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 
 void PlayerComponent::Shooting()
 {
-	//Bullet* bullet;
+	Bullet newBullet;
 
-	std::cout << "mouse clicked" << std::endl;
+	m_Bullets.push_back(newBullet);
 }

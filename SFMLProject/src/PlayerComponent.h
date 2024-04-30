@@ -32,6 +32,7 @@ private:
 	float m_orbitRadius = 50.0f;
 	float m_angle;
 
+	std::vector<Bullet> m_Bullets;
 
 
 };
