@@ -113,6 +113,7 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	AG::Vector2<float>  delta = mousePosition - _GameObject->GetLocation();
 	m_angle = std::atan2(delta.y, delta.x);
 
+
 	//Calculate position of firing point
 	AG::Vector2<float>  orbitPosition;
 	orbitPosition.x = _GameObject->GetLocation().x + m_orbitRadius * std::cos(m_angle);
@@ -128,9 +129,18 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	window.draw(m_FiringPoint);
 }
 
-void PlayerComponent::Shooting()
+AG::Vector2<float>& PlayerComponent::GetFirePointLocation()
+{
+	return m_FiringPoint.getGlobalBounds();
+}
+
+void PlayerComponent::Shooting(sf::RenderWindow& window)
 {
 	Bullet newBullet;
 
-	m_Bullets.push_back(newBullet);
+	newBullet.SetLocation(500,500);
+
+	std::cout << newBullet.GetLocation().x << " , " << newBullet.GetLocation().y << std::endl;
+
+	window.draw(newBullet.GetCircleShape());
 }

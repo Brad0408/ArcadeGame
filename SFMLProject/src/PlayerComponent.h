@@ -16,8 +16,9 @@ public:
 
 	void CreateFiringPoint();
 	void CalculateFiringPointRotation(sf::RenderWindow &window);
+	AG::Vector2<float> &GetFirePointLocation();
 
-	void Shooting();
+	void Shooting(sf::RenderWindow& window);
 
 private:
 	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 50;

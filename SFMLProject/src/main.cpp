@@ -172,10 +172,6 @@ int main()
 
 		Player->GetComponent<PlayerComponent>()->Move(deltaTime);
 
-		if (Player->GetIsShooting())
-		{
-			Player->GetComponent<PlayerComponent>()->Shooting();
-		}
 
 
 		Enemy->GetComponent<EnemyComponent>()->Move();
@@ -210,7 +206,7 @@ int main()
 						//Wall Detection
 						if (objectA->GetIsWall() || objectB->GetIsWall())
 						{
-							std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+							//std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
 
 							for (GameObject* wall : walls)
@@ -222,7 +218,7 @@ int main()
 						//Detection between none walls
 						else
 						{
-							std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+							//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 						}
 					}
 					
@@ -254,6 +250,10 @@ int main()
 		}
 
 		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting(window);
+		}
 		
 		//window.draw(TestShape);
 		

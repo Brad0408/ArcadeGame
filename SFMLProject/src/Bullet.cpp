@@ -13,3 +13,10 @@ Bullet::~Bullet()
 {
 }
 
+sf::CircleShape& Bullet::GetCircleShape()
+{
+	//std::cout << "Claled uinfudnasdas " << std::endl;
+
+	return m_BulletShape;
+}
+

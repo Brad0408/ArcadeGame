@@ -10,7 +10,7 @@ public:
 
 	~Bullet();
 
-
+	sf::CircleShape& GetCircleShape();
 
 
 private:
