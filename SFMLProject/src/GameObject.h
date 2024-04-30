@@ -5,6 +5,7 @@
 #include <PlayerComponent.h>
 #include <EnemyComponent.h>
 #include <BoxCollider.h>
+#include <CircleCollider.h>
 
 class GameObject : public Object
 {
@@ -55,6 +56,10 @@ public:
 	void SetRectangleShape(sf::RectangleShape &shape);
 	sf::RectangleShape& GetRectangleShape();
 
+	//Set and Gets CircleShapes
+	void SetCircleShape(sf::CircleShape& shape);
+	sf::CircleShape& GetCircleShape();
+
 	//Sets and get locations
 	void SetLocation(float x, float y);
 	AG::Vector2<float>& GetLocation();
@@ -63,10 +68,15 @@ public:
 	void DrawOutlines(sf::RectangleShape &shape);
 
 	bool HasBoxCollider(GameObject* GameObject);
+	bool HasCircleCollider(GameObject* GameObject);
 	AG::Vector2<float>& GetMoveDirection();
+	AG::Vector2<float> GetSize();
 
 	void SetIsWall(bool isWall);
 	bool GetIsWall();
+
+	void SetIsPlayer(bool isPlayer);
+	bool GetIsPlayer();
 
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting();
@@ -75,16 +85,17 @@ public:
 	void Destroy();
 
 private:
-	//Basic attributes for the GameObject
 	std::string m_Name;
 	bool m_Active;
 	std::string m_Tag;
 	bool m_IsWall = false;
+	bool m_IsPlayer = false;
 	bool m_IsShooting = false;
 
 	AG::Vector2<float> m_location;
 	AG::Vector2<float> m_MoveDirection;
 	sf::RectangleShape m_SpriteShape;
+	sf::CircleShape m_CircleShape;
 
 	
 
@@ -135,7 +146,7 @@ public:
 		//Move this newly created component into the vector
 		m_Components.push_back(std::move(newComp));
 
-		std::cout << "Component attached: " << typeid(T).name() << " to " << GetName() << std::endl;
+		//std::cout << "Component attached: " << typeid(T).name() << " to " << GetName() << std::endl;
 
 		//Returns a pointer to the newly added component
 		return static_cast<T*>(m_Components[m_Components.size() - 1].get());

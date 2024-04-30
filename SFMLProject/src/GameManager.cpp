@@ -2,10 +2,27 @@
 
 //Definition of the static member variable
 std::vector<GameObject*> GameManager::GameObjectsVector;
+std::vector<Bullet*> GameManager::BulletsVector;
 
 void GameManager::AddGameObject(GameObject* gameObject)
 {
 	GetGameObjectVector().push_back(gameObject);
+}
+
+void GameManager::AddBulletObject(Bullet* bullet)
+{
+	GetBulletsVector().push_back(bullet);
+}
+
+void GameManager::RemoveBullet(Bullet* bullet)
+{
+	std::vector<Bullet*> &bullets = GetBulletsVector();
+	auto it = std::find(bullets.begin(), bullets.end(), bullet);
+	if (it != bullets.end())
+	{
+		bullets.erase(it);
+		delete bullet;
+	}
 }
 
 
@@ -13,6 +30,11 @@ void GameManager::AddGameObject(GameObject* gameObject)
 std::vector<GameObject*>& GameManager::GetGameObjectVector()
 {
 	return GameObjectsVector;
+}
+
+std::vector<Bullet*>& GameManager::GetBulletsVector()
+{
+	return BulletsVector;
 }
 
 
@@ -28,7 +50,18 @@ void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
 	}
 }
 
+void GameManager::ClearAllVectors()
+{
+	GameObjectsVector.clear();
+	BulletsVector.clear();
+}
+
 void GameManager::ClearGameObjectVector()
 {
 	GameObjectsVector.clear();
+}
+
+void GameManager::ClearBulletVector()
+{
+	BulletsVector.clear();
 }

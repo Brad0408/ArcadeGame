@@ -4,7 +4,8 @@
 
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
-	
+	_GameObject->SetIsPlayer(true);
+
 	//std::cout << "PlayerCompont Constructed" << std::endl;
 	//std::cout << "GameObject value in PlayerComponent : " << _GameObject << std::endl;
 
@@ -102,8 +103,6 @@ void PlayerComponent::CreateFiringPoint()
 	m_FiringPoint.setSize(m_FiringPointSize);
 	m_FiringPoint.setFillColor(sf::Color::Red);
 	m_FiringPoint.setOrigin(m_FiringPoint.getSize().x / 2.0f, m_FiringPoint.getSize().y / 2.0f);
-
-	std::cout << "firing poi9nt created" << std::endl;
 }
 
 void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
@@ -129,18 +128,17 @@ void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 	window.draw(m_FiringPoint);
 }
 
-AG::Vector2<float>& PlayerComponent::GetFirePointLocation()
+const AG::Vector2<float> &PlayerComponent::GetFirePointLocation()
 {
-	return m_FiringPoint.getGlobalBounds();
+	m_FiringPointLocation = AG::Vector2<float>(m_FiringPoint.getPosition().x, m_FiringPoint.getPosition().y);
+	return m_FiringPointLocation;
 }
 
-void PlayerComponent::Shooting(sf::RenderWindow& window)
+void PlayerComponent::Shooting()
 {
-	Bullet newBullet;
+	Bullet* newBullet = new Bullet(GetFirePointLocation());
 
-	newBullet.SetLocation(500,500);
 
-	std::cout << newBullet.GetLocation().x << " , " << newBullet.GetLocation().y << std::endl;
 
-	window.draw(newBullet.GetCircleShape());
+	GameManager::AddBulletObject(newBullet);
 }

@@ -3,6 +3,7 @@
 #include <Vector2.h>
 #include <Event.h>
 #include <GameObject.h>
+#include <Bullet.h>
 
 #define FIXEDFRAMERATE 0.025f
 
@@ -171,7 +172,10 @@ int main()
 		lastTime = now;
 
 		Player->GetComponent<PlayerComponent>()->Move(deltaTime);
-
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting();
+		}
 
 
 		Enemy->GetComponent<EnemyComponent>()->Move();
@@ -179,6 +183,8 @@ int main()
 
 		//Retrieve the vector of GameObjects from the GameManager
 		std::vector<GameObject*> &gameObjects = GameManager::GetGameObjectVector();
+		std::vector<Bullet*> &bulletObjects = GameManager::GetBulletsVector();
+
 
 		//Check for collisions between game objects
 		for (int i = 0; i < gameObjects.size(); ++i)
@@ -206,7 +212,7 @@ int main()
 						//Wall Detection
 						if (objectA->GetIsWall() || objectB->GetIsWall())
 						{
-							//std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+							std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
 
 							for (GameObject* wall : walls)
@@ -218,7 +224,7 @@ int main()
 						//Detection between none walls
 						else
 						{
-							//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+							std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 						}
 					}
 					
@@ -227,6 +233,31 @@ int main()
 		}
 
 
+		//Check for collisions between bullets and other objects
+		for (Bullet* bullet : bulletObjects)
+		{
+			for (GameObject* gameObject : gameObjects)
+			{
+				//Skip collision checks if both object is a player
+				if (gameObject->GetIsPlayer())
+				{
+					continue;
+				}
+
+				//Check collision between bullet and other game objects
+				if (bullet->HasCircleCollider(bullet) && gameObject->HasBoxCollider(gameObject))
+				{
+					CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
+					BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
+
+					//Ensure both colliders are valid before checking collision
+					if (bulletCollider && gameObjectCollider && bulletCollider->CheckCollision(bullet, gameObject))
+					{
+						std::cout << "Collision detected between bullet and " << gameObject->GetName() << std::endl;
+					}
+				}
+			}
+		}
 
 
 
@@ -235,8 +266,13 @@ int main()
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-			//std::cout << "timeSincePhysicsStep: " << timeSincePhysicsStep << std::endl;
-			//std::cout << "Player Location: (" << Player->location.x << ", " << Player->location.y << ")" << std::endl;
+			for (Bullet* bullet : GameManager::GetBulletsVector()) 
+			{
+				bullet->Update(deltaTime, Player);
+			}
+
+
+
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
 
@@ -249,22 +285,28 @@ int main()
 			window.draw(gameObject->GetRectangleShape());
 		}
 
-		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
-		if (Player->GetIsShooting())
+		for (Bullet* bullet : bulletObjects) 
 		{
-			Player->GetComponent<PlayerComponent>()->Shooting(window);
+			//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
+			window.draw(bullet->GetCircleShape()); 
 		}
+
+		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
-		//window.draw(TestShape);
-		
+
+
+
 		//Display whats actually been rendered
 		window.display();
+
+
 
 	}
 
 	//Memory Cleanup
 	ResourceManager::ClearTextureMap();
-	GameManager::ClearGameObjectVector();
+	GameManager::ClearAllVectors();
+
 
 	return 0;
 }

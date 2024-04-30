@@ -16,13 +16,14 @@ public:
 
 	void CreateFiringPoint();
 	void CalculateFiringPointRotation(sf::RenderWindow &window);
-	AG::Vector2<float> &GetFirePointLocation();
+	const AG::Vector2<float> &GetFirePointLocation();
 
-	void Shooting(sf::RenderWindow& window);
+	void Shooting();
 
 private:
 	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 50;
 	AG::Vector2<float> m_FiringPointSize = AG::Vector2<float>::one * 10;
+	AG::Vector2<float> m_FiringPointLocation = AG::Vector2<float>::one * 10;
 
 	sf::RectangleShape m_PlayerShapeRectangle;
 	sf::RectangleShape m_FiringPoint;
