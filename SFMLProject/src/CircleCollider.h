@@ -10,7 +10,7 @@ public:
 
 	~CircleCollider();
 
-	bool CheckCollision(GameObject* objectOne, GameObject* objectTwo)  override;
+	bool BulletCollision(Bullet* circleObject, GameObject* objectTwo);
 
 	static bool WallCollision(GameObject* objectOne, GameObject* objectTwo);
 

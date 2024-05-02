@@ -1,4 +1,6 @@
 #include "GameManager.h"
+#include "GameManager.h"
+#include "Bullet.h"
 
 //Definition of the static member variable
 std::vector<GameObject*> GameManager::GameObjectsVector;
@@ -14,16 +16,7 @@ void GameManager::AddBulletObject(Bullet* bullet)
 	GetBulletsVector().push_back(bullet);
 }
 
-void GameManager::RemoveBullet(Bullet* bullet)
-{
-	std::vector<Bullet*> &bullets = GetBulletsVector();
-	auto it = std::find(bullets.begin(), bullets.end(), bullet);
-	if (it != bullets.end())
-	{
-		bullets.erase(it);
-		delete bullet;
-	}
-}
+
 
 
 
@@ -64,4 +57,27 @@ void GameManager::ClearGameObjectVector()
 void GameManager::ClearBulletVector()
 {
 	BulletsVector.clear();
+}
+
+
+void GameManager::RemoveBullet(Bullet* bullet)
+{
+	std::vector<Bullet*>& bullets = GetBulletsVector();
+	auto it = std::find(bullets.begin(), bullets.end(), bullet);
+	if (it != bullets.end())
+	{
+		bullets.erase(it);
+		delete bullet;
+	}
+}
+
+void GameManager::RemoveMarkedBullets()
+{
+	auto it = std::remove_if(GetBulletsVector().begin(), GetBulletsVector().end(), [](Bullet* bullet)
+	{
+		return bullet->ShouldRemove();
+		delete bullet;
+		
+	});
+	GetBulletsVector().erase(it, GetBulletsVector().end());
 }

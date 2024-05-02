@@ -5,7 +5,7 @@
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
 	_GameObject->SetIsPlayer(true);
-
+	_GameObject->SetName("Player");
 	//std::cout << "PlayerCompont Constructed" << std::endl;
 	//std::cout << "GameObject value in PlayerComponent : " << _GameObject << std::endl;
 
@@ -59,6 +59,14 @@ PlayerComponent::~PlayerComponent()
 
 }
 
+void PlayerComponent::Update(float deltaTime)
+{
+	Move(deltaTime);
+
+	m_timeSinceLastShot += deltaTime;
+}
+
+
 
 void PlayerComponent::Move(float deltaTime)
 {
@@ -97,7 +105,6 @@ void PlayerComponent::Move(float deltaTime)
 }
 
 
-
 void PlayerComponent::CreateFiringPoint()
 {
 	m_FiringPoint.setSize(m_FiringPointSize);
@@ -108,8 +115,8 @@ void PlayerComponent::CreateFiringPoint()
 void PlayerComponent::CalculateFiringPointRotation(sf::RenderWindow &window)
 {
 	//Calculate angle between player and mouse cursor
-	AG::Vector2<float>  mousePosition = AG::Vector2<float>(sf::Mouse::getPosition(window));
-	AG::Vector2<float>  delta = mousePosition - _GameObject->GetLocation();
+	m_MousePosition = AG::Vector2<float>(sf::Mouse::getPosition(window));
+	AG::Vector2<float>  delta = m_MousePosition - _GameObject->GetLocation();
 	m_angle = std::atan2(delta.y, delta.x);
 
 
@@ -134,11 +141,32 @@ const AG::Vector2<float> &PlayerComponent::GetFirePointLocation()
 	return m_FiringPointLocation;
 }
 
+float &PlayerComponent::GetFiringPointRotation()
+{
+	return m_angle;
+}
+
+AG::Vector2<float>& PlayerComponent::GetMousePosition()
+{
+	return m_MousePosition;
+}
+
+AG::Vector2<float> PlayerComponent::CalculateDirection()
+{
+	AG::Vector2<float> direction = GetMousePosition() - GetFirePointLocation();
+	return direction;
+}
+
 void PlayerComponent::Shooting()
 {
-	Bullet* newBullet = new Bullet(GetFirePointLocation());
+	if (m_timeSinceLastShot >= 1.5f && _GameObject->GetIsShooting())
+	{
 
+		Bullet* newBullet = new Bullet(GetFirePointLocation(), 150.0f, CalculateDirection());
 
+		GameManager::AddBulletObject(newBullet);
 
-	GameManager::AddBulletObject(newBullet);
+		m_timeSinceLastShot = 0.0f;
+
+	}
 }

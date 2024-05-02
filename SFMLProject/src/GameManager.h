@@ -22,6 +22,8 @@ public:
 	static void ClearGameObjectVector();
 	static void ClearBulletVector();
 
+	static void RemoveMarkedBullets();
+
 private:
 	//Vector that stores all the created gameObjects
 	static std::vector<GameObject*> GameObjectsVector;

@@ -1,4 +1,5 @@
 #include "CircleCollider.h"
+#include "Bullet.h"
 
 CircleCollider::CircleCollider(GameObject* owner) : ColliderComponent(owner)
 {
@@ -8,13 +9,14 @@ CircleCollider::~CircleCollider()
 {
 }
 
-bool CircleCollider::CheckCollision(GameObject* circleObject, GameObject* rectObject)
+bool CircleCollider::BulletCollision(Bullet* circleObject, GameObject* rectObject)
 {
 	sf::CircleShape circle = circleObject->GetCircleShape();
 	sf::RectangleShape rect = rectObject->GetRectangleShape();
 
 	// Check if the circle intersects with the rectangle
-	if (circle.getGlobalBounds().intersects(rect.getGlobalBounds())) {
+	if (circle.getGlobalBounds().intersects(rect.getGlobalBounds()))
+	{
 		// If there is an intersection, return true
 		return true;
 	}
