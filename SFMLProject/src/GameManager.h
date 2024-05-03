@@ -22,6 +22,7 @@ public:
 	static void ClearGameObjectVector();
 	static void ClearBulletVector();
 
+	static void RemoveMarkedGameObjects();
 	static void RemoveMarkedBullets();
 
 private:

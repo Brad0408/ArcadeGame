@@ -45,6 +45,10 @@ EnemyComponent::EnemyComponent(GameObject* owner) : Component(owner)
 EnemyComponent::~EnemyComponent()
 {
 }
+void EnemyComponent::Update(float deltaTime)
+{
+	Move(deltaTime);
+}
 
 void EnemyComponent::Move(float deltaTime)
 {

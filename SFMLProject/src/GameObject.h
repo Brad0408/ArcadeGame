@@ -81,8 +81,8 @@ public:
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting();
 
-	GameObject* Instantiate(GameObject* Object);
-	void Destroy();
+	void MarkGameObjectForRemoval();
+	bool ShouldRemoveGameObject();
 
 private:
 	std::string m_Name;
@@ -91,6 +91,8 @@ private:
 	bool m_IsWall = false;
 	bool m_IsPlayer = false;
 	bool m_IsShooting = false;
+	bool m_shouldRemove = false;
+
 
 	AG::Vector2<float> m_location;
 	AG::Vector2<float> m_MoveDirection;

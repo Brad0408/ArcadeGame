@@ -10,7 +10,6 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 	m_velocity = velocity;
 	m_direction = direction;
 
-	//m_BulletShape.setPosition(m_position.x - m_BulletShape.getRadius(), m_position.y - m_BulletShape.getRadius());
 	m_BulletShape.setOrigin(m_BulletShape.getRadius(), m_BulletShape.getRadius());
 	m_BulletShape.setPosition(m_position.x , m_position.y );
 	SetName("Bullet");
@@ -27,7 +26,7 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 
 Bullet::~Bullet()
 {
-	GameManager::RemoveBullet(this);
+
 }
 
 void Bullet::Update(float deltaTime)
@@ -44,7 +43,7 @@ void Bullet::Update(float deltaTime)
 	if (m_lifespan <= 0.0)
 	{
 		std::cout << "Expired" << std::endl;
-		GameManager::RemoveBullet(this);
+		//GameManager::RemoveBullet(this);
 		this->MarkForRemoval();
 	}
 

@@ -12,6 +12,7 @@ public:
 
 
 	void Move(float deltaTime);
+	void Update(float deltaTime) override;
 
 private:
 	AG::Vector2<float> m_EnemySize = AG::Vector2<float>::one * 50;

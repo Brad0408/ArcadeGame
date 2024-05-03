@@ -172,15 +172,6 @@ int main()
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
 
-		Player->GetComponent<PlayerComponent>()->Update(deltaTime);
-		if (Player->GetIsShooting())
-		{
-			Player->GetComponent<PlayerComponent>()->Shooting();
-		}
-
-
-		Enemy->GetComponent<EnemyComponent>()->Move(deltaTime);
-
 
 
 		//Check for collisions between game objects
@@ -225,15 +216,14 @@ int main()
 				}
 			}
 		}
-
+	
+		
 
 		//Check for collisions between bullets and other objects
 		for (int i = 0; i < bulletObjects.size(); ++i)
 		{
 			for (int j = 0; j < gameObjects.size(); ++j)
 			{
-				//std::cout << "Check " << std::endl;
-
 				Bullet* bullet = bulletObjects[i];
 				GameObject* gameObject = gameObjects[j];
 
@@ -257,31 +247,33 @@ int main()
 					if (gameObject->GetIsWall())
 					{
 						bullet->MarkForRemoval();
-						//std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						
+					
+						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
 					}
 					else
 					{
-						// Delete the game object
-						//delete gameObject;
-						//gameObject = nullptr;
-
-						//// Find and remove the enemy from the vector
-						//auto it = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
-						//if (it != gameObjects.end())
-						//{
-						//	gameObjects.erase(it);
-						//}
-						//std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						gameObject->MarkGameObjectForRemoval();
+						bullet->MarkForRemoval();
+						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
 					}
 		
 				}
 			}
 		}
 
+ 
+		Player->GetComponent<PlayerComponent>()->Update(deltaTime);
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting();
+		}
 
-
-
-
+		if (Enemy)
+		{
+			//Enemy->GetComponent<EnemyComponent>()->Update(deltaTime);
+		}
+		
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
@@ -299,8 +291,6 @@ int main()
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
-
-		GameManager::RemoveMarkedBullets();
 
 		//Clear
 		window.clear();
@@ -320,11 +310,11 @@ int main()
 		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
 
-
+		GameManager::RemoveMarkedBullets();
+		GameManager::RemoveMarkedGameObjects();
 
 		//Display whats actually been rendered
 		window.display();
-
 
 
 	}
