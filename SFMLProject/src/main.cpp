@@ -261,6 +261,16 @@ int main()
 					}
 					else
 					{
+						// Delete the game object
+						//delete gameObject;
+						//gameObject = nullptr;
+
+						//// Find and remove the enemy from the vector
+						//auto it = std::find(gameObjects.begin(), gameObjects.end(), gameObject);
+						//if (it != gameObjects.end())
+						//{
+						//	gameObjects.erase(it);
+						//}
 						//std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
 					}
 		

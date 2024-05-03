@@ -16,10 +16,6 @@ void GameManager::AddBulletObject(Bullet* bullet)
 	GetBulletsVector().push_back(bullet);
 }
 
-
-
-
-
 std::vector<GameObject*>& GameManager::GetGameObjectVector()
 {
 	return GameObjectsVector;
@@ -29,10 +25,6 @@ std::vector<Bullet*>& GameManager::GetBulletsVector()
 {
 	return BulletsVector;
 }
-
-
-
-
 
 void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
 {
@@ -58,6 +50,9 @@ void GameManager::ClearBulletVector()
 {
 	BulletsVector.clear();
 }
+
+
+
 
 
 void GameManager::RemoveBullet(Bullet* bullet)
