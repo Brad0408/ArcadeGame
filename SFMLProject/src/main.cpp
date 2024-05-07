@@ -24,8 +24,11 @@ int main()
 	}
 
 	//Put newly made gameObjects on the vector
-	GameManager::AddGameObject(Player);
-	GameManager::AddGameObject(Enemy);
+	//GameManager::AddGameObject(Player);
+	//GameManager::AddGameObject(Enemy);
+	GameManager::AddGameObjectList(Player);
+	GameManager::AddGameObjectList(Enemy);
+
 
 
 	for (int i = 0; i < 4; ++i) 
@@ -138,8 +141,13 @@ int main()
 	std::vector<GameObject*>& gameObjects = GameManager::GetGameObjectVector();
 	std::vector<Bullet*>& bulletObjects = GameManager::GetBulletsVector();
 
+
+	std::list<std::shared_ptr<GameObject*>>& gameObjectsL = GameManager::GetGameObjectList();
+	std::list<std::shared_ptr<Bullet*>>& bulletObjectsL = GameManager::GetBulletsList();
+
 	//Out the names of the store gameobejcts to check they exist on the vector
 	GameManager::GetGameObjectNames(GameManager::GetGameObjectVector());
+	GameManager::GetGameObjectListsNames(GameManager::GetGameObjectList());
 
 	while (window.isOpen())
 	{
@@ -175,12 +183,14 @@ int main()
 
 
 		//Check for collisions between game objects
-		for (int i = 0; i < gameObjects.size(); ++i)
+		for (auto it = gameObjectsL.begin(); it != gameObjectsL.end(); ++it)
 		{
-			for (int j = i + 1; j < gameObjects.size(); ++j)
+			for (auto jt = std::next(it); jt != gameObjectsL.end(); ++jt)
 			{
-				GameObject* objectA = gameObjects[i];
-				GameObject* objectB = gameObjects[j];
+				GameObject* objectA = *(*it); // Dereference the shared pointer to get the GameObject pointer
+				GameObject* objectB = *(*jt); // Dereference the shared pointer to get the GameObject pointer
+
+		
 
 				//Skip collision checks if both objects are walls
 				if (objectA->GetIsWall() && objectB->GetIsWall())
@@ -298,6 +308,14 @@ int main()
 		{
 			window.draw(gameObject->GetRectangleShape());
 		}
+
+
+		for (const auto& gameObjectPtr : gameObjectsL)
+		{
+			GameObject* gameObject = *gameObjectPtr; // Dereference the shared pointer to get the GameObject pointer
+			window.draw(gameObject->GetRectangleShape());
+		}
+
 
 		for (Bullet* bullet : bulletObjects) 
 		{

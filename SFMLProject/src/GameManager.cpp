@@ -2,28 +2,36 @@
 #include "Bullet.h"
 
 //Definition of the static member variable
-//std::list<std::shared_ptr<Bullet*>> GameManager::BulletObjectsList;
-//std::list<std::shared_ptr<GameObject*>> GameManager::GameObjectsList;
+std::list<std::shared_ptr<Bullet*>> GameManager::BulletObjectsList;
+std::list<std::shared_ptr<GameObject*>> GameManager::GameObjectsList;
 
 std::vector<GameObject*> GameManager::GameObjectsVector;
 std::vector<Bullet*> GameManager::BulletsVector;
 
+//Add to gameobject vector
 void GameManager::AddGameObject(GameObject* gameObject)
 {
-	//std::shared_ptr<GameObject*> gameObjectPtr = std::make_shared<GameObject*>(gameObjectPtr);
-	//GameObjectsList.push_back(gameObjectPtr);
-
 	GetGameObjectVector().push_back(gameObject);
-
 }
 
+//Add to gameobject list
+void GameManager::AddGameObjectList(GameObject* gameObject)
+{
+	std::shared_ptr<GameObject*> gameObjectPtr(new GameObject * (gameObject));
+	GameObjectsList.push_back(gameObjectPtr);
+}
+
+//Add to bullet vector
 void GameManager::AddBulletObject(Bullet* bullet)
 {
-	//std::shared_ptr<Bullet*> bulletObjectPtr = std::make_shared<Bullet*>(bulletObjectPtr);
-	//BulletObjectsList.push_back(bulletObjectPtr);
-
-
 	GetBulletsVector().push_back(bullet);
+}
+
+//Add to bullet list
+void GameManager::AddBulletObjectList(Bullet* bullet)
+{
+	std::shared_ptr<Bullet*> bulletObjectPtr(new Bullet * (bullet));
+	BulletObjectsList.push_back(bulletObjectPtr);
 }
 
 
@@ -37,15 +45,15 @@ std::vector<Bullet*>& GameManager::GetBulletsVector()
 	return BulletsVector;
 }
 
-//std::list<std::shared_ptr<GameObject*>> &GameManager::GetGameObjectList()
-//{
-//	return GameObjectsList;
-//}
-//
-//std::list<std::shared_ptr<Bullet*>> &GameManager::GetBulletsList()
-//{
-//	return BulletObjectsList;
-//}
+std::list<std::shared_ptr<GameObject*>> &GameManager::GetGameObjectList()
+{
+	return GameObjectsList;
+}
+
+std::list<std::shared_ptr<Bullet*>> &GameManager::GetBulletsList()
+{
+	return BulletObjectsList;
+}
 
 void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
 {
@@ -56,27 +64,46 @@ void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
 	}
 }
 
+void GameManager::GetGameObjectListsNames(std::list<std::shared_ptr<GameObject*>>& GameObjectsList)
+{
+	for (const auto& gameObjectPtr : GameObjectsList)
+	{
+		GameObject* gameObject = *gameObjectPtr; // Dereference the shared pointer to get the GameObject pointer
+		std::cout << "Stored GameObjects on the list : " << gameObject->GetName() << std::endl;
+	}
+
+}
+
 void GameManager::ClearAllVectors()
 {
 	GameObjectsVector.clear();
 	BulletsVector.clear();
+}
 
-	//BulletObjectsList.clear();
-	//GameObjectsList.clear();
+void GameManager::ClearAllLists()
+{
+	BulletObjectsList.clear();
+	GameObjectsList.clear();
 }
 
 void GameManager::ClearGameObjectVector()
 {
 	GameObjectsVector.clear();
+}
 
-	//GameObjectsList.clear();
+void GameManager::ClearGameObjectList()
+{
+	GameObjectsList.clear();
 }
 
 void GameManager::ClearBulletVector()
 {
 	BulletsVector.clear();
+}
 
-	//BulletObjectsList.clear();
+void GameManager::ClearBulletList()
+{
+	BulletObjectsList.clear();
 }
 
 
@@ -144,8 +171,14 @@ void GameManager::RemoveMarkedBullets()
 
 void GameManager::RemoveMarkedObjectsHelper()
 {
-	//GameManager::RemoveMarkedObjectsList<Bullet*>(GetBulletsList());
-	//GameManager::RemoveMarkedObjects<GameObject>(GetGameObjectList());
+	//GameManager::RemoveMarkedObjectsList<Bullet>(GetBulletsList());
+	//GameManager::RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
+
+
+	
+	GameManager::RemoveMarkedObjectsList(GetBulletsList());
+	GameManager::RemoveMarkedObjectsList(GetGameObjectList());
+
 
 
 	GameManager::RemoveMarkedObjects(GetGameObjectVector());
