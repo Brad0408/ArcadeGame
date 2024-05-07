@@ -12,11 +12,10 @@
 
 int main()
 {
-
-
-
 	GameObject* Player = new GameObject();
 	GameObject* Enemy = new GameObject();
+	EnemyComponent* EnemyComp = Enemy->GetComponent<EnemyComponent>();
+
 	std::array<GameObject*, 4> walls;
 
 	
@@ -27,18 +26,20 @@ int main()
 	}
 
 	//Put newly made gameObjects on the vector
-	GameManager::AddGameObject(Player);
-	GameManager::AddGameObject(Enemy);
+	//GameManager::AddGameObject(Player);
+	//GameManager::AddGameObject(Enemy);
+	GameManager::AddGameObjectList(Player);
+	GameManager::AddGameObjectList(Enemy);
+
 
 
 	for (int i = 0; i < 4; ++i) 
 	{
-		GameManager::AddGameObject(walls[i]);
+		//GameManager::AddGameObject(walls[i]);
+		GameManager::AddGameObjectList(walls[i]);
 	}
 
 
-
-	Player->SetName("Player");
 	Enemy->SetName("Enemy");
 	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
 
@@ -47,9 +48,6 @@ int main()
 		walls[i]->SetName(wallNames[i]);
 	}
 
-
-	//Out the names of the store gameobejcts to check they exist on the vector
-	GameManager::GetGameObjectNames(GameManager::GetGameObjectVector());
 
 
 	Player->AddComponent<PlayerComponent>();
@@ -69,7 +67,6 @@ int main()
 
 	//Create window of resolution
 	sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works");
-
 
 
 #pragma region Walls
@@ -136,13 +133,28 @@ int main()
 
 
 	//Test shape thats squished
-	sf::RectangleShape TestShape(sf::Vector2f(100, 50));
-	TestShape.setFillColor(sf::Color::Green);
-	TestShape.setPosition(200, 200);
+	//sf::RectangleShape TestShape(sf::Vector2f(100, 50));
+	//TestShape.setFillColor(sf::Color::Green);
+	//TestShape.setPosition(200, 200);
 	
+
+
+
+	//Retrieve the vector of GameObjects from the GameManager
+	std::vector<GameObject*>& gameObjects = GameManager::GetGameObjectVector();
+	std::vector<Bullet*>& bulletObjects = GameManager::GetBulletsVector();
+
+
+	std::list<std::shared_ptr<GameObject*>>& gameObjectsL = GameManager::GetGameObjectList();
+	std::list<std::shared_ptr<Bullet*>>& bulletObjectsL = GameManager::GetBulletsList();
+
+	//Out the names of the store gameobejcts to check they exist on the vector
+	GameManager::GetGameObjectNames(GameManager::GetGameObjectVector());
+	GameManager::GetGameObjectListsNames(GameManager::GetGameObjectList());
 
 	while (window.isOpen())
 	{
+
 		//Declare event
 		sf::Event event;
 
@@ -171,28 +183,22 @@ int main()
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
 
-		Player->GetComponent<PlayerComponent>()->Move(deltaTime);
-		if (Player->GetIsShooting())
-		{
-			Player->GetComponent<PlayerComponent>()->Shooting();
-		}
-
-
-		Enemy->GetComponent<EnemyComponent>()->Move();
-
-
-		//Retrieve the vector of GameObjects from the GameManager
-		std::vector<GameObject*> &gameObjects = GameManager::GetGameObjectVector();
-		std::vector<Bullet*> &bulletObjects = GameManager::GetBulletsVector();
 
 
 		//Check for collisions between game objects
-		for (int i = 0; i < gameObjects.size(); ++i)
+		//for (int i = 0; i < bulletObjects.size(); ++i)
+		for (auto it = gameObjectsL.begin(); it != gameObjectsL.end(); ++it)
 		{
-			for (int j = i + 1; j < gameObjects.size(); ++j)
+			//for (int j = 0; j < gameObjects.size(); ++j)
+			for (auto jt = std::next(it); jt != gameObjectsL.end(); ++jt)
 			{
-				GameObject* objectA = gameObjects[i];
-				GameObject* objectB = gameObjects[j];
+				//Bullet* bullet = bulletObjects[i];
+				//GameObject* gameObject = gameObjects[j];
+
+				GameObject* objectA = *(*it); // Dereference the shared pointer to get the GameObject pointer
+				GameObject* objectB = *(*jt); // Dereference the shared pointer to get the GameObject pointer
+
+		
 
 				//Skip collision checks if both objects are walls
 				if (objectA->GetIsWall() && objectB->GetIsWall())
@@ -201,77 +207,106 @@ int main()
 				}
 
 
-				if (objectA->HasBoxCollider(objectA) && objectB->HasBoxCollider(objectB))
+		
+				BoxCollider* colliderA = objectA->GetComponent<BoxCollider>();
+				BoxCollider* colliderB = objectB->GetComponent<BoxCollider>();
+
+				// Ensure both colliders are valid before checking collision
+				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
-					BoxCollider* colliderA = objectA->GetComponent<BoxCollider>();
-					BoxCollider* colliderB = objectB->GetComponent<BoxCollider>();
-
-					// Ensure both colliders are valid before checking collision
-					if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
+					//Wall Detection
+					if (objectA->GetIsWall() || objectB->GetIsWall())
 					{
-						//Wall Detection
-						if (objectA->GetIsWall() || objectB->GetIsWall())
+						std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+
+
+						for (GameObject* wall : walls)
 						{
-							std::cout << "Wall Collision deteced between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
-
-
-							for (GameObject* wall : walls)
-							{
-								BoxCollider::WallCollision(objectA, objectB);
-							}
-
+							BoxCollider::WallCollision(objectA, objectB);
 						}
-						//Detection between none walls
-						else
-						{
-							std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
-						}
+
 					}
-					
+					//Detection between none walls
+					else
+					{
+						std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+					}
 				}
 			}
 		}
-
+	
+		GameManager::Update(deltaTime);
 
 		//Check for collisions between bullets and other objects
-		for (Bullet* bullet : bulletObjects)
+		for (auto bulletIt = bulletObjectsL.begin(); bulletIt != bulletObjectsL.end(); ++bulletIt)
 		{
-			for (GameObject* gameObject : gameObjects)
+			for (auto gameObjectIt = gameObjectsL.begin(); gameObjectIt != gameObjectsL.end(); ++gameObjectIt)
 			{
+				Bullet* bullet = *(*bulletIt); // Dereference the shared pointer to get the Bullet pointer
+				GameObject* gameObject = *(*gameObjectIt); // Dereference the shared pointer to get the GameObject pointer
+
+
 				//Skip collision checks if both object is a player
 				if (gameObject->GetIsPlayer())
 				{
 					continue;
 				}
 
-				//Check collision between bullet and other game objects
-				if (bullet->HasCircleCollider(bullet) && gameObject->HasBoxCollider(gameObject))
-				{
-					CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
-					BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
 
-					//Ensure both colliders are valid before checking collision
-					if (bulletCollider && gameObjectCollider && bulletCollider->CheckCollision(bullet, gameObject))
+				// Check collision between bullet and other game objects
+				CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
+				BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
+
+
+				// Ensure both colliders are valid before checking collision
+				if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet, gameObject))
+				{
+
+					// Check if the object is a wall
+					if (gameObject->GetIsWall())
 					{
-						std::cout << "Collision detected between bullet and " << gameObject->GetName() << std::endl;
+						bullet->MarkForRemoval();
+						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
+						break;
 					}
+					else
+					{
+						if (!gameObject->ShouldRemove())
+						{
+							gameObject->MarkForRemoval();
+						}
+						bullet->MarkForRemoval();
+						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
+						break;
+					}
+		
 				}
 			}
 		}
 
+ 
+		Player->GetComponent<PlayerComponent>()->Update(deltaTime);
+		if (Player->GetIsShooting())
+		{
+			Player->GetComponent<PlayerComponent>()->Shooting();
+		}
 
 
-
-
+		if (EnemyComp)
+		{
+			EnemyComp->Update(deltaTime);
+		}
+		
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-			for (Bullet* bullet : GameManager::GetBulletsVector()) 
-			{
-				bullet->Update(deltaTime, Player);
-			}
+			//for (Bullet* bullet : GameManager::GetBulletsVector()) 
+			//{
+			//	bullet->Update(deltaTime);
+			//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
+			//}
 
-
+		
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
@@ -280,25 +315,42 @@ int main()
 		window.clear();
 
 		//Loop through each GameObject in the vector
-		for (GameObject* gameObject : gameObjects) 
+		//for (GameObject* gameObject : gameObjects) 
+		//{
+		//	window.draw(gameObject->GetRectangleShape());
+		//}
+
+		//for (Bullet* bullet : bulletObjects)
+		//{
+		//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
+		//	window.draw(bullet->GetCircleShape());
+		//}
+
+
+		for (const auto& gameObjectPtr : gameObjectsL)
 		{
+			GameObject* gameObject = *gameObjectPtr; // Dereference the shared pointer to get the GameObject pointer
 			window.draw(gameObject->GetRectangleShape());
 		}
 
-		for (Bullet* bullet : bulletObjects) 
+		for (const auto& bullObjectPtr : bulletObjectsL)
 		{
-			//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
-			window.draw(bullet->GetCircleShape()); 
+			Bullet* bulletObject = *bullObjectPtr; // Dereference the shared pointer to get the GameObject pointer
+			window.draw(bulletObject->GetCircleShape());
 		}
+
 
 		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
 
+		GameManager::RemoveMarkedObjectsHelper();
 
+
+		//GameManager::RemoveMarkedBullets();
+		//GameManager::RemoveMarkedGameObjects();
 
 		//Display whats actually been rendered
 		window.display();
-
 
 
 	}

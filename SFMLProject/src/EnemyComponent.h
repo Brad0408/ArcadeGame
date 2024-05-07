@@ -11,7 +11,8 @@ public:
 	~EnemyComponent();
 
 
-	void Move();
+	void Move(float deltaTime);
+	void Update(float deltaTime) override;
 
 private:
 	AG::Vector2<float> m_EnemySize = AG::Vector2<float>::one * 50;
@@ -20,6 +21,5 @@ private:
 
 	sf::IntRect m_EnemyTextureUV;
 
-	//float m_MovementSpeed = 0.1f;
-	float m_MovementSpeed = 3.1f;		//for uni pcs, works slower
+	float m_MovementSpeed = 37.0f;
 };

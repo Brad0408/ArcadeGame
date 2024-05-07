@@ -145,15 +145,12 @@ bool GameObject::GetIsShooting()
 	return m_IsShooting;
 }
 
-GameObject* GameObject::Instantiate(GameObject* Object)
+void GameObject::MarkForRemoval()
 {
-	Object = new GameObject();
-	return Object;
+	m_shouldRemove = true;
 }
 
-void GameObject::Destroy()
+bool GameObject::ShouldRemove()
 {
-	GameManager::ClearGameObjectVector();
-	delete this;
-	
+	return m_shouldRemove;
 }

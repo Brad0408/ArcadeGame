@@ -45,32 +45,36 @@ EnemyComponent::EnemyComponent(GameObject* owner) : Component(owner)
 EnemyComponent::~EnemyComponent()
 {
 }
+void EnemyComponent::Update(float deltaTime)
+{
+	Move(deltaTime);
+}
 
-void EnemyComponent::Move()
+void EnemyComponent::Move(float deltaTime)
 {
 	AG::Vector2<float> direction(0.0f, 0.0f);
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		_GameObject->GetLocation().x -= m_MovementSpeed;
+		_GameObject->GetLocation().x -= m_MovementSpeed * deltaTime;
 
 		direction.x = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		_GameObject->GetLocation().x += m_MovementSpeed;
+		_GameObject->GetLocation().x += m_MovementSpeed * deltaTime;
 
 		direction.x = 1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		_GameObject->GetLocation().y -= m_MovementSpeed;
+		_GameObject->GetLocation().y -= m_MovementSpeed * deltaTime;
 
 		direction.y = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		_GameObject->GetLocation().y += m_MovementSpeed;
+		_GameObject->GetLocation().y += m_MovementSpeed * deltaTime;
 
 		direction.y = 1.0f;
 	}
