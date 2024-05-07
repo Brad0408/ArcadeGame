@@ -171,33 +171,33 @@ void GameManager::RemoveMarkedBullets()
 
 void GameManager::RemoveMarkedObjectsHelper()
 {
-	//GameManager::RemoveMarkedObjectsList<Bullet>(GetBulletsList());
-	//GameManager::RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
-
-
-	
-	GameManager::RemoveMarkedObjectsList(GetBulletsList());
-	GameManager::RemoveMarkedObjectsList(GetGameObjectList());
+	GameManager::RemoveMarkedObjectsList<Bullet>(GetBulletsList());
+	GameManager::RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
 
 
 
-	GameManager::RemoveMarkedObjects(GetGameObjectVector());
-	GameManager::RemoveMarkedObjects(GetBulletsVector());
+
+
+	//GameManager::RemoveMarkedObjects(GetGameObjectVector());
+	//GameManager::RemoveMarkedObjects(GetBulletsVector());
 
 }
 
 void GameManager::Update(float deltaTime)
 {
-	for (Bullet* bullet : GetBulletsVector())
+	for (auto& bulletPtr : GetBulletsList())
 	{
-		if (bullet)
-		{	
+		if (bulletPtr)
+		{
+			Bullet* bullet = *bulletPtr;
 			bullet->Update(deltaTime);
 		}
 	}
 
 
 
+
+
 	// Remove bullets marked for removal
-	//RemoveMarkedObjectsList(GetBulletsList());
+	RemoveMarkedObjectsList(GetBulletsList());
 }

@@ -58,6 +58,7 @@ public:
 				T* object = *objectPtr; // Dereference the shared pointer to get the pointer to T
 				if (object && object->ShouldRemove())
 				{
+					delete object;
 					return true;
 				}
 				return false;

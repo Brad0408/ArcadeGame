@@ -123,19 +123,24 @@ public:
 	{
 		T* returnComp = nullptr;
 
-		//Iterate over the componenets attached to the GameObject
+		// Iterate over the components attached to the GameObject
 		for (int i = 0; i < m_Components.size(); i++)
 		{
-			//Cast to type T and set returnComp will point to the component of type T
-			returnComp = dynamic_cast<T*>(m_Components[i].get());
-			if (returnComp != nullptr)
+			// Check if the component is not null
+			if (m_Components[i])
 			{
-				//Break if T has been found
-				break;
+				// Attempt to cast to type T
+				T* castComp = dynamic_cast<T*>(m_Components[i].get());
+				// If the cast is successful and the pointer is not null, set returnComp and break
+				if (castComp != nullptr)
+				{
+					returnComp = castComp;
+					break;
+				}
 			}
 		}
 
-		//Returns the pointer to the component
+		// Returns the pointer to the component
 		return returnComp;
 	}
 

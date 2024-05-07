@@ -14,6 +14,8 @@ int main()
 {
 	GameObject* Player = new GameObject();
 	GameObject* Enemy = new GameObject();
+	EnemyComponent* EnemyComp = Enemy->GetComponent<EnemyComponent>();
+
 	std::array<GameObject*, 4> walls;
 
 	
@@ -33,7 +35,8 @@ int main()
 
 	for (int i = 0; i < 4; ++i) 
 	{
-		GameManager::AddGameObject(walls[i]);
+		//GameManager::AddGameObject(walls[i]);
+		GameManager::AddGameObjectList(walls[i]);
 	}
 
 
@@ -183,10 +186,15 @@ int main()
 
 
 		//Check for collisions between game objects
+		//for (int i = 0; i < bulletObjects.size(); ++i)
 		for (auto it = gameObjectsL.begin(); it != gameObjectsL.end(); ++it)
 		{
+			//for (int j = 0; j < gameObjects.size(); ++j)
 			for (auto jt = std::next(it); jt != gameObjectsL.end(); ++jt)
 			{
+				//Bullet* bullet = bulletObjects[i];
+				//GameObject* gameObject = gameObjects[j];
+
 				GameObject* objectA = *(*it); // Dereference the shared pointer to get the GameObject pointer
 				GameObject* objectB = *(*jt); // Dereference the shared pointer to get the GameObject pointer
 
@@ -230,12 +238,13 @@ int main()
 		GameManager::Update(deltaTime);
 
 		//Check for collisions between bullets and other objects
-		for (int i = 0; i < bulletObjects.size(); ++i)
+		for (auto bulletIt = bulletObjectsL.begin(); bulletIt != bulletObjectsL.end(); ++bulletIt)
 		{
-			for (int j = 0; j < gameObjects.size(); ++j)
+			for (auto gameObjectIt = gameObjectsL.begin(); gameObjectIt != gameObjectsL.end(); ++gameObjectIt)
 			{
-				Bullet* bullet = bulletObjects[i];
-				GameObject* gameObject = gameObjects[j];
+				Bullet* bullet = *(*bulletIt); // Dereference the shared pointer to get the Bullet pointer
+				GameObject* gameObject = *(*gameObjectIt); // Dereference the shared pointer to get the GameObject pointer
+
 
 				//Skip collision checks if both object is a player
 				if (gameObject->GetIsPlayer())
@@ -257,14 +266,17 @@ int main()
 					if (gameObject->GetIsWall())
 					{
 						bullet->MarkForRemoval();
-						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
 						break;
 					}
 					else
 					{
-						gameObject->MarkForRemoval();
+						if (!gameObject->ShouldRemove())
+						{
+							gameObject->MarkForRemoval();
+						}
 						bullet->MarkForRemoval();
-						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
 						break;
 					}
 		
@@ -280,10 +292,9 @@ int main()
 		}
 
 
-		EnemyComponent* EnemyComp = Enemy->GetComponent<EnemyComponent>();
 		if (EnemyComp)
 		{
-			Enemy->GetComponent<EnemyComponent>()->Update(deltaTime);
+			EnemyComp->Update(deltaTime);
 		}
 		
 		timeSincePhysicsStep += deltaTime;
@@ -304,10 +315,16 @@ int main()
 		window.clear();
 
 		//Loop through each GameObject in the vector
-		for (GameObject* gameObject : gameObjects) 
-		{
-			window.draw(gameObject->GetRectangleShape());
-		}
+		//for (GameObject* gameObject : gameObjects) 
+		//{
+		//	window.draw(gameObject->GetRectangleShape());
+		//}
+
+		//for (Bullet* bullet : bulletObjects)
+		//{
+		//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
+		//	window.draw(bullet->GetCircleShape());
+		//}
 
 
 		for (const auto& gameObjectPtr : gameObjectsL)
@@ -316,12 +333,12 @@ int main()
 			window.draw(gameObject->GetRectangleShape());
 		}
 
-
-		for (Bullet* bullet : bulletObjects) 
+		for (const auto& bullObjectPtr : bulletObjectsL)
 		{
-			//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
-			window.draw(bullet->GetCircleShape()); 
+			Bullet* bulletObject = *bullObjectPtr; // Dereference the shared pointer to get the GameObject pointer
+			window.draw(bulletObject->GetCircleShape());
 		}
+
 
 		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		

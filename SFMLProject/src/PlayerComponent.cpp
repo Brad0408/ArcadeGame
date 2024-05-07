@@ -164,7 +164,7 @@ void PlayerComponent::Shooting()
 
 		Bullet* newBullet = new Bullet(GetFirePointLocation(), 75.0f, CalculateDirection());
 
-		GameManager::AddBulletObject(newBullet);
+		GameManager::AddBulletObjectList(newBullet);
 
 		m_timeSinceLastShot = 0.0f;
 
