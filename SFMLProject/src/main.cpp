@@ -18,7 +18,7 @@ int main()
 
 	std::array<GameObject*, 4> walls;
 
-	
+	GameManager::CreateEnemyPool(10);
 
 	for (int i = 0; i < 4; ++i)
 	{

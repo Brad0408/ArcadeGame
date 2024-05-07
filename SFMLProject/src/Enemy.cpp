@@ -1,9 +1,10 @@
 #include "Enemy.h"
 
-Enemy::Enemy(AG::Vector2<float>& spawnLocation)
+Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 {
-
+	std::cout << "EnemyCreated" << std::endl;
 }
+
 
 Enemy::~Enemy()
 {

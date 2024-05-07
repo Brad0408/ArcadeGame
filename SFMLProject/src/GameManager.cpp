@@ -1,9 +1,11 @@
 #include "GameManager.h"
 #include "Bullet.h"
+#include "Enemy.h"
 
 //Definition of the static member variable
 std::list<std::shared_ptr<Bullet*>> GameManager::BulletObjectsList;
 std::list<std::shared_ptr<GameObject*>> GameManager::GameObjectsList;
+std::list<std::shared_ptr<Enemy*>> GameManager::EnemyObjectsList;
 
 std::vector<GameObject*> GameManager::GameObjectsVector;
 std::vector<Bullet*> GameManager::BulletsVector;
@@ -34,6 +36,12 @@ void GameManager::AddBulletObjectList(Bullet* bullet)
 	BulletObjectsList.push_back(bulletObjectPtr);
 }
 
+void GameManager::AddEnemyObjectsList(Enemy* enemy)
+{
+	std::shared_ptr<Enemy*> enemyObjectPtr(new Enemy * (enemy));
+	EnemyObjectsList.push_back(enemyObjectPtr);
+}
+
 
 std::vector<GameObject*>& GameManager::GetGameObjectVector()
 {
@@ -53,6 +61,11 @@ std::list<std::shared_ptr<GameObject*>> &GameManager::GetGameObjectList()
 std::list<std::shared_ptr<Bullet*>> &GameManager::GetBulletsList()
 {
 	return BulletObjectsList;
+}
+
+std::list<std::shared_ptr<Enemy*>>& GameManager::GetEnemyList()
+{
+	return EnemyObjectsList;
 }
 
 void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
@@ -193,11 +206,43 @@ void GameManager::Update(float deltaTime)
 			bullet->Update(deltaTime);
 		}
 	}
+}
+
+std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int numSpawnLocations)
+{
+	std::vector<AG::Vector2<float>> spawnLocations;
 
 
+	// Initialize random number generator
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> disX(0.0f, 800.0f); // Range for X coordinate
+	std::uniform_real_distribution<float> disY(0.0f, 800.0f); // Range for Y coordinate
 
+	// Generate random spawn locations
+	for (int i = 0; i < numSpawnLocations; ++i)
+	{
+		float x = disX(gen);
+		float y = disY(gen);
+		spawnLocations.push_back(AG::Vector2<float>(x, y));
+	}
 
+	return spawnLocations;
+}
 
-	// Remove bullets marked for removal
-	RemoveMarkedObjectsList(GetBulletsList());
+void GameManager::CreateEnemyPool(int numEnemies)
+{
+	EnemyObjectsList.clear();
+
+	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numEnemies);
+
+	for (const auto& spawnLocation : spawnLocations)
+	{
+		// Create a new enemy object using the spawn location directly
+		Enemy* newEnemy = new Enemy(spawnLocation);
+
+		AddEnemyObjectsList(newEnemy);
+	}
+
+	
 }

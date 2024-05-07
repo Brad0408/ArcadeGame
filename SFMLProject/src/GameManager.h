@@ -2,6 +2,7 @@
 #include <gameObject_concept.h>
 
 class Bullet;
+class Enemy;
 
 
 class GameManager : public Object
@@ -14,6 +15,8 @@ public:
 	static void AddBulletObject(Bullet* bullet);
 	static void AddBulletObjectList(Bullet* bullet);
 
+	static void AddEnemyObjectsList(Enemy* enemy);
+
 	static void RemoveBullet(Bullet* bullet);
 
 	static std::vector<GameObject*>& GetGameObjectVector();
@@ -21,6 +24,7 @@ public:
 
 	static std::list<std::shared_ptr<GameObject*>> &GetGameObjectList();
 	static std::list<std::shared_ptr<Bullet*>> &GetBulletsList();
+	static std::list<std::shared_ptr<Enemy*>> &GetEnemyList();
 
 	static void GetGameObjectNames(std::vector<GameObject*> GameObjectsVector);
 	static void GetGameObjectListsNames(std::list<std::shared_ptr<GameObject*>>& GameObjectsList);
@@ -41,13 +45,19 @@ public:
 
 	static void Update(float deltaTime);
 
+	static std::vector<AG::Vector2<float>> GenerateRandomSpawnLocations(int numSpawnLocations);
+	static void CreateEnemyPool(int numEnemies);
+
 private:
 	//Vector that stores all the created gameObjects
 	static std::vector<GameObject*> GameObjectsVector;
 	static std::vector<Bullet*> BulletsVector;
+	static std::vector<Enemy*> EnemyVector;
 
+	//Alternative lists instead of vectors - Getting memory issues this way fixes it ?
 	static std::list<std::shared_ptr<Bullet*>> BulletObjectsList;
 	static std::list<std::shared_ptr<GameObject*>> GameObjectsList;
+	static std::list<std::shared_ptr<Enemy*>> EnemyObjectsList;
 
 
 public:

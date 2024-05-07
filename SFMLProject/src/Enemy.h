@@ -5,7 +5,7 @@ class Enemy : public GameObject
 {
 
 public:
-	Enemy(AG::Vector2<float>& spawnLocation);
+	Enemy(const AG::Vector2<float>& spawnLocation);
 	~Enemy();
 
 
