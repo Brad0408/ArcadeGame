@@ -21,7 +21,7 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 
 	m_direction.Normalise();
 
-	m_shouldRemove = false;
+	//m_shouldRemove = false;
 }
 
 Bullet::~Bullet()
@@ -44,7 +44,10 @@ void Bullet::Update(float deltaTime)
 	{
 		std::cout << "Expired" << std::endl;
 		//GameManager::RemoveBullet(this);
-		this->MarkForRemoval();
+		if (this)
+		{
+			this->MarkForRemoval();
+		}
 	}
 
 }
@@ -54,13 +57,13 @@ sf::CircleShape& Bullet::GetCircleShape()
 	return m_BulletShape;
 }
 
-void Bullet::MarkForRemoval()
-{
-	m_shouldRemove = true;
-}
-
-bool Bullet::ShouldRemove()
-{
-	return m_shouldRemove;
-}
+//void Bullet::MarkForRemoval()
+//{
+//	m_shouldRemove = true;
+//}
+//
+//bool Bullet::ShouldRemove()
+//{
+//	return m_shouldRemove;
+//}
 

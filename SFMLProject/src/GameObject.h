@@ -81,8 +81,8 @@ public:
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting();
 
-	void MarkGameObjectForRemoval();
-	bool ShouldRemoveGameObject();
+	virtual void MarkForRemoval();
+	virtual bool ShouldRemove();
 
 private:
 	std::string m_Name;

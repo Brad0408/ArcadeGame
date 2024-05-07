@@ -162,7 +162,7 @@ void PlayerComponent::Shooting()
 	if (m_timeSinceLastShot >= 1.5f && _GameObject->GetIsShooting())
 	{
 
-		Bullet* newBullet = new Bullet(GetFirePointLocation(), 150.0f, CalculateDirection());
+		Bullet* newBullet = new Bullet(GetFirePointLocation(), 75.0f, CalculateDirection());
 
 		GameManager::AddBulletObject(newBullet);
 

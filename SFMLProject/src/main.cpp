@@ -217,7 +217,7 @@ int main()
 			}
 		}
 	
-		
+		GameManager::Update(deltaTime);
 
 		//Check for collisions between bullets and other objects
 		for (int i = 0; i < bulletObjects.size(); ++i)
@@ -247,15 +247,15 @@ int main()
 					if (gameObject->GetIsWall())
 					{
 						bullet->MarkForRemoval();
-						
-					
 						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						break;
 					}
 					else
 					{
-						gameObject->MarkGameObjectForRemoval();
+						gameObject->MarkForRemoval();
 						bullet->MarkForRemoval();
 						std::cout << "Collision detected between bullet " << i << " and " << gameObject->GetName() << std::endl;
+						break;
 					}
 		
 				}
@@ -269,25 +269,23 @@ int main()
 			Player->GetComponent<PlayerComponent>()->Shooting();
 		}
 
-		if (Enemy)
+
+		EnemyComponent* EnemyComp = Enemy->GetComponent<EnemyComponent>();
+		if (EnemyComp)
 		{
-			//Enemy->GetComponent<EnemyComponent>()->Update(deltaTime);
+			Enemy->GetComponent<EnemyComponent>()->Update(deltaTime);
 		}
 		
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-			for (Bullet* bullet : GameManager::GetBulletsVector()) 
-			{
-				bullet->Update(deltaTime);
+			//for (Bullet* bullet : GameManager::GetBulletsVector()) 
+			//{
+			//	bullet->Update(deltaTime);
+			//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
+			//}
 
-	
-				//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
-	
-
-			}
-
-
+		
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
@@ -310,8 +308,11 @@ int main()
 		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
 		
 
-		GameManager::RemoveMarkedBullets();
-		GameManager::RemoveMarkedGameObjects();
+		GameManager::RemoveMarkedObjectsHelper();
+
+
+		//GameManager::RemoveMarkedBullets();
+		//GameManager::RemoveMarkedGameObjects();
 
 		//Display whats actually been rendered
 		window.display();

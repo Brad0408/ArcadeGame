@@ -145,12 +145,12 @@ bool GameObject::GetIsShooting()
 	return m_IsShooting;
 }
 
-void GameObject::MarkGameObjectForRemoval()
+void GameObject::MarkForRemoval()
 {
 	m_shouldRemove = true;
 }
 
-bool GameObject::ShouldRemoveGameObject()
+bool GameObject::ShouldRemove()
 {
 	return m_shouldRemove;
 }

@@ -12,12 +12,12 @@ public:
 	void Update(float deltaTime);
 	sf::CircleShape& GetCircleShape();
 
-	void MarkForRemoval();
-	bool ShouldRemove();
+	//void MarkForRemoval() override;
+	//bool ShouldRemove() override;
 
 private:
 	float m_BulletRadius = 7.0f;
-	float m_lifespan = 10.0f;
+	float m_lifespan = 15.0f;
 	float m_velocity;
 
 	AG::Vector2<float> m_position;
@@ -25,6 +25,6 @@ private:
 
 	sf::CircleShape m_BulletShape;
 
-	bool m_shouldRemove;
+	//bool m_shouldRemove;
 
 };
