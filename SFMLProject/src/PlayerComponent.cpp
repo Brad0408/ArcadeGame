@@ -162,9 +162,11 @@ void PlayerComponent::Shooting()
 	if (m_timeSinceLastShot >= 1.5f && _GameObject->GetIsShooting())
 	{
 
-		Bullet* newBullet = new Bullet(GetFirePointLocation(), 75.0f, CalculateDirection());
+		// Create a new Bullet object with std::make_unique
+		std::unique_ptr<Bullet> newBullet = std::make_unique<Bullet>(GetFirePointLocation(), 75.0f, CalculateDirection());
 
-		GameManager::AddBulletObjectList(newBullet);
+		// Pass the unique pointer to GameManager::AddBulletObjectList
+		GameManager::AddBulletObjectList(std::move(newBullet));
 
 		m_timeSinceLastShot = 0.0f;
 

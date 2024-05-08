@@ -141,12 +141,12 @@ int main()
 
 
 	//Retrieve the vector of GameObjects from the GameManager
-	std::vector<GameObject*>& gameObjects = GameManager::GetGameObjectVector();
-	std::vector<Bullet*>& bulletObjects = GameManager::GetBulletsVector();
+	//std::vector<GameObject*>& gameObjects = GameManager::GetGameObjectVector();
+	//std::vector<Bullet*>& bulletObjects = GameManager::GetBulletsVector();
 
 
-	std::list<std::shared_ptr<GameObject*>>& gameObjectsL = GameManager::GetGameObjectList();
-	std::list<std::shared_ptr<Bullet*>>& bulletObjectsL = GameManager::GetBulletsList();
+	std::list<std::unique_ptr<GameObject>>& gameObjectsL = GameManager::GetGameObjectList();
+	std::list<std::unique_ptr<Bullet>>& bulletObjectsL = GameManager::GetBulletsList();
 
 	//Out the names of the store gameobejcts to check they exist on the vector
 	GameManager::GetGameObjectNames(GameManager::GetGameObjectVector());
@@ -195,8 +195,8 @@ int main()
 				//Bullet* bullet = bulletObjects[i];
 				//GameObject* gameObject = gameObjects[j];
 
-				GameObject* objectA = *(*it); // Dereference the shared pointer to get the GameObject pointer
-				GameObject* objectB = *(*jt); // Dereference the shared pointer to get the GameObject pointer
+				GameObject* objectA = it->get(); // Dereference the shared pointer to get the GameObject pointer
+				GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
 
 		
 
@@ -242,8 +242,8 @@ int main()
 		{
 			for (auto gameObjectIt = gameObjectsL.begin(); gameObjectIt != gameObjectsL.end(); ++gameObjectIt)
 			{
-				Bullet* bullet = *(*bulletIt); // Dereference the shared pointer to get the Bullet pointer
-				GameObject* gameObject = *(*gameObjectIt); // Dereference the shared pointer to get the GameObject pointer
+				Bullet* bullet = bulletIt->get(); // Dereference the shared pointer to get the Bullet pointer
+				GameObject* gameObject = gameObjectIt->get(); // Dereference the shared pointer to get the GameObject pointer
 
 
 				//Skip collision checks if both object is a player
@@ -329,14 +329,12 @@ int main()
 
 		for (const auto& gameObjectPtr : gameObjectsL)
 		{
-			GameObject* gameObject = *gameObjectPtr; // Dereference the shared pointer to get the GameObject pointer
-			window.draw(gameObject->GetRectangleShape());
+			window.draw(gameObjectPtr->GetRectangleShape());
 		}
 
 		for (const auto& bullObjectPtr : bulletObjectsL)
 		{
-			Bullet* bulletObject = *bullObjectPtr; // Dereference the shared pointer to get the GameObject pointer
-			window.draw(bulletObject->GetCircleShape());
+			window.draw(bullObjectPtr->GetCircleShape());
 		}
 
 
