@@ -12,35 +12,28 @@
 
 int main()
 {
-	GameObject* Player = new GameObject();
-	GameObject* Enemy = new GameObject();
-	EnemyComponent* EnemyComp = Enemy->GetComponent<EnemyComponent>();
+
+	GameManager::CreatePlayer();
+	GameManager::CreateEnemyPool(10);
 
 	std::array<GameObject*, 4> walls;
 
-	GameManager::CreateEnemyPool(10);
 
 	for (int i = 0; i < 4; ++i)
 	{
 		walls[i] = new GameObject();
 	}
 
-	//Put newly made gameObjects on the vector
-	//GameManager::AddGameObject(Player);
-	//GameManager::AddGameObject(Enemy);
-	GameManager::AddGameObjectList(Player);
-	GameManager::AddGameObjectList(Enemy);
+	//Put newly made gameObjects on the List
+	GameManager::AddGameObjectList(GameManager::GetEnemyList());
 
 
 
 	for (int i = 0; i < 4; ++i) 
 	{
-		//GameManager::AddGameObject(walls[i]);
 		GameManager::AddGameObjectList(walls[i]);
 	}
 
-
-	Enemy->SetName("Enemy");
 	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
 
 	for (int i = 0; i < walls.size(); ++i) 
@@ -48,16 +41,6 @@ int main()
 		walls[i]->SetName(wallNames[i]);
 	}
 
-
-
-	Player->AddComponent<PlayerComponent>();
-	Player->AddComponent<BoxCollider>();
-	Player->GetComponent<BoxCollider>()->DrawOutlines(Player->GetRectangleShape());
-
-
-	Enemy->AddComponent<BoxCollider>();
-	Enemy->AddComponent<EnemyComponent>();
-	Enemy->GetComponent<BoxCollider>()->DrawOutlines(Enemy->GetRectangleShape());
 
 	for (int i = 0; i < 4; ++i) 
 	{
@@ -140,17 +123,12 @@ int main()
 
 
 
-	//Retrieve the vector of GameObjects from the GameManager
-	//std::vector<GameObject*>& gameObjects = GameManager::GetGameObjectVector();
-	//std::vector<Bullet*>& bulletObjects = GameManager::GetBulletsVector();
-
 
 	std::list<std::unique_ptr<GameObject>>& gameObjectsL = GameManager::GetGameObjectList();
 	std::list<std::unique_ptr<Bullet>>& bulletObjectsL = GameManager::GetBulletsList();
-
-	//Out the names of the store gameobejcts to check they exist on the vector
-	GameManager::GetGameObjectNames(GameManager::GetGameObjectVector());
 	GameManager::GetGameObjectListsNames(GameManager::GetGameObjectList());
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	while (window.isOpen())
 	{
@@ -165,18 +143,6 @@ int main()
 			{
 				window.close();
 			}
-
-			// Check for left mouse button press event
-			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-			{
-				Player->SetIsShooting(true);
-			}
-
-			// Check for left mouse button release event
-			if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-			{
-				Player->SetIsShooting(false);
-			}
 		}
 
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -186,22 +152,22 @@ int main()
 
 
 		//Check for collisions between game objects
-		//for (int i = 0; i < bulletObjects.size(); ++i)
 		for (auto it = gameObjectsL.begin(); it != gameObjectsL.end(); ++it)
 		{
-			//for (int j = 0; j < gameObjects.size(); ++j)
 			for (auto jt = std::next(it); jt != gameObjectsL.end(); ++jt)
 			{
-				//Bullet* bullet = bulletObjects[i];
-				//GameObject* gameObject = gameObjects[j];
-
 				GameObject* objectA = it->get(); // Dereference the shared pointer to get the GameObject pointer
 				GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
 
-		
+
 
 				//Skip collision checks if both objects are walls
 				if (objectA->GetIsWall() && objectB->GetIsWall())
+				{
+					continue;
+				}
+
+				if (objectA->GetIsEnemy() && objectB->GetIsEnemy())
 				{
 					continue;
 				}
@@ -229,14 +195,34 @@ int main()
 					//Detection between none walls
 					else
 					{
+						objectA->MarkForRemoval();
+						objectB->MarkForRemoval();
+						
+					
+
+						float CreationTime = 0.0f;
+						bool playerCreationStarted = false;
+						CreationTime += deltaTime;
+				
+
+						if (!playerCreationStarted && CreationTime >= 0.0001f)
+						{
+							GameManager::CreatePlayer();
+							playerCreationStarted = true;
+							std::cout << "PlayerCreated " << std::endl;
+						}
+
+
 						std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 					}
 				}
 			}
 		}
-	
-		GameManager::Update(deltaTime);
 
+
+
+
+	
 		//Check for collisions between bullets and other objects
 		for (auto bulletIt = bulletObjectsL.begin(); bulletIt != bulletObjectsL.end(); ++bulletIt)
 		{
@@ -267,65 +253,68 @@ int main()
 					{
 						bullet->MarkForRemoval();
 						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
-						break;
+		
 					}
 					else
 					{
-						if (!gameObject->ShouldRemove())
-						{
-							gameObject->MarkForRemoval();
-						}
+						gameObject->MarkForRemoval();
 						bullet->MarkForRemoval();
+
+				
+
+
+
 						std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
-						break;
+					
 					}
 		
 				}
 			}
 		}
 
- 
-		Player->GetComponent<PlayerComponent>()->Update(deltaTime);
-		if (Player->GetIsShooting())
-		{
-			Player->GetComponent<PlayerComponent>()->Shooting();
-		}
 
 
-		if (EnemyComp)
+
+
+		bool enemiesExist = false;
+
+		// Iterate over the game objects to check for enemies
+		for (const auto& gameObject : gameObjectsL)
 		{
-			EnemyComp->Update(deltaTime);
+			if (gameObject->GetTag() == "Enemy")
+			{
+				// At least one enemy is found
+				enemiesExist = true;
+				break;
+			}
 		}
+
+		// Check if no enemies are found
+		if (!enemiesExist)
+		{
+			// Call CreateEnemyPool function if no enemies are found
+			GameManager::CreateEnemyPool(10);
+			GameManager::AddGameObjectList(GameManager::GetEnemyList());
+		}
+
 		
+
+
+
+
+
+
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-			//for (Bullet* bullet : GameManager::GetBulletsVector()) 
-			//{
-			//	bullet->Update(deltaTime);
-			//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
-			//}
-
-		
-
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
 
 		//Clear
 		window.clear();
 
-		//Loop through each GameObject in the vector
-		//for (GameObject* gameObject : gameObjects) 
-		//{
-		//	window.draw(gameObject->GetRectangleShape());
-		//}
 
-		//for (Bullet* bullet : bulletObjects)
-		//{
-		//	//bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
-		//	window.draw(bullet->GetCircleShape());
-		//}
-
+		/////////////Rendering////////////////
 
 		for (const auto& gameObjectPtr : gameObjectsL)
 		{
@@ -338,14 +327,18 @@ int main()
 		}
 
 
-		Player->GetComponent<PlayerComponent>()->CalculateFiringPointRotation(window);
-		
+
+
+
+
+
+		///////////Updating////////////////
+
+		GameManager::Update(deltaTime, window, event);
 
 		GameManager::RemoveMarkedObjectsHelper();
 
 
-		//GameManager::RemoveMarkedBullets();
-		//GameManager::RemoveMarkedGameObjects();
 
 		//Display whats actually been rendered
 		window.display();
@@ -353,9 +346,9 @@ int main()
 
 	}
 
-	//Memory Cleanup
+	//Memory Cleanup At Terimination
 	ResourceManager::ClearTextureMap();
-	GameManager::ClearAllVectors();
+	GameManager::ClearAllLists();
 
 
 	return 0;

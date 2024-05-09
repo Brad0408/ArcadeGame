@@ -39,6 +39,8 @@ public:
 
 	//Set the tag of the GameObject
 	inline void SetTag(std::string newTag) { m_Tag = newTag; }
+	std::string GetTag() const { return m_Tag; }
+
 
 	//Check if a passed in tag value is the same as the set tag value of the GameObject
 	inline bool CompareTag(std::string comp) { return m_Tag == comp; }
@@ -78,6 +80,9 @@ public:
 	void SetIsPlayer(bool isPlayer);
 	bool GetIsPlayer();
 
+	void SetIsEnemy(bool isEnemy);
+	bool GetIsEnemy();
+
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting();
 
@@ -90,6 +95,7 @@ private:
 	std::string m_Tag;
 	bool m_IsWall = false;
 	bool m_IsPlayer = false;
+	bool m_IsEnemy = false;
 	bool m_IsShooting = false;
 	bool m_shouldRemove = false;
 

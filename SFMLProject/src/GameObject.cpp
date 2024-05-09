@@ -135,6 +135,16 @@ bool GameObject::GetIsPlayer()
 	return m_IsPlayer;
 }
 
+void GameObject::SetIsEnemy(bool isEnemy)
+{
+	m_IsEnemy = isEnemy;
+}
+
+bool GameObject::GetIsEnemy()
+{
+	return m_IsEnemy;
+}
+
 void GameObject::SetIsShooting(bool isShooting)
 {
 	m_IsShooting = isShooting;

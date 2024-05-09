@@ -32,19 +32,14 @@ EnemyComponent::EnemyComponent(GameObject* owner) : Component(owner)
 	_GameObject->SetRectangleShape(m_EnemyShapeRectangle);
 
 
-
-
-
-
-
-
-
-
 }
 
 EnemyComponent::~EnemyComponent()
 {
 }
+
+
+
 void EnemyComponent::Update(float deltaTime)
 {
 	Move(deltaTime);

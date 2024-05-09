@@ -10,12 +10,14 @@ class GameManager : public Object
 
 public:
 	static void AddGameObject(GameObject* gameObject);
+	static void AddGameObject(std::unique_ptr<GameObject> gameObject);
 	static void AddGameObjectList(GameObject* gameObject);
+	static void AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList);
 
 	static void AddBulletObject(Bullet* bullet);
 	static void AddBulletObjectList(std::unique_ptr<Bullet> bullet);
 
-	static void AddEnemyObjectsList(Enemy* enemy);
+	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
 	static void RemoveBullet(Bullet* bullet);
 
@@ -24,10 +26,11 @@ public:
 
 	static std::list<std::unique_ptr<GameObject>> &GetGameObjectList();
 	static std::list<std::unique_ptr<Bullet>> &GetBulletsList();
-	static std::list<std::shared_ptr<Enemy*>> &GetEnemyList();
+	static std::list<std::unique_ptr<Enemy>> &GetEnemyList();
 
 	static void GetGameObjectNames(std::vector<GameObject*> GameObjectsVector);
 	static void GetGameObjectListsNames(std::list<std::unique_ptr<GameObject>>& GameObjectsList);
+	static void GetEnemyListNames(std::list<std::unique_ptr<Enemy>>& EnemyObjectsList);
 
 	static void ClearAllVectors();
 	static void ClearAllLists();
@@ -43,11 +46,12 @@ public:
 	static void RemoveMarkedBullets();
 	static void RemoveMarkedObjectsHelper();
 
-	static void Update(float deltaTime);
+	static void Update(float deltaTime, sf::RenderWindow& window, sf::Event& event);
 
 	static std::vector<AG::Vector2<float>> GenerateRandomSpawnLocations(int numSpawnLocations);
 	static void CreateEnemyPool(int numEnemies);
-
+	static void CreatePlayer();
+	static GameObject &GetPlayer();
 private:
 	//Vector that stores all the created gameObjects
 	static std::vector<GameObject*> GameObjectsVector;
@@ -57,10 +61,10 @@ private:
 	//Alternative lists instead of vectors and pointer types, helped with some memory issues
 	static std::list<std::unique_ptr<Bullet>> BulletObjectsList;
 	static std::list<std::unique_ptr<GameObject>> GameObjectsList;
+	static std::list<std::unique_ptr<Enemy>> EnemyObjectsList;
 
 
-	static std::list<std::shared_ptr<Enemy*>> EnemyObjectsList;
-
+	static std::unique_ptr<GameObject> player;
 
 public:
 	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsList(std::list<std::unique_ptr<T>>& objects)
@@ -70,13 +74,6 @@ public:
 			return (objectPtr && objectPtr->ShouldRemove());
 		}), objects.end());
 	}
-
-
-
-
-
-
-
 
 
 	//template <class T> requires isGameObject<T> static void RemoveMarkedObjectsList(std::list<std::shared_ptr<T>>& objects)
@@ -92,10 +89,6 @@ public:
 	//			return false;
 	//		});
 	//}
-
-
-
-
 
 	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsVector(std::vector<T*>& objects)
 	{

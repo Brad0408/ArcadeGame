@@ -13,6 +13,8 @@ public:
 	//Deconstructor
 	virtual ~Component() {}
 
+	//virtual ~Component() = default;
+
 	//Returns _GameObject pointer - provides access to the object associated with this component
 	GameObject* GetGameObject() { return _GameObject; }
 

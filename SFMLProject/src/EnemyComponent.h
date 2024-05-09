@@ -15,7 +15,7 @@ public:
 	void Update(float deltaTime) override;
 
 private:
-	AG::Vector2<float> m_EnemySize = AG::Vector2<float>::one * 50;
+	AG::Vector2<float> m_EnemySize = AG::Vector2<float>::one * 10;
 
 	sf::RectangleShape m_EnemyShapeRectangle;
 
