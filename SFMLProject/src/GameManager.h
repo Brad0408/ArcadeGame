@@ -9,41 +9,44 @@ class GameManager : public Object
 {
 
 public:
-	static void AddGameObject(GameObject* gameObject);
 	static void AddGameObject(std::unique_ptr<GameObject> gameObject);
+
 	static void AddGameObjectList(GameObject* gameObject);
 	static void AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList);
 
-	static void AddBulletObject(Bullet* bullet);
+
 	static void AddBulletObjectList(std::unique_ptr<Bullet> bullet);
 
 	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
-	static void RemoveBullet(Bullet* bullet);
 
-	static std::vector<GameObject*>& GetGameObjectVector();
-	static std::vector<Bullet*>& GetBulletsVector();
+
+
 
 	static std::list<std::unique_ptr<GameObject>> &GetGameObjectList();
 	static std::list<std::unique_ptr<Bullet>> &GetBulletsList();
 	static std::list<std::unique_ptr<Enemy>> &GetEnemyList();
 
-	static void GetGameObjectNames(std::vector<GameObject*> GameObjectsVector);
+
 	static void GetGameObjectListsNames(std::list<std::unique_ptr<GameObject>>& GameObjectsList);
 	static void GetEnemyListNames(std::list<std::unique_ptr<Enemy>>& EnemyObjectsList);
 
-	static void ClearAllVectors();
+
+	static void GenericCollision(float deltaTime);
+	static void BulletCollisions();
+
+
 	static void ClearAllLists();
 
 
-	static void ClearGameObjectVector();
-	static void ClearGameObjectList();
 
-	static void ClearBulletVector();
+	static void ClearGameObjectList();
+	static void ClearEnemiesAndPlayer();
+
+;
 	static void ClearBulletList();
 
-	static void RemoveMarkedGameObjects();
-	static void RemoveMarkedBullets();
+
 	static void RemoveMarkedObjectsHelper();
 
 	static void Update(float deltaTime, sf::RenderWindow& window, sf::Event& event);
@@ -52,11 +55,13 @@ public:
 	static void CreateEnemyPool(int numEnemies);
 	static void CreatePlayer();
 	static GameObject &GetPlayer();
+
+	static void StartPlayerCreationTimer();
+	static void UpdatePlayerCreation(float deltaTime);
+
+	static void CreateWalls();
+	static std::array<GameObject*, 4>& GetWalls();
 private:
-	//Vector that stores all the created gameObjects
-	static std::vector<GameObject*> GameObjectsVector;
-	static std::vector<Bullet*> BulletsVector;
-	static std::vector<Enemy*> EnemyVector;
 
 	//Alternative lists instead of vectors and pointer types, helped with some memory issues
 	static std::list<std::unique_ptr<Bullet>> BulletObjectsList;
@@ -65,6 +70,10 @@ private:
 
 
 	static std::unique_ptr<GameObject> player;
+	static std::array<GameObject*, 4> walls;
+
+	static bool isPlayerCreationTimerActive;
+	static float playerCreationTimer;
 
 public:
 	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsList(std::list<std::unique_ptr<T>>& objects)

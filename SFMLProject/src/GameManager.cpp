@@ -5,23 +5,13 @@
 //Definition of the static member variable
 std::list<std::unique_ptr<Bullet>> GameManager::BulletObjectsList;
 std::list<std::unique_ptr<GameObject>> GameManager::GameObjectsList;
-
 std::list<std::unique_ptr<Enemy>> GameManager::EnemyObjectsList;
 
-std::vector<GameObject*> GameManager::GameObjectsVector;
-std::vector<Bullet*> GameManager::BulletsVector;
-std::vector<Enemy*> GameManager::EnemyVector;
-
 std::unique_ptr<GameObject> GameManager::player = nullptr;
+std::array<GameObject*, 4> GameManager::walls;
 
-
-//Add to gameobject vector
-void GameManager::AddGameObject(GameObject* gameObject)
-{
-	GetGameObjectVector().push_back(gameObject);
-}
-
-
+bool GameManager::isPlayerCreationTimerActive = false;
+float GameManager::playerCreationTimer = 0.0f;
 
 //Add to gameobject list
 void GameManager::AddGameObjectList(GameObject* gameObject)
@@ -32,6 +22,9 @@ void GameManager::AddGameObjectList(GameObject* gameObject)
 	// Store the unique pointer in the list
 	GameObjectsList.push_back(std::move(gameObjectPtr));
 }
+
+
+
 
 
 void GameManager::AddGameObject(std::unique_ptr<GameObject> gameObject)
@@ -55,11 +48,7 @@ void GameManager::AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList
 	enemyList.clear();
 }
 
-//Add to bullet vector
-void GameManager::AddBulletObject(Bullet* bullet)
-{
-	GetBulletsVector().push_back(bullet);
-}
+
 
 //Add to bullet list
 void GameManager::AddBulletObjectList(std::unique_ptr<Bullet> bullet)
@@ -75,15 +64,7 @@ void GameManager::AddEnemyObjectsList(std::unique_ptr<Enemy> enemy)
 }
 
 
-std::vector<GameObject*>& GameManager::GetGameObjectVector()
-{
-	return GameObjectsVector;
-}
 
-std::vector<Bullet*>& GameManager::GetBulletsVector()
-{
-	return BulletsVector;
-}
 
 std::list<std::unique_ptr<GameObject>> &GameManager::GetGameObjectList()
 {
@@ -100,14 +81,7 @@ std::list<std::unique_ptr<Enemy>> &GameManager::GetEnemyList()
 	return EnemyObjectsList;
 }
 
-void GameManager::GetGameObjectNames(std::vector<GameObject*> GameObjectsVector)
-{
-	//Loop to just output the names of all created gameObject
-	for (GameObject* gameobject : GameObjectsVector)
-	{
-		std::cout << "Stored GameObjects on the vector : " << gameobject->GetName() << std::endl;
-	}
-}
+
 
 void GameManager::GetGameObjectListsNames(std::list<std::unique_ptr<GameObject>>& GameObjectsList)
 {
@@ -127,12 +101,127 @@ void GameManager::GetEnemyListNames(std::list<std::unique_ptr<Enemy>>& EnemyObje
 
 }
 
-void GameManager::ClearAllVectors()
+void GameManager::GenericCollision(float deltaTime)
 {
-	GameObjectsVector.clear();
-	BulletsVector.clear();
-	EnemyVector.clear();
+	// Declare objectA outside the inner loop
+	GameObject* objectA = nullptr;
+
+	// Check for collisions between game objects
+	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
+	{
+		// Set objectA to the player object if it has not been set yet
+		if ((*it)->GetTag() == "Player" && !objectA)
+		{
+			objectA = it->get();
+		}
+
+		for (auto jt = std::next(it); jt != GetGameObjectList().end(); ++jt)
+		{
+			GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
+
+			// Skip collision checks if both objects are walls
+			if (objectA && objectA->GetIsWall() && objectB->GetIsWall())
+			{
+				continue;
+			}
+
+			// Continue with your collision detection logic here
+			if (objectA && objectB)
+			{
+				// Check for specific conditions before collision detection
+				if ((objectA->GetIsEnemy() && objectB->GetIsEnemy()) || (objectA->GetIsPlayer() && objectB->GetIsPlayer()))
+				{
+					continue; // Skip collision detection between enemies or between players
+				}
+
+				BoxCollider* colliderA = objectA->GetComponent<BoxCollider>();
+				BoxCollider* colliderB = objectB->GetComponent<BoxCollider>();
+
+				// Ensure both colliders are valid before checking collision
+				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
+				{
+					// Wall Detection
+					if (objectA->GetIsWall() || objectB->GetIsWall())
+					{
+						std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+
+						// Handle wall collision
+						for (GameObject* wall : GetWalls())
+						{
+							BoxCollider::WallCollision(objectA, objectB);
+						}
+					}
+					else
+					{
+						// Handle collision between non-wall objects
+						//objectA->MarkForRemoval();
+						//objectB->MarkForRemoval();
+
+						//ClearEnemies();
+
+						ClearEnemiesAndPlayer();
+						CreatePlayer();
+
+						//StartPlayerCreationTimer();
+
+						std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+					}
+				}
+			}
+		}
+	}
+
+	UpdatePlayerCreation(deltaTime);
 }
+
+void GameManager::BulletCollisions()
+{
+	//Check for collisions between bullets and other objects
+	for (auto bulletIt = GetBulletsList().begin(); bulletIt != GetBulletsList().end(); ++bulletIt)
+	{
+		for (auto gameObjectIt = GetGameObjectList().begin(); gameObjectIt != GetGameObjectList().end(); ++gameObjectIt)
+		{
+			Bullet* bullet = bulletIt->get(); // Dereference the shared pointer to get the Bullet pointer
+			GameObject* gameObject = gameObjectIt->get(); // Dereference the shared pointer to get the GameObject pointer
+
+
+			//Skip collision checks if both object is a player
+			if (gameObject->GetIsPlayer())
+			{
+				continue;
+			}
+
+
+			// Check collision between bullet and other game objects
+			CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
+			BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
+
+
+			// Ensure both colliders are valid before checking collision
+			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet, gameObject))
+			{
+
+				// Check if the object is a wall
+				if (gameObject->GetIsWall())
+				{
+					bullet->MarkForRemoval();
+					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
+
+				}
+				else
+				{
+					gameObject->MarkForRemoval();
+					bullet->MarkForRemoval();
+					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
+
+				}
+
+			}
+		}
+	}
+}
+
+
 
 void GameManager::ClearAllLists()
 {
@@ -141,40 +230,25 @@ void GameManager::ClearAllLists()
 	EnemyObjectsList.clear();
 }
 
-void GameManager::ClearGameObjectVector()
-{
-	GameObjectsVector.clear();
-}
+
 
 void GameManager::ClearGameObjectList()
 {
-	GameObjectsList.clear();
-}
-
-void GameManager::ClearBulletVector()
-{
-	BulletsVector.clear();
-}
-
-void GameManager::ClearBulletList()
-{
-	BulletObjectsList.clear();
-}
-
-
-
-
-
-void GameManager::RemoveBullet(Bullet* bullet)
-{
-	std::vector<Bullet*>& bullets = GetBulletsVector();
-
-	//auto& bullets = GetBulletsList();
-	auto it = std::find(bullets.begin(), bullets.end(), bullet);
-	if (it != bullets.end())
+	for (auto& gameObject : GetGameObjectList())
 	{
-		bullets.erase(it);
-		delete bullet;
+		gameObject->MarkForRemoval();
+	}
+}
+
+void GameManager::ClearEnemiesAndPlayer()
+{
+	for (auto& gameObject : GetGameObjectList())
+	{
+		// Check if the current object has the tag "Enemy"
+		if (gameObject->GetTag() == "Enemy" || gameObject->GetTag() == "Player")
+		{
+			gameObject->MarkForRemoval();
+		}
 	}
 }
 
@@ -182,56 +256,17 @@ void GameManager::RemoveBullet(Bullet* bullet)
 
 
 
-void GameManager::RemoveMarkedGameObjects()
+
+void GameManager::ClearBulletList()
 {
-	//auto &gameObjects = GetGameObjectList();
-	auto &gameObjects = GetGameObjectVector();
-
-	auto it = std::remove_if(gameObjects.begin(), gameObjects.end(), [](GameObject* gameObject)
-	{
-		bool shouldReturn = gameObject->ShouldRemove();
-
-		if (shouldReturn)
-		{
-			delete gameObject;
-			return true;
-		}
-
-		return false;
-	});
-
-	gameObjects.erase(it, gameObjects.end());
+	BulletObjectsList.clear();
 }
 
-void GameManager::RemoveMarkedBullets()
-{
-	//auto &bullets = GetBulletsList();
-	auto &bullets = GetBulletsVector();
-
-	auto it = std::remove_if(bullets.begin(), bullets.end(), [](Bullet* bullet)
-	{
-		bool shouldReturn = bullet->ShouldRemove();
-
-		if (shouldReturn)
-		{
-			delete bullet;
-			return true;
-		}
-
-		return false;
-	});
-
-	bullets.erase(it, bullets.end());
-}
 
 void GameManager::RemoveMarkedObjectsHelper()
 {
-	GameManager::RemoveMarkedObjectsList<Bullet>(GetBulletsList());
-	GameManager::RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
-
-	//GameManager::RemoveMarkedObjects(GetGameObjectVector());
-	//GameManager::RemoveMarkedObjects(GetBulletsVector());
-
+	RemoveMarkedObjectsList<Bullet>(GetBulletsList());
+	RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
 }
 
 void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& event)
@@ -246,6 +281,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 		}
 	}
 
+	GameManager::GenericCollision(deltaTime);
 
 	for (auto& gameObject : GetGameObjectList())
 	{
@@ -270,7 +306,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 					gameObject->SetIsShooting(false);
 				}
 
-				if (GameManager::GetPlayer().GetIsShooting())
+				if (GetPlayer().GetIsShooting())
 				{
 					playerComponent->Shooting();
 				}
@@ -278,13 +314,27 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 			}
 
 		}
+		else if (gameObject->GetTag() == "Enemy")
+		{
+			auto enemy = dynamic_cast<Enemy*>(gameObject.get());
+			if (enemy)
+			{
+				enemy->Update(deltaTime, GetPlayer().GetLocation());
+			}
+		}
 	}
+
+
+
+
+
+
 }
 
 std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int numSpawnLocations)
 {
 	std::vector<AG::Vector2<float>> spawnLocations;
-	AG::Vector2<float> playerSpawnLocation = AG::Vector2<float>(500, 450);
+	AG::Vector2<float> playerLocation = GetPlayer().GetLocation();
 	float minDistance = 200.0f;
 
 	// Initialize random number generator
@@ -305,7 +355,7 @@ std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int nu
 			y = disY(gen);
 
 			// Calculate distance between player spawn location and current spawn location
-			distance = std::sqrt((x - playerSpawnLocation.x) * (x - playerSpawnLocation.x) + (y - playerSpawnLocation.y) * (y - playerSpawnLocation.y));
+			distance = std::sqrt((x - playerLocation.x) * (x - playerLocation.x) + (y - playerLocation.y) * (y - playerLocation.y));
 
 			// Check if the distance is greater than the minimum distance
 		} while (distance < minDistance);
@@ -329,8 +379,8 @@ void GameManager::CreateEnemyPool(int numEnemies)
 		// Create a shared pointer to a dynamically allocated Enemy object
 		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>(spawnLocation);
 
-		// Pass the shared pointer to GameManager::AddEnemyObjectList
-		GameManager::AddEnemyObjectsList(std::move(newEnemy));
+	
+		AddEnemyObjectsList(std::move(newEnemy));
 
 	}
 
@@ -339,18 +389,25 @@ void GameManager::CreateEnemyPool(int numEnemies)
 
 void GameManager::CreatePlayer()
 {
-	// Create a unique pointer to a new player object
-	player = std::make_unique<GameObject>();
+	// Check if a player object already exists
+	if (!player)
+	{
+		// Create a unique pointer to a new player object
+		player = std::make_unique<GameObject>();
 
-	player->AddComponent<PlayerComponent>();
-	player->AddComponent<BoxCollider>();
-	player->GetComponent<BoxCollider>()->DrawOutlines(player->GetRectangleShape());
+		player->AddComponent<PlayerComponent>();
+		player->AddComponent<BoxCollider>();
+		player->GetComponent<BoxCollider>()->DrawOutlines(player->GetRectangleShape());
 
-
-	// Add the player object to the GameObjectsList
-	GameObjectsList.push_back(std::move(player));
-
+		// Add the player object to the GameObjectsList
+		GameObjectsList.push_back(std::move(player));
+	}
+	else
+	{
+		std::cout << "A player object already exists." << std::endl;
+	}
 }
+
 
 GameObject& GameManager::GetPlayer()
 {
@@ -369,3 +426,124 @@ GameObject& GameManager::GetPlayer()
 	std::cout << "Player not found" << std::endl;
 	throw std::runtime_error("Player not found");
 }
+
+void GameManager::StartPlayerCreationTimer()
+{
+	// Reset the timer
+	playerCreationTimer = 0.0f;
+
+	// Set the flag to indicate that the player creation timer has started
+	isPlayerCreationTimerActive = true;
+}
+
+void GameManager::UpdatePlayerCreation(float deltaTime)
+{
+	// Check if the player creation timer is active
+	if (isPlayerCreationTimerActive)
+	{
+		// Increment the timer
+		playerCreationTimer += deltaTime;
+
+		// Check if 2 seconds have passed
+		if (playerCreationTimer >= 2.0f)
+		{
+			// Create a new player
+			CreatePlayer();
+
+			// Reset the player creation timer and flag
+			playerCreationTimer = 0.0f;
+			isPlayerCreationTimerActive = false;
+		}
+	}
+}
+
+#pragma region Walls
+
+void GameManager::CreateWalls()
+{
+
+
+	for (int i = 0; i < 4; ++i)
+	{
+		walls[i] = new GameObject();
+	}
+
+	for (int i = 0; i < 4; ++i)
+	{
+		AddGameObjectList(walls[i]);
+	}
+
+	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
+
+	for (int i = 0; i < walls.size(); ++i)
+	{
+		walls[i]->SetName(wallNames[i]);
+	}
+
+
+	for (int i = 0; i < 4; ++i)
+	{
+		walls[i]->AddComponent<BoxCollider>();
+	}
+
+
+
+	float TopPadding = 20.0f;
+	float LeftPadding = 20.0f;
+	float BottomPadding = 960.0f;
+	float RightPadding = 960.0f;
+
+	//Define the size and locations of the wall
+	AG::Vector2<float> VerticalWallSize = AG::Vector2<float>(15, 1000);
+	AG::Vector2<float> HorizontalWallSize = AG::Vector2<float>(1000, 15);
+
+	AG::Vector2<float> TopWallPos = AG::Vector2<float>(0.0f, TopPadding);
+	AG::Vector2<float> LeftWallPos = AG::Vector2<float>(LeftPadding, 0.0f);
+	AG::Vector2<float> BottomWallPos = AG::Vector2<float>(0.0f, BottomPadding);
+	AG::Vector2<float> RightWallPos = AG::Vector2<float>(RightPadding, 0.0f);
+
+	//Create a rectangle
+	sf::RectangleShape TopWallShape(HorizontalWallSize);
+	sf::RectangleShape LeftWallShape(VerticalWallSize);
+	sf::RectangleShape BottomWallShape(HorizontalWallSize);
+	sf::RectangleShape RightWallShape(VerticalWallSize);
+
+	TopWallShape.setFillColor(sf::Color::Green);
+	LeftWallShape.setFillColor(sf::Color::Blue);
+	BottomWallShape.setFillColor(sf::Color::Magenta);
+	RightWallShape.setFillColor(sf::Color::Yellow);
+
+	TopWallShape.setPosition(TopWallPos);
+	LeftWallShape.setPosition(LeftWallPos);
+	BottomWallShape.setPosition(BottomWallPos);
+	RightWallShape.setPosition(RightWallPos);
+
+
+	TopWallShape.setOutlineThickness(3);
+	LeftWallShape.setOutlineThickness(3);
+	BottomWallShape.setOutlineThickness(3);
+	RightWallShape.setOutlineThickness(3);
+
+	TopWallShape.setOutlineColor(sf::Color(255, 255, 255));
+	LeftWallShape.setOutlineColor(sf::Color(255, 255, 255));
+	BottomWallShape.setOutlineColor(sf::Color(255, 255, 255));
+	RightWallShape.setOutlineColor(sf::Color(255, 255, 255));
+
+	walls[0]->SetRectangleShape(TopWallShape);
+	walls[1]->SetRectangleShape(LeftWallShape);
+	walls[2]->SetRectangleShape(BottomWallShape);
+	walls[3]->SetRectangleShape(RightWallShape);
+
+
+	for (int i = 0; i < 4; ++i)
+	{
+		walls[i]->SetIsWall(true);
+	}
+}
+
+std::array<GameObject*, 4>& GameManager::GetWalls()
+{
+	return walls;
+}
+
+#pragma endregion

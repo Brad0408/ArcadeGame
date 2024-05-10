@@ -22,6 +22,8 @@ public:
 
 
 	void Update(float deltaTime);
+	virtual void Update(float deltaTime, const AG::Vector2<float>& playerPosition) {};
+
 	void Render(sf::RenderWindow& window);
 
 

@@ -5,10 +5,9 @@
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
 	_GameObject->SetIsPlayer(true);
+	_GameObject->SetIsWall(false);
 	_GameObject->SetName("Player");
 	_GameObject->SetTag("Player");
-	//std::cout << "PlayerCompont Constructed" << std::endl;
-	//std::cout << "GameObject value in PlayerComponent : " << _GameObject << std::endl;
 
 	_GameObject->SetLocation(500, 450);
 
@@ -37,7 +36,6 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	m_PlayerShapeRectangle.setPosition(_GameObject->GetLocation());
 
 
-	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
 	CreateFiringPoint();
 

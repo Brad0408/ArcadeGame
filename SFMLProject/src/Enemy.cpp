@@ -5,6 +5,7 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 	SetName("Enemy");
 	SetTag("Enemy");
 	SetIsEnemy(true);
+	SetIsWall(false);
 
 	SetLocation(spawnLocation.x, spawnLocation.y);
 
@@ -42,3 +43,24 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 Enemy::~Enemy()
 {
 }
+
+
+void Enemy::Update(float deltaTime, const AG::Vector2<float>& playerPosition)
+{
+
+	// Calculate direction vector towards the player
+	AG::Vector2<float> direction = playerPosition - GetLocation();
+	direction.Normalise(); // Normalize the direction vector to get a unit vector
+
+	// Move the enemy towards the player's position
+	AG::Vector2<float> displacement = direction * m_MovementSpeed * deltaTime;
+	Move(displacement);
+}
+
+void Enemy::Move(AG::Vector2<float>& displacement)
+{
+	SetLocation(GetLocation().x + displacement.x, GetLocation().y + displacement.y);
+	GetRectangleShape().setPosition(GetLocation());
+
+}
+
