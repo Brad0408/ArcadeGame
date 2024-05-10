@@ -37,6 +37,16 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 	SetRectangleShape(m_EnemyShapeRectangle);
 
 	AddComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
+
+
+	// Initialize the random number generator
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<float> dis(10.0f, 15.5f);
+
+	// Assign a random movement speed to the enemy
+	m_MovementSpeed = dis(gen);
+
 }
 
 

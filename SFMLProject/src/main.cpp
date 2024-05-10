@@ -13,7 +13,7 @@ int main()
 
 	GameManager::CreatePlayer();
 	GameManager::CreateWalls();
-	GameManager::CreateEnemyPool(15);
+	GameManager::CreateEnemyPool(20);
 
 	//Put newly made gameObjects on the List
 	GameManager::AddGameObjectList(GameManager::GetEnemyList());
@@ -43,7 +43,7 @@ int main()
 
 	std::list<std::unique_ptr<GameObject>>& gameObjectsL = GameManager::GetGameObjectList();
 	std::list<std::unique_ptr<Bullet>>& bulletObjectsL = GameManager::GetBulletsList();
-	GameManager::GetGameObjectListsNames(GameManager::GetGameObjectList());
+	//GameManager::GetGameObjectListsNames(GameManager::GetGameObjectList());
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +69,7 @@ int main()
 
 
 
-
+		GameManager::GenericCollision();
 		GameManager::BulletCollisions();
 
 	
@@ -91,7 +91,7 @@ int main()
 		if (!enemiesExist)
 		{
 			// Call CreateEnemyPool function if no enemies are found
-			GameManager::CreateEnemyPool(15);
+			GameManager::CreateEnemyPool(20);
 			GameManager::AddGameObjectList(GameManager::GetEnemyList());
 		}
 

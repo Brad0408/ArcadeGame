@@ -10,10 +10,10 @@ std::list<std::unique_ptr<Enemy>> GameManager::EnemyObjectsList;
 std::unique_ptr<GameObject> GameManager::player = nullptr;
 std::array<GameObject*, 4> GameManager::walls;
 
-bool GameManager::isPlayerCreationTimerActive = false;
-float GameManager::playerCreationTimer = 0.0f;
 
-//Add to gameobject list
+#pragma region AddingToLists
+
+//Add to gameobject list - for raw pointers to the walls
 void GameManager::AddGameObjectList(GameObject* gameObject)
 {
 	// Create a std::unique_ptr<GameObject> from the raw pointer
@@ -23,16 +23,14 @@ void GameManager::AddGameObjectList(GameObject* gameObject)
 	GameObjectsList.push_back(std::move(gameObjectPtr));
 }
 
-
-
-
-
-void GameManager::AddGameObject(std::unique_ptr<GameObject> gameObject)
+//Add to the gameobject list 
+void GameManager::AddGameObjectList(std::unique_ptr<GameObject> &gameObject)
 {
 	GameObjectsList.push_back(std::move(gameObject));
 }
 
 
+//Add to the game object list from the enemies list
 void GameManager::AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList)
 {
 	for (auto& enemyPtr : enemyList)
@@ -40,8 +38,7 @@ void GameManager::AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList
 		// Move the unique pointer's ownership to a shared pointer
 		std::unique_ptr<GameObject> gameObjectPtr = std::move(enemyPtr);
 
-		// Add the shared pointer to the GameObject list
-		GameObjectsList.push_back(std::move(gameObjectPtr)); // Corrected this line
+		AddGameObjectList(gameObjectPtr);
 	}
 
 	// Clear the original list after moving its elements
@@ -64,7 +61,10 @@ void GameManager::AddEnemyObjectsList(std::unique_ptr<Enemy> enemy)
 }
 
 
+#pragma endregion
 
+
+#pragma region GettingLists
 
 std::list<std::unique_ptr<GameObject>> &GameManager::GetGameObjectList()
 {
@@ -80,31 +80,67 @@ std::list<std::unique_ptr<Enemy>> &GameManager::GetEnemyList()
 {
 	return EnemyObjectsList;
 }
+#pragma endregion
 
 
+#pragma region GettingListNames
 
-void GameManager::GetGameObjectListsNames(std::list<std::unique_ptr<GameObject>>& GameObjectsList)
+void GameManager::GetGameObjectListsNames()
 {
-	for (const auto& gameObjectPtr : GameObjectsList)
-	{
-		std::cout << "Stored GameObjects on the list : " << gameObjectPtr->GetName() << std::endl;
-	}
+	// Map to store the count of objects with each name
+	std::unordered_map<std::string, int> nameCount;
 
+	for (const auto& gameObjectPtr : GetGameObjectList())
+	{
+		std::string name = gameObjectPtr->GetName();
+		std::string tag = gameObjectPtr->GetTag();
+
+		// Check if the name already exists in the map
+		if (nameCount.find(name) != nameCount.end())
+		{
+			// Increment the count for this name
+			nameCount[name]++;
+		}
+		else
+		{
+			// Add the name to the map with count 1
+			nameCount[name] = 1;
+		}
+
+		// Construct the name with count suffix if necessary
+		std::string displayName = name;
+		if (nameCount[name] > 1)
+		{
+			displayName += " " + std::to_string(nameCount[name]);
+		}
+
+		std::cout << "Stored GameObject on the list: " << displayName << " (Tag: " << tag << ")" << std::endl;
+	}
 }
 
-void GameManager::GetEnemyListNames(std::list<std::unique_ptr<Enemy>>& EnemyObjectsList)
+
+
+void GameManager::GetEnemyListNames()
 {
-	for (const auto& enemyObjectPtr : EnemyObjectsList)
+	for (const auto& enemyObjectPtr : GetEnemyList())
 	{
 		std::cout << "Stored EnemyObjects on the list : " << enemyObjectPtr->GetName() << std::endl;
 	}
 
 }
 
-void GameManager::GenericCollision(float deltaTime)
+#pragma endregion
+
+
+#pragma region Collisions
+
+void GameManager::GenericCollision()
 {
 	// Declare objectA outside the inner loop
 	GameObject* objectA = nullptr;
+
+	// Check if player creation is in progress
+	bool isResetEntities = false;
 
 	// Check for collisions between game objects
 	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
@@ -120,7 +156,7 @@ void GameManager::GenericCollision(float deltaTime)
 			GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
 
 			// Skip collision checks if both objects are walls
-			if (objectA && objectA->GetIsWall() && objectB->GetIsWall())
+			if (objectA && objectB && objectA->GetIsWall() && objectB->GetIsWall())
 			{
 				continue;
 			}
@@ -140,6 +176,8 @@ void GameManager::GenericCollision(float deltaTime)
 				// Ensure both colliders are valid before checking collision
 				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
+					std::cout << "COLLISION" << std::endl;
+
 					// Wall Detection
 					if (objectA->GetIsWall() || objectB->GetIsWall())
 					{
@@ -154,83 +192,70 @@ void GameManager::GenericCollision(float deltaTime)
 					else
 					{
 						// Handle collision between non-wall objects
-						//objectA->MarkForRemoval();
-						//objectB->MarkForRemoval();
+						if (!isResetEntities)
+						{
+							ClearEnemiesAndResetPlayer();
+							isResetEntities = true;
+						}
 
-						//ClearEnemies();
+						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						ClearEnemiesAndPlayer();
-						CreatePlayer();
-
-						//StartPlayerCreationTimer();
-
-						std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+						GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
 		}
 	}
-
-	UpdatePlayerCreation(deltaTime);
 }
 
 void GameManager::BulletCollisions()
 {
-	//Check for collisions between bullets and other objects
-	for (auto bulletIt = GetBulletsList().begin(); bulletIt != GetBulletsList().end(); ++bulletIt)
+	// Check for collisions between bullets and other objects
+	for (const auto& bullet : GetBulletsList())
 	{
-		for (auto gameObjectIt = GetGameObjectList().begin(); gameObjectIt != GetGameObjectList().end(); ++gameObjectIt)
+		// Check collision between bullet and other game objects
+		for (const auto& gameObject : GetGameObjectList())
 		{
-			Bullet* bullet = bulletIt->get(); // Dereference the shared pointer to get the Bullet pointer
-			GameObject* gameObject = gameObjectIt->get(); // Dereference the shared pointer to get the GameObject pointer
 
-
-			//Skip collision checks if both object is a player
+			// Skip collision checks if the bullet belongs to the player
 			if (gameObject->GetIsPlayer())
 			{
 				continue;
 			}
 
-
-			// Check collision between bullet and other game objects
 			CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
 			BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
 
-
 			// Ensure both colliders are valid before checking collision
-			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet, gameObject))
+			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet.get(), gameObject.get()))
 			{
-
-				// Check if the object is a wall
+				// Mark bullet and object for removal
 				if (gameObject->GetIsWall())
 				{
 					bullet->MarkForRemoval();
-					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
-
 				}
 				else
 				{
 					gameObject->MarkForRemoval();
 					bullet->MarkForRemoval();
+
 					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
-
 				}
-
 			}
 		}
 	}
 }
 
+#pragma endregion
 
 
+#pragma region ClearingLists
 void GameManager::ClearAllLists()
 {
 	BulletObjectsList.clear();
 	GameObjectsList.clear();
 	EnemyObjectsList.clear();
 }
-
-
 
 void GameManager::ClearGameObjectList()
 {
@@ -240,27 +265,24 @@ void GameManager::ClearGameObjectList()
 	}
 }
 
-void GameManager::ClearEnemiesAndPlayer()
+void GameManager::ClearEnemiesAndResetPlayer()
 {
+
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Enemy"
-		if (gameObject->GetTag() == "Enemy" || gameObject->GetTag() == "Player")
+		if (gameObject->GetTag() == "Enemy")
 		{
 			gameObject->MarkForRemoval();
 		}
+		else if (gameObject->GetTag() == "Player")
+		{
+			gameObject->SetLocation(500, 450);
+		}
 	}
 }
+#pragma endregion 
 
-
-
-
-
-
-void GameManager::ClearBulletList()
-{
-	BulletObjectsList.clear();
-}
 
 
 void GameManager::RemoveMarkedObjectsHelper()
@@ -268,6 +290,9 @@ void GameManager::RemoveMarkedObjectsHelper()
 	RemoveMarkedObjectsList<Bullet>(GetBulletsList());
 	RemoveMarkedObjectsList<GameObject>(GetGameObjectList());
 }
+
+
+
 
 void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& event)
 {
@@ -281,14 +306,12 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 		}
 	}
 
-	GameManager::GenericCollision(deltaTime);
-
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Player"
 		if (gameObject->GetTag() == "Player")
 		{
-			auto playerComponent = gameObject->GetComponent<PlayerComponent>();
+			PlayerComponent* playerComponent = gameObject->GetComponent<PlayerComponent>();
 			if (playerComponent)
 			{
 				playerComponent->Update(deltaTime);
@@ -306,7 +329,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 					gameObject->SetIsShooting(false);
 				}
 
-				if (GetPlayer().GetIsShooting())
+				if (GetPlayer()->GetIsShooting())
 				{
 					playerComponent->Shooting();
 				}
@@ -319,29 +342,27 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 			auto enemy = dynamic_cast<Enemy*>(gameObject.get());
 			if (enemy)
 			{
-				enemy->Update(deltaTime, GetPlayer().GetLocation());
+				enemy->Update(deltaTime, GetPlayer()->GetLocation());
 			}
 		}
 	}
 
 
-
-
-
-
 }
+
+#pragma region SpawningEnemies
 
 std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int numSpawnLocations)
 {
 	std::vector<AG::Vector2<float>> spawnLocations;
-	AG::Vector2<float> playerLocation = GetPlayer().GetLocation();
+	AG::Vector2<float> playerLocation = GetPlayer()->GetLocation();
 	float minDistance = 200.0f;
 
 	// Initialize random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> disX(100.0f, 850.0f); // Range for X coordinate
-	std::uniform_real_distribution<float> disY(100.0f, 850.0f); // Range for Y coordinate
+	std::uniform_real_distribution<float> disX(80.0f, 850.0f); // Range for X coordinate
+	std::uniform_real_distribution<float> disY(80.0f, 850.0f); // Range for Y coordinate
 
 	// Generate random spawn locations
 	for (int i = 0; i < numSpawnLocations; ++i)
@@ -370,6 +391,9 @@ void GameManager::CreateEnemyPool(int numEnemies)
 {
 	std::cout << "ENEMEIS CREATED" << std::endl;
 
+	//GetPlayer()->SetLocation(500, 450);
+	//GetPlayer()->GetRectangleShape().setPosition(GetPlayer()->GetLocation());
+
 	EnemyObjectsList.clear();
 
 	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numEnemies);
@@ -379,16 +403,18 @@ void GameManager::CreateEnemyPool(int numEnemies)
 		// Create a shared pointer to a dynamically allocated Enemy object
 		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>(spawnLocation);
 
-	
 		AddEnemyObjectsList(std::move(newEnemy));
 
 	}
-
-	
 }
 
+#pragma endregion
+
+#pragma region Player
 void GameManager::CreatePlayer()
 {
+	std::cout << "PLAYER CREATED" << std::endl;
+
 	// Check if a player object already exists
 	if (!player)
 	{
@@ -400,7 +426,7 @@ void GameManager::CreatePlayer()
 		player->GetComponent<BoxCollider>()->DrawOutlines(player->GetRectangleShape());
 
 		// Add the player object to the GameObjectsList
-		GameObjectsList.push_back(std::move(player));
+		AddGameObjectList(player);
 	}
 	else
 	{
@@ -409,84 +435,36 @@ void GameManager::CreatePlayer()
 }
 
 
-GameObject& GameManager::GetPlayer()
+std::unique_ptr<GameObject> &GameManager::GetPlayer()
 {
-	// Loop through the GameObjectsList to find the player object
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Player"
 		if (gameObject->GetTag() == "Player")
 		{
 			// Return a reference to the player object
-			return *gameObject;
-		}
-	}
-
-	// If no player object is found, throw an exception
-	std::cout << "Player not found" << std::endl;
-	throw std::runtime_error("Player not found");
-}
-
-void GameManager::StartPlayerCreationTimer()
-{
-	// Reset the timer
-	playerCreationTimer = 0.0f;
-
-	// Set the flag to indicate that the player creation timer has started
-	isPlayerCreationTimerActive = true;
-}
-
-void GameManager::UpdatePlayerCreation(float deltaTime)
-{
-	// Check if the player creation timer is active
-	if (isPlayerCreationTimerActive)
-	{
-		// Increment the timer
-		playerCreationTimer += deltaTime;
-
-		// Check if 2 seconds have passed
-		if (playerCreationTimer >= 2.0f)
-		{
-			// Create a new player
-			CreatePlayer();
-
-			// Reset the player creation timer and flag
-			playerCreationTimer = 0.0f;
-			isPlayerCreationTimerActive = false;
+			return gameObject;
 		}
 	}
 }
+
+#pragma endregion
 
 #pragma region Walls
 
 void GameManager::CreateWalls()
 {
 
+	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
 
 	for (int i = 0; i < 4; ++i)
 	{
 		walls[i] = new GameObject();
-	}
-
-	for (int i = 0; i < 4; ++i)
-	{
 		AddGameObjectList(walls[i]);
-	}
-
-	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
-
-	for (int i = 0; i < walls.size(); ++i)
-	{
 		walls[i]->SetName(wallNames[i]);
-	}
-
-
-	for (int i = 0; i < 4; ++i)
-	{
+		walls[i]->SetTag("Wall");
 		walls[i]->AddComponent<BoxCollider>();
 	}
-
-
 
 	float TopPadding = 20.0f;
 	float LeftPadding = 20.0f;
