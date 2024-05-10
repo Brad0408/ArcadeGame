@@ -3,7 +3,6 @@
 #include <ResourceManager.h>
 #include <GameManager.h>
 #include <PlayerComponent.h>
-#include <EnemyComponent.h>
 #include <BoxCollider.h>
 #include <CircleCollider.h>
 
