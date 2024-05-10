@@ -1,9 +1,7 @@
-#include <iostream>
-#include <chrono>
-#include <Vector2.h>
 #include <Event.h>
-#include <GameObject.h>
 #include <Bullet.h>
+
+
 
 #define FIXEDFRAMERATE 0.025f
 
@@ -15,8 +13,8 @@ int main()
 
 	GameManager::CreatePlayer();
 	GameManager::CreateWalls();
-
 	GameManager::CreateEnemyPool(15);
+
 	//Put newly made gameObjects on the List
 	GameManager::AddGameObjectList(GameManager::GetEnemyList());
 
