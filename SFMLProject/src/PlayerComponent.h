@@ -25,8 +25,8 @@ public:
 	void Shooting();
 
 private:
-	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 50;
-	AG::Vector2<float> m_FiringPointSize = AG::Vector2<float>::one * 10;
+	AG::Vector2<float> m_PlayerSize = AG::Vector2<float>::one * 35;
+	AG::Vector2<float> m_FiringPointSize = AG::Vector2<float>::one * 8;
 	AG::Vector2<float> m_FiringPointLocation = AG::Vector2<float>::one * 10;
 	AG::Vector2<float> m_MousePosition;
 

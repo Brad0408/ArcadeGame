@@ -5,11 +5,11 @@
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
 	_GameObject->SetIsPlayer(true);
+	_GameObject->SetIsWall(false);
 	_GameObject->SetName("Player");
-	//std::cout << "PlayerCompont Constructed" << std::endl;
-	//std::cout << "GameObject value in PlayerComponent : " << _GameObject << std::endl;
+	_GameObject->SetTag("Player");
 
-	_GameObject->SetLocation(650, 450);
+	_GameObject->SetLocation(500, 450);
 
 
 	
@@ -36,7 +36,6 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	m_PlayerShapeRectangle.setPosition(_GameObject->GetLocation());
 
 
-	//_GameObject->DrawOutlines(PlayerShapeRectangle);
 
 	CreateFiringPoint();
 
@@ -95,6 +94,11 @@ void PlayerComponent::Move(float deltaTime)
 		_GameObject->GetLocation().y += m_MovementSpeed * deltaTime;
 
 		direction.y = 1.0f;
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	{
+		GameManager::CreateEnemyPool(50);
+		GameManager::AddGameObjectList(GameManager::GetEnemyList());
 	}
 
 	direction.Normalise();
@@ -162,9 +166,11 @@ void PlayerComponent::Shooting()
 	if (m_timeSinceLastShot >= 1.5f && _GameObject->GetIsShooting())
 	{
 
-		Bullet* newBullet = new Bullet(GetFirePointLocation(), 75.0f, CalculateDirection());
+		//Create a new bullet
+		std::unique_ptr<Bullet> newBullet = std::make_unique<Bullet>(GetFirePointLocation(), 75.0f, CalculateDirection());
 
-		GameManager::AddBulletObjectList(newBullet);
+		//Put bullet on the list
+		GameManager::AddBulletObjectList(std::move(newBullet));
 
 		m_timeSinceLastShot = 0.0f;
 
