@@ -18,7 +18,7 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 
 
 	//Set texture to be the whole sprite sheet
-	m_EnemyShapeRectangle.setTexture(&ResourceManager::GetTexture("Player"));
+	m_EnemyShapeRectangle.setTexture(&ResourceManager::GetTexture("Enemy"));
 
 
 	//Set the texture to the cookie cutter section of the sprite sheet
@@ -36,8 +36,9 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation)
 	//Actually set it
 	SetRectangleShape(m_EnemyShapeRectangle);
 
-	AddComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
-
+	AddComponent<BoxCollider>();
+	AddComponent<AnimationComponent>();
+	animationComponent = GetComponent<AnimationComponent>();
 
 	// Initialize the random number generator
 	std::random_device rd;
@@ -57,6 +58,9 @@ Enemy::~Enemy()
 
 void Enemy::Update(float deltaTime, const AG::Vector2<float>& playerPosition)
 {
+	animationComponent->SetGruntAnimation(AnimationComponent::GruntStates::Moving);
+	m_EnemyShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetGruntState(), deltaTime, animationComponent->GetGruntAnimationsMap()));
+	SetRectangleShape(m_EnemyShapeRectangle);
 
 	// Calculate direction vector towards the player
 	AG::Vector2<float> direction = playerPosition - GetLocation();
@@ -65,12 +69,13 @@ void Enemy::Update(float deltaTime, const AG::Vector2<float>& playerPosition)
 	// Move the enemy towards the player's position
 	AG::Vector2<float> displacement = direction * m_MovementSpeed * deltaTime;
 	Move(displacement);
+
+	GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
 }
 
 void Enemy::Move(AG::Vector2<float>& displacement)
 {
 	SetLocation(GetLocation().x + displacement.x, GetLocation().y + displacement.y);
 	GetRectangleShape().setPosition(GetLocation());
-
 }
 

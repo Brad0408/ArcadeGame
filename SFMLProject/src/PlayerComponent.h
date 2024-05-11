@@ -3,6 +3,7 @@
 #include <GameObject.h>
 
 class Bullet;
+class AnimationComponent;
 
 class PlayerComponent : public Component
 {
@@ -35,13 +36,11 @@ private:
 	sf::RectangleShape m_FiringPoint;
 
 	sf::IntRect m_PlayerTextureUV;
+	AnimationComponent* animationComponent;
 
 	float m_MovementSpeed = 37.0f;
 	float m_orbitRadius = 50.0f;
 	float m_angle;
 	float m_timeSinceLastShot = 0.0f;
-
-	std::vector<Bullet> m_Bullets;
-
 
 };

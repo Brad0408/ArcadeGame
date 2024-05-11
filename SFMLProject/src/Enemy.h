@@ -15,9 +15,11 @@ private:
 	AG::Vector2<float> m_EnemySize = AG::Vector2<float>::one * 35;
 
 	sf::RectangleShape m_EnemyShapeRectangle;
+	AnimationComponent* animationComponent;
 
 	sf::IntRect m_EnemyTextureUV;
 
 	float m_MovementSpeed = 10.0f;
+
 
 };

@@ -176,12 +176,12 @@ void GameManager::GenericCollision()
 				// Ensure both colliders are valid before checking collision
 				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
-					std::cout << "COLLISION" << std::endl;
+					//std::cout << "COLLISION" << std::endl;
 
 					// Wall Detection
 					if (objectA->GetIsWall() || objectB->GetIsWall())
 					{
-						std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+						//std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
 						// Handle wall collision
 						for (GameObject* wall : GetWalls())
@@ -200,7 +200,7 @@ void GameManager::GenericCollision()
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						GameManager::GetGameObjectListsNames();
+						//GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
@@ -422,8 +422,7 @@ void GameManager::CreatePlayer()
 		player = std::make_unique<GameObject>();
 
 		player->AddComponent<PlayerComponent>();
-		player->AddComponent<BoxCollider>();
-		player->GetComponent<BoxCollider>()->DrawOutlines(player->GetRectangleShape());
+
 
 		// Add the player object to the GameObjectsList
 		AddGameObjectList(player);

@@ -146,6 +146,7 @@ int main()
 
 	//Memory Cleanup At Terimination
 	ResourceManager::ClearTextureMap();
+	//ResourceManager::ClearSoundBufferMap();
 	GameManager::ClearAllLists();
 
 

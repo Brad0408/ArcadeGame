@@ -4,6 +4,9 @@
 
 PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
+	_GameObject->AddComponent<BoxCollider>();
+	_GameObject->AddComponent<AnimationComponent>();
+
 	_GameObject->SetIsPlayer(true);
 	_GameObject->SetIsWall(false);
 	_GameObject->SetName("Player");
@@ -12,12 +15,12 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 	_GameObject->SetLocation(500, 450);
 
 
-	
+	animationComponent = _GameObject->GetComponent<AnimationComponent>();
 	
 
 
 	//Cookie cutter part of sprite sheet (0,0 = Coordinates, 24, 24 = Size of rectangle)
-	m_PlayerTextureUV = sf::IntRect(210, 164, 24, 24);
+	m_PlayerTextureUV = sf::IntRect(342, 164, 24, 24);
 
 	m_PlayerShapeRectangle.setSize(m_PlayerSize);
 
@@ -63,6 +66,8 @@ void PlayerComponent::Update(float deltaTime)
 	Move(deltaTime);
 
 	m_timeSinceLastShot += deltaTime;
+
+	_GameObject->GetComponent<BoxCollider>()->DrawOutlines(_GameObject->GetRectangleShape());
 }
 
 
@@ -75,11 +80,22 @@ void PlayerComponent::Move(float deltaTime)
 	{
 		_GameObject->GetLocation().x -= m_MovementSpeed * deltaTime;
 
+
+		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Left);
+		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
+		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
+
 		direction.x = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 	{
 		_GameObject->GetLocation().x += m_MovementSpeed * deltaTime;
+
+
+		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Right);
+		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
+		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
+
 
 		direction.x = 1.0f;
 	}
@@ -87,11 +103,23 @@ void PlayerComponent::Move(float deltaTime)
 	{
 		_GameObject->GetLocation().y -= m_MovementSpeed * deltaTime;
 
+
+		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Up);
+		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
+		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
+
+
 		direction.y = -1.0f;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 	{
 		_GameObject->GetLocation().y += m_MovementSpeed * deltaTime;
+
+
+		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Down);
+		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
+		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
+
 
 		direction.y = 1.0f;
 	}
@@ -100,6 +128,13 @@ void PlayerComponent::Move(float deltaTime)
 		GameManager::CreateEnemyPool(50);
 		GameManager::AddGameObjectList(GameManager::GetEnemyList());
 	}
+	else
+	{
+		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Idle);
+		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
+		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
+	}
+
 
 	direction.Normalise();
 
@@ -108,6 +143,8 @@ void PlayerComponent::Move(float deltaTime)
 	_GameObject->GetRectangleShape().setPosition(_GameObject->GetLocation());
 }
 
+
+#pragma region ShooingAndAiming
 
 void PlayerComponent::CreateFiringPoint()
 {
@@ -163,7 +200,7 @@ AG::Vector2<float> PlayerComponent::CalculateDirection()
 
 void PlayerComponent::Shooting()
 {
-	if (m_timeSinceLastShot >= 1.5f && _GameObject->GetIsShooting())
+	if (m_timeSinceLastShot >= 1.25f && _GameObject->GetIsShooting())
 	{
 
 		//Create a new bullet
@@ -171,8 +208,12 @@ void PlayerComponent::Shooting()
 
 		//Put bullet on the list
 		GameManager::AddBulletObjectList(std::move(newBullet));
+		//ResourceManager::PlaySound(ResourceManager::GetSoundBuffer("Shoot"));
 
 		m_timeSinceLastShot = 0.0f;
 
+		
 	}
 }
+
+#pragma endregion

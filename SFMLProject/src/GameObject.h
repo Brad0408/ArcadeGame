@@ -5,6 +5,7 @@
 #include <PlayerComponent.h>
 #include <BoxCollider.h>
 #include <CircleCollider.h>
+#include <AnimationComponent.h>
 
 class GameObject : public Object
 {
