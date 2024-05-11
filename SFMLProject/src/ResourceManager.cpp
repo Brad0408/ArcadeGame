@@ -1,6 +1,9 @@
 #include "ResourceManager.h"
 
+std::unordered_map<std::string, sf::Texture> ResourceManager::Textures;
+//std::unordered_map<std::string, sf::SoundBuffer> ResourceManager::SoundBuffers;
 
+ 
 //Set the key and matching value to the key with the file path
 const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths = 
 {
@@ -9,14 +12,13 @@ const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths
 	{"Mario", "Textures/mario.jpg"},
 };
 
-//
-//const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferPaths =
-//{
-//	{"Shoot", "Audio/Shoot.wav"},
-//};
 
-std::unordered_map<std::string, sf::Texture> ResourceManager::Textures;
-//std::unordered_map<std::string, sf::SoundBuffer> ResourceManager::SoundBuffers;
+const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferPaths =
+{
+	{"Shoot", "Audio/Shoot.wav"},
+};
+
+
 
 
 
@@ -42,34 +44,41 @@ const std::string& ResourceManager::GetTexturePath(const std::string& TextureNam
 }
 
 
-sf::Texture& ResourceManager::GetTexture(const std::string& TextureName) 
+sf::Texture& ResourceManager::GetTexture(const std::string& TextureName)
 {
-	//Check if the texture is on the map
-	if (Textures.find(TextureName) == Textures.end())
+	// Check if the texture is in the map
+	auto it = Textures.find(TextureName);
+	if (it == Textures.end())
 	{
-		//Load the texture based of the file path
+		// Texture not found, load the default texture
 		sf::Texture texture;
 		if (!texture.loadFromFile(GetTexturePath(TextureName)))
 		{
-			std::cout << "Texture not found: " << TextureName << std::endl;
+			// Default texture could not be loaded
+			std::cout << "Default texture not found: " << TextureName << std::endl;
+			// Load the default texture
+			if (!texture.loadFromFile("Textures/robotronsprites.jpg"))
+			{
+				// Failed to load the default texture, print an error message
+				std::cout << "Failed to load default texture: robotronsprites.jpg" << std::endl;
+			}
 		}
-		else
-		{
-			//Move the created texture onto the "Textures" Map
-			Textures.emplace(TextureName, std::move(texture));
 
-			//std::cout << "Added texture: Key = " << TextureName << ", Value = " << Textures.at(TextureName).getNativeHandle() << std::endl;
+		// Insert the default texture into the map
+		Textures.emplace(TextureName, std::move(texture));
 
-		}
+		// Return the newly inserted texture
+		return Textures.at(TextureName);
 	}
-	
 
-	//If the texture already existed just return it
-	return Textures.at(TextureName);
+	// Texture found in the map, return it
+	return it->second;
 }
 
 
 
+//
+//
 //const std::string& ResourceManager::GetSoundBufferPath(const std::string& SoundName)
 //{
 //	// Check if the sound name exists in the map

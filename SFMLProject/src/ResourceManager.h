@@ -1,6 +1,7 @@
 #pragma once
 #include <Object.h>
 
+class SoundBuffer;
 
 class ResourceManager : public Object
 {
@@ -16,7 +17,7 @@ public:
 
 	//Clears map 'Textures'
 	static void ClearTextureMap();   
-	//static void ClearSoundBufferMap();
+	static void ClearSoundBufferMap();
 
 	// Play music
 	//static void PlayMusic(sf::Music& music);
@@ -24,14 +25,14 @@ public:
 	// Play sound
 	//static void PlaySound(sf::SoundBuffer& buffer);
 
+
+
 private:
-	//A Map that has a string matched to a file path
 	static const std::unordered_map<std::string, std::string> TexturePaths;
-	//static const std::unordered_map<std::string, std::string> SoundBufferPaths;
-
-
-	//A map that has a string matched to a texture
 	static std::unordered_map<std::string, sf::Texture> Textures;
-	//static std::unordered_map<std::string, sf::SoundBuffer> SoundBuffers;
+
+	static const std::unordered_map<std::string, std::string> SoundBufferPaths;
+	static std::unordered_map<std::string, sf::SoundBuffer> SoundBuffers;
 	
+
 };
