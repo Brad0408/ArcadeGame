@@ -68,7 +68,6 @@ bool BoxCollider::WallCollision(GameObject* objectOne, GameObject* objectTwo)
 		currentPosition.x -= displacementX;
 		currentPosition.y -= displacementY;
 		objectOne->SetLocation(currentPosition.x, currentPosition.y);
-		objectOne->GetRectangleShape().setPosition(objectOne->GetLocation());
 
 		return true; 
 

@@ -16,11 +16,12 @@ public:
 	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
 
-	static std::list<std::unique_ptr<GameObject>> &GetGameObjectList();
-	static std::list<std::unique_ptr<Bullet>> &GetBulletsList();
-	static std::list<std::unique_ptr<Enemy>> &GetEnemyList();
+	static std::list<std::unique_ptr<GameObject>>& GetGameObjectList() { return GameObjectsList; }
+	static std::list<std::unique_ptr<Bullet>>& GetBulletsList() { return BulletObjectsList; }
+	static std::list<std::unique_ptr<Enemy>>& GetEnemyList() { return EnemyObjectsList; }
+	static std::array<GameObject*, 4>& GetWalls() { return walls; }
 	static std::unique_ptr<GameObject>& GetPlayer();
-	static std::array<GameObject*, 4>& GetWalls();
+	static int GetEnemyCount();
 
 
 	static void GetGameObjectListsNames();
@@ -34,33 +35,54 @@ public:
 	static void ClearAllLists();
 	static void ClearGameObjectList();
 	static void ClearEnemiesAndResetPlayer();
-
-
-
 	static void RemoveMarkedObjectsHelper();
+	static void ClearFont() { font = sf::Font(); }
+
+
 
 	static void Update(float deltaTime, sf::RenderWindow& window, sf::Event& event);
 
 
 	static std::vector<AG::Vector2<float>> GenerateRandomSpawnLocations(int numSpawnLocations);
 	static void CreateEnemyPool(int numEnemies);
+	static float GenerateRandomEnemySpeeds();
 	static void CreatePlayer();
 	static void CreateWalls();
 
+	static void SettingFonts();
+	static void UpdateScore(int points);
+	static void UpdateLives(int life, bool increaseLives);
+	static void UpdateWaveCounter(int addCount);
+	static void IncreaseWaveCounter() { waves++;  wavesText.setString("Wave: " + std::to_string(waves)); waveKills = 0; }
+	static sf::Text& GetScoreTexts() { return scoreText; }
+	static sf::Text& GetLivesTexts() { return livesText; }
+	static int GetWaveCount() { return waves; }
+
+	static void TextRender(sf::RenderWindow& window);
 
 
 private:
-
-	//Alternative lists instead of vectors and pointer types, helped with some memory issues
+	//Alternative pointer types, helped with some memory issues
 	static std::list<std::unique_ptr<Bullet>> BulletObjectsList;
 	static std::list<std::unique_ptr<GameObject>> GameObjectsList;
 	static std::list<std::unique_ptr<Enemy>> EnemyObjectsList;
 
 
 	static std::unique_ptr<GameObject> player;
+	static int waveKills;
+
+	//Raw pointers for walls - wont ever be deleted
 	static std::array<GameObject*, 4> walls;
 
+	static sf::Font font;
+	static sf::Text scoreText;
+	static sf::Text livesText;
+	static sf::Text wavesText;
 
+
+	static int playerScore;
+	static int playerLives;
+	static int waves;
 
 public:
 	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsList(std::list<std::unique_ptr<T>>& objects)

@@ -21,40 +21,23 @@ public:
 	GameObject(const GameObject&) = default;
 
 
-	void Update(float deltaTime);
+	void Update(float deltaTime) {};
 	virtual void Update(float deltaTime, const AG::Vector2<float>& playerPosition) {};
 
-	void Render(sf::RenderWindow& window);
 
 
-	//Set the Name of the GameObject
 	inline void SetName(std::string newName) { m_Name = newName; }
-
-	//Get the Name of the GameObject
 	inline std::string GetName() { return m_Name; }
 
-	//Set if the GameObject is active
-	void SetActive(bool newActive);
-
-	//Get the curret active state of the GameObject
+	void SetActive(bool newActive) {};
 	inline bool GetActive() { return m_Active; }
 
-	//Set the tag of the GameObject
 	inline void SetTag(std::string newTag) { m_Tag = newTag; }
 	std::string GetTag() const { return m_Tag; }
 
 
-	//Check if a passed in tag value is the same as the set tag value of the GameObject
 	inline bool CompareTag(std::string comp) { return m_Tag == comp; }
 
-
-	//Sets and Get textures
-	void SetTexture(sf::Texture *texture);
-	const sf::Texture* GetTexture();
-
-	//Set and get TextureUVs
-	void SetTextureRect(sf::IntRect &textureRect);
-	sf::IntRect GetTextureRect();
 
 	//Sets and Gets RectangleShapes
 	void SetRectangleShape(sf::RectangleShape &shape);
@@ -68,13 +51,7 @@ public:
 	void SetLocation(float x, float y);
 	AG::Vector2<float>& GetLocation();
 
-	//Draw an outline around the gameObject
-	void DrawOutlines(sf::RectangleShape &shape);
-
-	bool HasBoxCollider(GameObject* GameObject);
-	bool HasCircleCollider(GameObject* GameObject);
 	AG::Vector2<float>& GetMoveDirection();
-	AG::Vector2<float> GetSize();
 
 	void SetIsWall(bool isWall);
 	bool GetIsWall();

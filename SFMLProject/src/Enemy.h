@@ -5,7 +5,7 @@ class Enemy : public GameObject
 {
 
 public:
-	Enemy(const AG::Vector2<float>& spawnLocation);
+	Enemy(const AG::Vector2<float>& spawnLocation, float speed);
 	~Enemy();
 
 	void Update(float deltaTime, const AG::Vector2<float>& playerPosition) override;

@@ -13,6 +13,7 @@ int main()
 	GameManager::CreatePlayer();
 	GameManager::CreateWalls();
 	GameManager::CreateEnemyPool(20);
+	GameManager::SettingFonts();
 
 	//Put newly made gameObjects on the List
 	GameManager::AddGameObjectList(GameManager::GetEnemyList());
@@ -21,7 +22,7 @@ int main()
 
 
 	//Create window of resolution
-	sf::RenderWindow window(sf::VideoMode(1000, 1000), "SFML Works");
+	sf::RenderWindow window(sf::VideoMode(1000, 1000), "Robotron 2024");
 
 
 
@@ -31,7 +32,7 @@ int main()
 	float timeSincePhysicsStep = 0.0f;
 
 
-	//Test shape thats squished
+	//Test shape
 	//sf::RectangleShape TestShape(sf::Vector2f(100, 50));
 	//TestShape.setFillColor(sf::Color::Green);
 	//TestShape.setPosition(200, 200);
@@ -86,12 +87,40 @@ int main()
 			}
 		}
 
+		int wave = GameManager::GetWaveCount();
+
 		// Check if no enemies are found
 		if (!enemiesExist)
 		{
-			// Call CreateEnemyPool function if no enemies are found
-			GameManager::CreateEnemyPool(20);
-			GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			if (wave < 10)
+			{
+				GameManager::CreateEnemyPool(20);
+				GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			}
+			else if (wave >= 10 && wave < 20)
+			{
+				GameManager::CreateEnemyPool(25);
+				GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			}
+			else if (wave >= 20 && wave < 30)
+			{
+				GameManager::CreateEnemyPool(30);
+				GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			}
+			else if (wave >= 30 && wave < 35)
+			{
+				GameManager::CreateEnemyPool(35);
+				GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			}
+			else if (wave >= 40)
+			{
+				GameManager::CreateEnemyPool(40);
+				GameManager::AddGameObjectList(GameManager::GetEnemyList());
+			}
+
+
+
+			GameManager::UpdateWaveCounter(1);
 		}
 
 		
@@ -101,11 +130,15 @@ int main()
 
 
 
+
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
+
+
+
 
 		//Clear
 		window.clear();
@@ -128,7 +161,6 @@ int main()
 
 
 
-
 		///////////Updating////////////////
 
 		GameManager::Update(deltaTime, window, event);
@@ -143,9 +175,11 @@ int main()
 
 	}
 
-	//Memory Cleanup At Terimination
+	//Cleanup At Terimination
 	ResourceManager::ClearTextureMap();
 	//ResourceManager::ClearSoundBufferMap();
+
+	GameManager::ClearFont();
 	GameManager::ClearAllLists();
 
 

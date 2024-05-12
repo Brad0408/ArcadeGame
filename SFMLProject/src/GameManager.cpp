@@ -10,6 +10,15 @@ std::list<std::unique_ptr<Enemy>> GameManager::EnemyObjectsList;
 std::unique_ptr<GameObject> GameManager::player = nullptr;
 std::array<GameObject*, 4> GameManager::walls;
 
+sf::Font GameManager::font;
+sf::Text GameManager::scoreText;
+sf::Text GameManager::livesText;
+sf::Text GameManager::wavesText;
+
+int GameManager::playerScore = 0;
+int GameManager::playerLives = 5;
+int GameManager::waveKills = 0;
+int GameManager::waves = 0;
 
 #pragma region AddingToLists
 
@@ -64,23 +73,6 @@ void GameManager::AddEnemyObjectsList(std::unique_ptr<Enemy> enemy)
 #pragma endregion
 
 
-#pragma region GettingLists
-
-std::list<std::unique_ptr<GameObject>> &GameManager::GetGameObjectList()
-{
-	return GameObjectsList;
-}
-
-std::list<std::unique_ptr<Bullet>> &GameManager::GetBulletsList()
-{
-	return BulletObjectsList;
-}
-
-std::list<std::unique_ptr<Enemy>> &GameManager::GetEnemyList()
-{
-	return EnemyObjectsList;
-}
-#pragma endregion
 
 
 #pragma region GettingListNames
@@ -126,7 +118,6 @@ void GameManager::GetEnemyListNames()
 	{
 		std::cout << "Stored EnemyObjects on the list : " << enemyObjectPtr->GetName() << std::endl;
 	}
-
 }
 
 #pragma endregion
@@ -195,7 +186,9 @@ void GameManager::GenericCollision()
 						if (!isResetEntities)
 						{
 							ClearEnemiesAndResetPlayer();
+							UpdateLives(1, false);
 							isResetEntities = true;
+							waveKills = 0;
 						}
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
@@ -238,6 +231,9 @@ void GameManager::BulletCollisions()
 				{
 					gameObject->MarkForRemoval();
 					bullet->MarkForRemoval();
+					UpdateScore(50);
+					waveKills++;
+
 
 					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
 				}
@@ -347,7 +343,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 		}
 	}
 
-
+	TextRender(window);
 }
 
 #pragma region SpawningEnemies
@@ -356,7 +352,7 @@ std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int nu
 {
 	std::vector<AG::Vector2<float>> spawnLocations;
 	AG::Vector2<float> playerLocation = GetPlayer()->GetLocation();
-	float minDistance = 200.0f;
+	float minDistance = 300.0f;
 
 	// Initialize random number generator
 	std::random_device rd;
@@ -387,9 +383,46 @@ std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int nu
 	return spawnLocations;
 }
 
+float GameManager::GenerateRandomEnemySpeeds()
+{
+	std::random_device rd;
+	std::mt19937 gen(rd());
+
+	float minSpeed = 8.0f;
+	float maxSpeed = 15.0f;
+
+	if (waves >= 10 && waves < 20)
+	{
+		minSpeed += 1.0f;
+		maxSpeed += 1.0f;
+	}
+	else if (waves >= 20 && waves < 30)
+	{
+		minSpeed += 2.0f;
+		maxSpeed += 2.0f;
+	}
+	else if (waves >= 30 && waves < 35)
+	{
+		minSpeed += 3.0f;
+		maxSpeed += 3.0f;
+	}
+	else if (waves >= 40)
+	{
+		minSpeed += 4.0f;
+		maxSpeed += 4.0f;
+	}
+
+	std::uniform_real_distribution<float> dist(minSpeed, maxSpeed);
+	float generatedSpeed = dist(gen);
+
+	//std::cout << "Randomly generated speed: " << generatedSpeed << std::endl;
+
+	return generatedSpeed;
+}
+
 void GameManager::CreateEnemyPool(int numEnemies)
 {
-	std::cout << "ENEMEIS CREATED" << std::endl;
+	std::cout << "ENEMEIS CREATED: " << numEnemies << std::endl;
 
 	//GetPlayer()->SetLocation(500, 450);
 	//GetPlayer()->GetRectangleShape().setPosition(GetPlayer()->GetLocation());
@@ -400,8 +433,10 @@ void GameManager::CreateEnemyPool(int numEnemies)
 
 	for (const auto& spawnLocation : spawnLocations)
 	{
+		float enemySpeed = GenerateRandomEnemySpeeds();
+
 		// Create a shared pointer to a dynamically allocated Enemy object
-		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>(spawnLocation);
+		std::unique_ptr<Enemy> newEnemy = std::make_unique<Enemy>(spawnLocation, enemySpeed);
 
 		AddEnemyObjectsList(std::move(newEnemy));
 
@@ -427,14 +462,10 @@ void GameManager::CreatePlayer()
 		// Add the player object to the GameObjectsList
 		AddGameObjectList(player);
 	}
-	else
-	{
-		std::cout << "A player object already exists." << std::endl;
-	}
 }
 
 
-std::unique_ptr<GameObject> &GameManager::GetPlayer()
+std::unique_ptr<GameObject>& GameManager::GetPlayer()
 {
 	for (auto& gameObject : GetGameObjectList())
 	{
@@ -445,6 +476,9 @@ std::unique_ptr<GameObject> &GameManager::GetPlayer()
 			return gameObject;
 		}
 	}
+
+	static std::unique_ptr<GameObject> nullGameObject;
+	return nullGameObject;
 }
 
 #pragma endregion
@@ -518,9 +552,109 @@ void GameManager::CreateWalls()
 	}
 }
 
-std::array<GameObject*, 4>& GameManager::GetWalls()
+#pragma endregion
+
+
+void GameManager::SettingFonts()
 {
-	return walls;
+	//sf::Font font;
+	if (!font.loadFromFile("Fonts/PublicPixel.ttf"))
+	{
+		std::cout << "no font found" << std::endl;
+	}
+
+	// Set up score text
+	scoreText.setFont(font);
+	scoreText.setString("Score: " + std::to_string(playerScore));
+	scoreText.setCharacterSize(15);
+	//scoreText.setFillColor(sf::Color::Black);
+	scoreText.setOutlineColor(sf::Color::Black);
+	scoreText.setOutlineThickness(5);
+	scoreText.setPosition(55, 52); // Adjust position as needed
+
+	// Set up lives text
+	livesText.setFont(font);
+	livesText.setString("Lives: " + std::to_string(playerLives));
+	livesText.setCharacterSize(15);
+	livesText.setOutlineColor(sf::Color::Black);
+	livesText.setOutlineThickness(5);
+	livesText.setPosition(810, 52); // Adjust position as needed
+
+
+	// Set up lives text
+	wavesText.setFont(font);
+	wavesText.setString("Wave: " + std::to_string(waves));
+	wavesText.setCharacterSize(15);
+	wavesText.setOutlineColor(sf::Color::Black);
+	wavesText.setOutlineThickness(5);
+	wavesText.setPosition(450, 52); // Adjust position as needed
 }
 
-#pragma endregion
+void GameManager::UpdateScore(int points)
+{
+	playerScore += points;
+
+	scoreText.setString("Score: " + std::to_string(playerScore));
+
+	if (playerScore % 5000 == 0)
+	{
+		UpdateLives(1, true);
+	}
+}
+
+void GameManager::UpdateLives(int life, bool increaseLives)
+{
+	if (increaseLives == true)
+	{
+		playerLives += life;
+
+		livesText.setString("Lives: " + std::to_string(playerLives));
+	}
+	else
+	{
+		playerLives -= life;
+
+		livesText.setString("Lives: " + std::to_string(playerLives));
+	}
+
+}
+
+void GameManager::UpdateWaveCounter(int addCount)
+{
+	if (waveKills == GetEnemyCount())
+	{
+		waves += addCount;
+
+		wavesText.setString("Wave: " + std::to_string(waves));
+
+		waveKills = 0;
+	}
+}
+
+
+int GameManager::GetEnemyCount()
+{
+	int enemyCount = 0;
+
+	// Iterate through the gameObjectsL list
+	for (const auto& gameObject : GetGameObjectList())
+	{
+		// Check if the game object's tag is "Enemy"
+		if (gameObject->GetTag() == "Enemy")
+		{
+			// Increment the enemy count
+			enemyCount++;
+		}
+	}
+
+	return enemyCount;
+}
+
+
+void GameManager::TextRender(sf::RenderWindow& window)
+{
+	window.draw(GetLivesTexts());
+	window.draw(GetScoreTexts());
+	window.draw(wavesText);
+}
+

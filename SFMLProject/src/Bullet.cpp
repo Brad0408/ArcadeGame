@@ -10,8 +10,8 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 	m_velocity = velocity;
 	m_direction = direction;
 
+	
 	m_BulletShape.setOrigin(m_BulletShape.getRadius(), m_BulletShape.getRadius());
-	m_BulletShape.setPosition(m_position.x , m_position.y );
 	SetName("Bullet");
 	AddComponent<CircleCollider>();
 
@@ -56,14 +56,4 @@ sf::CircleShape& Bullet::GetCircleShape()
 {
 	return m_BulletShape;
 }
-
-//void Bullet::MarkForRemoval()
-//{
-//	m_shouldRemove = true;
-//}
-//
-//bool Bullet::ShouldRemove()
-//{
-//	return m_shouldRemove;
-//}
 

@@ -125,8 +125,9 @@ void PlayerComponent::Move(float deltaTime)
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 	{
-		GameManager::CreateEnemyPool(50);
-		GameManager::AddGameObjectList(GameManager::GetEnemyList());
+		//GameManager::CreateEnemyPool(50);
+		//GameManager::AddGameObjectList(GameManager::GetEnemyList());
+		GameManager::IncreaseWaveCounter();
 	}
 	else
 	{
