@@ -4,9 +4,6 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation, float speed)
 {
 	SetName("Enemy");
 	SetTag("Enemy");
-	SetIsEnemy(true);
-	SetIsWall(false);
-
 	SetLocation(spawnLocation.x, spawnLocation.y);
 
 
@@ -15,6 +12,7 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation, float speed)
 	m_EnemyShapeRectangle.setTexture(&ResourceManager::GetTexture("Enemy"));
 	m_EnemyShapeRectangle.setTextureRect(m_EnemyTextureUV);
 	m_EnemyShapeRectangle.setOrigin(m_EnemySize / 2);
+	m_EnemyShapeRectangle.setPosition(GetLocation());
 	SetRectangleShape(m_EnemyShapeRectangle);
 
 

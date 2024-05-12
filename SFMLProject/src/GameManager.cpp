@@ -14,11 +14,17 @@ sf::Font GameManager::font;
 sf::Text GameManager::scoreText;
 sf::Text GameManager::livesText;
 sf::Text GameManager::wavesText;
+sf::Text GameManager::gameOverText;
+sf::Text GameManager::playthegameText;
 
 int GameManager::playerScore = 0;
-int GameManager::playerLives = 5;
+int GameManager::playerLives = 100;
 int GameManager::waveKills = 0;
 int GameManager::waves = 0;
+bool GameManager::gameOver = false;
+bool GameManager::gameStarted = false;
+
+
 
 #pragma region AddingToLists
 
@@ -147,7 +153,7 @@ void GameManager::GenericCollision()
 			GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
 
 			// Skip collision checks if both objects are walls
-			if (objectA && objectB && objectA->GetIsWall() && objectB->GetIsWall())
+			if (objectA && objectB && objectA->GetTag() == "Wall" && objectB->GetTag() == "Wall")
 			{
 				continue;
 			}
@@ -156,7 +162,7 @@ void GameManager::GenericCollision()
 			if (objectA && objectB)
 			{
 				// Check for specific conditions before collision detection
-				if ((objectA->GetIsEnemy() && objectB->GetIsEnemy()) || (objectA->GetIsPlayer() && objectB->GetIsPlayer()))
+				if ((objectA->GetTag() == "Enemy" && objectB->GetTag() == "Enemy") || (objectA->GetTag() == "Player" && objectB->GetTag() == "Player"))
 				{
 					continue; // Skip collision detection between enemies or between players
 				}
@@ -170,7 +176,7 @@ void GameManager::GenericCollision()
 					//std::cout << "COLLISION" << std::endl;
 
 					// Wall Detection
-					if (objectA->GetIsWall() || objectB->GetIsWall())
+					if (objectA->GetTag() == "Wall" || objectB->GetTag() == "Wall")
 					{
 						//std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
@@ -211,7 +217,7 @@ void GameManager::BulletCollisions()
 		{
 
 			// Skip collision checks if the bullet belongs to the player
-			if (gameObject->GetIsPlayer())
+			if (gameObject->GetTag() == "Player")
 			{
 				continue;
 			}
@@ -223,7 +229,7 @@ void GameManager::BulletCollisions()
 			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet.get(), gameObject.get()))
 			{
 				// Mark bullet and object for removal
-				if (gameObject->GetIsWall())
+				if (gameObject->GetTag() == "Wall")
 				{
 					bullet->MarkForRemoval();
 				}
@@ -274,6 +280,19 @@ void GameManager::ClearEnemiesAndResetPlayer()
 		else if (gameObject->GetTag() == "Player")
 		{
 			gameObject->SetLocation(500, 450);
+			gameObject->GetRectangleShape().setTextureRect(sf::IntRect(342, 164, 24, 24));
+			gameObject->SetRectangleShape(gameObject->GetRectangleShape());
+		}
+	}
+}
+void GameManager::ClearAnyBullets()
+{
+	for (auto& gameObject : GetBulletsList())
+	{
+		if (gameObject->GetTag() == "Bullet")
+		{
+			std::cout << "REMOVE BULELTS" << std::endl;
+			gameObject->MarkForRemoval();
 		}
 	}
 }
@@ -292,16 +311,6 @@ void GameManager::RemoveMarkedObjectsHelper()
 
 void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& event)
 {
-	for (auto& bulletPtr : GetBulletsList())
-	{
-
-		if (bulletPtr)
-		{
-			bulletPtr->Update(deltaTime);
-			bulletPtr->GetComponent<CircleCollider>()->DrawOutlines(bulletPtr->GetCircleShape());
-		}
-	}
-
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Player"
@@ -333,17 +342,98 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 			}
 
 		}
-		else if (gameObject->GetTag() == "Enemy")
-		{
-			auto enemy = dynamic_cast<Enemy*>(gameObject.get());
-			if (enemy)
-			{
-				enemy->Update(deltaTime, GetPlayer()->GetLocation());
-			}
-		}
+
 	}
 
+
+	if (!gameOver)
+	{
+		for (auto& bulletPtr : GetBulletsList())
+		{
+			if (bulletPtr)
+			{
+				bulletPtr->Update(deltaTime);
+				bulletPtr->GetComponent<CircleCollider>()->DrawOutlines(bulletPtr->GetCircleShape());
+			}
+		}
+
+		for (auto& gameObject : GetGameObjectList())
+		{
+			if (gameObject->GetTag() == "Enemy")
+			{
+				auto enemy = dynamic_cast<Enemy*>(gameObject.get());
+				if (enemy)
+				{
+					enemy->Update(deltaTime, GetPlayer()->GetLocation());
+				}
+			}
+		}
+
+
+		GameManager::GenericCollision();
+		GameManager::BulletCollisions();
+
+
+
+		bool enemiesExist = false;
+
+		// Iterate over the game objects to check for enemies
+		for (const auto& gameObject : GetGameObjectList())
+		{
+			if (gameObject->GetTag() == "Enemy")
+			{
+				// At least one enemy is found
+				enemiesExist = true;
+				break;
+			}
+		}
+
+
+		// Check if no enemies are found
+		if (!enemiesExist)
+		{
+			if (waves <= 10)
+			{
+				CreateEnemyPool(30);
+				AddGameObjectList(GetEnemyList());
+			}
+			else if (waves >= 10 && waves < 20)
+			{
+				CreateEnemyPool(35);
+				AddGameObjectList(GetEnemyList());
+			}
+			else if (waves >= 20 && waves < 30)
+			{
+				CreateEnemyPool(40);
+				AddGameObjectList(GetEnemyList());
+			}
+			else if (waves >= 30 && waves < 35)
+			{
+				CreateEnemyPool(45);
+				AddGameObjectList(GetEnemyList());
+			}
+			else if (waves >= 40)
+			{
+				CreateEnemyPool(50);
+				AddGameObjectList(GetEnemyList());
+			}
+
+
+
+			UpdateWaveCounter(1);
+		}
+
+
+
+	}
+	else
+	{
+		GameOver();
+	}
+
+
 	TextRender(window);
+
 }
 
 #pragma region SpawningEnemies
@@ -422,7 +512,7 @@ float GameManager::GenerateRandomEnemySpeeds()
 
 void GameManager::CreateEnemyPool(int numEnemies)
 {
-	std::cout << "ENEMEIS CREATED: " << numEnemies << std::endl;
+	std::cout << "Enemies created: " << numEnemies << std::endl;
 
 	//GetPlayer()->SetLocation(500, 450);
 	//GetPlayer()->GetRectangleShape().setPosition(GetPlayer()->GetLocation());
@@ -461,6 +551,10 @@ void GameManager::CreatePlayer()
 
 		// Add the player object to the GameObjectsList
 		AddGameObjectList(player);
+	}
+	else
+	{
+		std::cout << "already a aplayer" << std::endl;
 	}
 }
 
@@ -545,32 +639,40 @@ void GameManager::CreateWalls()
 	walls[2]->SetRectangleShape(BottomWallShape);
 	walls[3]->SetRectangleShape(RightWallShape);
 
-
-	for (int i = 0; i < 4; ++i)
-	{
-		walls[i]->SetIsWall(true);
-	}
 }
 
 #pragma endregion
 
 
-void GameManager::SettingFonts()
+void GameManager::SettingFont()
 {
-	//sf::Font font;
 	if (!font.loadFromFile("Fonts/PublicPixel.ttf"))
 	{
 		std::cout << "no font found" << std::endl;
 	}
+}
 
+sf::Text &GameManager::MainMenuText()
+{
+	playthegameText.setFont(font);
+	playthegameText.setString("Press 'Space' To Play");
+	playthegameText.setCharacterSize(15);
+	playthegameText.setOutlineColor(sf::Color::Black);
+	playthegameText.setOutlineThickness(5);
+	playthegameText.setPosition(400, 130);
+
+	return playthegameText;
+}
+
+void GameManager::SettingGameplayText()
+{
 	// Set up score text
 	scoreText.setFont(font);
 	scoreText.setString("Score: " + std::to_string(playerScore));
 	scoreText.setCharacterSize(15);
-	//scoreText.setFillColor(sf::Color::Black);
 	scoreText.setOutlineColor(sf::Color::Black);
 	scoreText.setOutlineThickness(5);
-	scoreText.setPosition(55, 52); // Adjust position as needed
+	scoreText.setPosition(55, 52);
 
 	// Set up lives text
 	livesText.setFont(font);
@@ -578,7 +680,7 @@ void GameManager::SettingFonts()
 	livesText.setCharacterSize(15);
 	livesText.setOutlineColor(sf::Color::Black);
 	livesText.setOutlineThickness(5);
-	livesText.setPosition(810, 52); // Adjust position as needed
+	livesText.setPosition(810, 52);
 
 
 	// Set up lives text
@@ -587,7 +689,7 @@ void GameManager::SettingFonts()
 	wavesText.setCharacterSize(15);
 	wavesText.setOutlineColor(sf::Color::Black);
 	wavesText.setOutlineThickness(5);
-	wavesText.setPosition(450, 52); // Adjust position as needed
+	wavesText.setPosition(450, 52);
 }
 
 void GameManager::UpdateScore(int points)
@@ -609,19 +711,30 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 		playerLives += life;
 
 		livesText.setString("Lives: " + std::to_string(playerLives));
+
 	}
 	else
 	{
 		playerLives -= life;
 
 		livesText.setString("Lives: " + std::to_string(playerLives));
+
+		if (playerLives <= 0)
+		{
+			playerLives = 0;
+			livesText.setString("Lives: " + std::to_string(playerLives));
+			gameOver = true;
+		}
 	}
 
 }
 
 void GameManager::UpdateWaveCounter(int addCount)
 {
-	if (waveKills == GetEnemyCount())
+	std::cout << "Kill count" << waveKills << std::endl;
+	std::cout << "Enemy count" <<GetEnemyCount() <<std::endl;
+
+	if (waveKills >= GetEnemyCount())
 	{
 		waves += addCount;
 
@@ -653,8 +766,70 @@ int GameManager::GetEnemyCount()
 
 void GameManager::TextRender(sf::RenderWindow& window)
 {
-	window.draw(GetLivesTexts());
-	window.draw(GetScoreTexts());
-	window.draw(wavesText);
+	if (!gameOver)
+	{
+		//Drawing Gameplay text
+		window.draw(GetLivesTexts());
+		window.draw(GetScoreTexts());
+		window.draw(wavesText);
+	}
+	else
+	{
+		//Drawing Gameover text
+		window.draw(gameOverText);
+		window.draw(GetScoreTexts());
+		window.draw(wavesText);
+		window.draw(playthegameText);
+	}
+}
+
+void GameManager::StartGame()
+{
+	std::cout << "GAME START" << std::endl;
+
+	gameStarted = true;
+	CreatePlayer();
+	CreateWalls();
+	CreateEnemyPool(20);
+	SettingGameplayText();
+
+	AddGameObjectList(GameManager::GetEnemyList());
+	
+}
+
+void GameManager::RestartGame()
+{
+	std::cout << "restart game " << std::endl;
+	CreateEnemyPool(20);
+	AddGameObjectList(GameManager::GetEnemyList());
+	gameOver = false;
+	waves = 0;
+	playerScore = 0;
+	playerLives = 5;
+
+	SettingGameplayText();
+}
+
+void GameManager::GameOver()
+{
+	ClearEnemiesAndResetPlayer();
+	ClearAnyBullets();
+	SetGameOverScreen();
+}
+
+void GameManager::SetGameOverScreen()
+{
+	gameOverText.setFont(font);
+	gameOverText.setString("Game Over !");
+	gameOverText.setCharacterSize(15);
+	gameOverText.setOutlineColor(sf::Color::Black);
+	gameOverText.setOutlineThickness(5);
+	gameOverText.setPosition(420, 52);
+
+	scoreText.setString("Your Score: " + std::to_string(playerScore));
+	scoreText.setPosition(420, 92);
+
+	wavesText.setString("Your Wave : " + std::to_string(waves));
+	wavesText.setPosition(420, 112);
 }
 

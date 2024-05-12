@@ -41,40 +41,28 @@ public:
 
 	//Sets and Gets RectangleShapes
 	void SetRectangleShape(sf::RectangleShape &shape);
-	sf::RectangleShape& GetRectangleShape();
+	sf::RectangleShape& GetRectangleShape() { return m_SpriteShape; }
 
 	//Set and Gets CircleShapes
 	void SetCircleShape(sf::CircleShape& shape);
-	sf::CircleShape& GetCircleShape();
+	sf::CircleShape& GetCircleShape() { return m_CircleShape; }
 
 	//Sets and get locations
 	void SetLocation(float x, float y);
-	AG::Vector2<float>& GetLocation();
+	AG::Vector2<float>& GetLocation() { return m_location; }
+	AG::Vector2<float>& GetMoveDirection() { return m_MoveDirection; }
 
-	AG::Vector2<float>& GetMoveDirection();
-
-	void SetIsWall(bool isWall);
-	bool GetIsWall();
-
-	void SetIsPlayer(bool isPlayer);
-	bool GetIsPlayer();
-
-	void SetIsEnemy(bool isEnemy);
-	bool GetIsEnemy();
 
 	void SetIsShooting(bool isShooting);
-	bool GetIsShooting();
+	bool GetIsShooting() { return m_IsShooting; }
 
 	virtual void MarkForRemoval();
-	virtual bool ShouldRemove();
+	virtual bool ShouldRemove() { return m_shouldRemove; }
 
 private:
 	std::string m_Name;
 	bool m_Active;
 	std::string m_Tag;
-	bool m_IsWall = false;
-	bool m_IsPlayer = false;
-	bool m_IsEnemy = false;
 	bool m_IsShooting = false;
 	bool m_shouldRemove = false;
 
@@ -91,10 +79,7 @@ private:
 	std::vector<std::unique_ptr<Component>> m_Components;
 
 public:
-	//Compares two GameObject instances, compares the uuids returns true if two GameObjects are equal
 	inline bool operator==(const GameObject& other) { return this->uuid == other.uuid; }
-
-	//Compares two GameObject instances, return true if they dont match
 	inline bool operator!=(const GameObject& other) { return !(*this == other); }
 
 

@@ -6,9 +6,6 @@ PlayerComponent::PlayerComponent(GameObject* owner) : Component(owner)
 {
 	_GameObject->AddComponent<BoxCollider>();
 	_GameObject->AddComponent<AnimationComponent>();
-
-	_GameObject->SetIsPlayer(true);
-	_GameObject->SetIsWall(false);
 	_GameObject->SetName("Player");
 	_GameObject->SetTag("Player");
 
@@ -76,6 +73,7 @@ void PlayerComponent::Move(float deltaTime)
 {
 	AG::Vector2<float> direction(0.0f, 0.0f);
 
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 	{
 		_GameObject->GetLocation().x -= m_MovementSpeed * deltaTime;
@@ -123,11 +121,9 @@ void PlayerComponent::Move(float deltaTime)
 
 		direction.y = 1.0f;
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 	{
-		//GameManager::CreateEnemyPool(50);
-		//GameManager::AddGameObjectList(GameManager::GetEnemyList());
-		GameManager::IncreaseWaveCounter();
+		//GameManager::RestartGame();
 	}
 	else
 	{

@@ -10,9 +10,11 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 	m_velocity = velocity;
 	m_direction = direction;
 
-	
+
 	m_BulletShape.setOrigin(m_BulletShape.getRadius(), m_BulletShape.getRadius());
+	m_BulletShape.setPosition(m_position.x, m_position.y);
 	SetName("Bullet");
+	SetTag("Bullet");
 	AddComponent<CircleCollider>();
 
 

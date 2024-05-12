@@ -35,6 +35,7 @@ public:
 	static void ClearAllLists();
 	static void ClearGameObjectList();
 	static void ClearEnemiesAndResetPlayer();
+	static void ClearAnyBullets();
 	static void RemoveMarkedObjectsHelper();
 	static void ClearFont() { font = sf::Font(); }
 
@@ -49,17 +50,25 @@ public:
 	static void CreatePlayer();
 	static void CreateWalls();
 
-	static void SettingFonts();
+	static void SettingFont();
+	static void SettingGameplayText();
 	static void UpdateScore(int points);
 	static void UpdateLives(int life, bool increaseLives);
 	static void UpdateWaveCounter(int addCount);
 	static void IncreaseWaveCounter() { waves++;  wavesText.setString("Wave: " + std::to_string(waves)); waveKills = 0; }
 	static sf::Text& GetScoreTexts() { return scoreText; }
 	static sf::Text& GetLivesTexts() { return livesText; }
+	static sf::Text& MainMenuText();
 	static int GetWaveCount() { return waves; }
 
 	static void TextRender(sf::RenderWindow& window);
 
+	static void StartGame();
+	static void RestartGame();
+	static void GameOver();
+	static bool &IsGameStarted() { return gameStarted; }
+	static bool &IsGameOver() { return gameOver; }
+	static void SetGameOverScreen();
 
 private:
 	//Alternative pointer types, helped with some memory issues
@@ -78,11 +87,15 @@ private:
 	static sf::Text scoreText;
 	static sf::Text livesText;
 	static sf::Text wavesText;
+	static sf::Text gameOverText;
+	static sf::Text playthegameText;
 
 
 	static int playerScore;
 	static int playerLives;
 	static int waves;
+	static bool gameOver;
+	static bool gameStarted;
 
 public:
 	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsList(std::list<std::unique_ptr<T>>& objects)
