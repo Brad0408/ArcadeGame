@@ -314,7 +314,7 @@ void GameManager::RemoveMarkedObjectsHelper()
 
 
 
-void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& event)
+void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 {
 	for (auto& gameObject : GetGameObjectList())
 	{
@@ -330,31 +330,14 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 				{
 					playerComponent->CalculateFiringPointRotation(window);
 
-					// Check for left mouse button press event
-					if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
-					{
-						gameObject->SetIsShooting(true);
-					}
-
-					// Check for left mouse button release event
-					if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-					{
-						gameObject->SetIsShooting(false);
-					}
 
 					if (GetPlayer()->GetIsShooting())
 					{
 						playerComponent->Shooting();
 					}
 				}
-
-
-
-
 			}
-
 		}
-
 	}
 
 
@@ -724,7 +707,7 @@ sf::Text &GameManager::MainMenuText()
 sf::Text& GameManager::MainMenuRobotronText()
 {
 	robotronText.setFont(font);
-	robotronText.setString("Robotron 2024");
+	robotronText.setString("Robotron 2084");
 	robotronText.setCharacterSize(50);
 	robotronText.setOutlineColor(sf::Color::Black);
 	robotronText.setOutlineThickness(5);

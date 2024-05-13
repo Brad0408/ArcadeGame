@@ -64,7 +64,7 @@ void PlayerComponent::Update(float deltaTime)
 
 	m_timeSinceLastShot += deltaTime;
 
-	_GameObject->GetComponent<BoxCollider>()->DrawOutlines(_GameObject->GetRectangleShape());
+	//_GameObject->GetComponent<BoxCollider>()->DrawOutlines(_GameObject->GetRectangleShape());
 }
 
 

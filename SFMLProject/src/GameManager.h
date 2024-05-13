@@ -41,7 +41,7 @@ public:
 
 
 
-	static void Update(float deltaTime, sf::RenderWindow& window, sf::Event& event);
+	static void Update(float deltaTime, sf::RenderWindow& window);
 
 
 	static std::vector<AG::Vector2<float>> GenerateRandomSpawnLocations(int numSpawnLocations);

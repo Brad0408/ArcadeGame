@@ -45,7 +45,7 @@ void Enemy::Update(float deltaTime, const AG::Vector2<float>& playerPosition)
 	AG::Vector2<float> displacement = direction * m_MovementSpeed * deltaTime;
 	Move(displacement);
 
-	GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
+	//GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
 }
 
 void Enemy::Move(AG::Vector2<float>& displacement)
