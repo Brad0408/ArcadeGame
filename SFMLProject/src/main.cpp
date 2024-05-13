@@ -19,7 +19,14 @@ int main()
 	float timeSincePhysicsStep = 0.0f;
 
 
+	sf::RectangleShape mainMenuPlayer;
+	sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(342, 164, 24, 24);
 
+	mainMenuPlayer.setSize(AG::Vector2<float>::one * 35);
+	mainMenuPlayer.setTexture(&ResourceManager::GetTexture("Player"));
+	mainMenuPlayer.setTextureRect(mainMenuPlayerTextureUV);
+	mainMenuPlayer.setOrigin(AG::Vector2<float>::one * 35 / 2);
+	mainMenuPlayer.setPosition(500, 450);
 
 	bool spaceKeyPressed = false;
 
@@ -107,6 +114,8 @@ int main()
 		else
 		{
 			window.draw(GameManager::MainMenuText());
+			window.draw(GameManager::MainMenuRobotronText());
+			window.draw(mainMenuPlayer);
 		}
 
 

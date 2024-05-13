@@ -59,6 +59,7 @@ public:
 	static sf::Text& GetScoreTexts() { return scoreText; }
 	static sf::Text& GetLivesTexts() { return livesText; }
 	static sf::Text& MainMenuText();
+	static sf::Text& MainMenuRobotronText();
 	static int GetWaveCount() { return waves; }
 
 	static void TextRender(sf::RenderWindow& window);
@@ -89,10 +90,15 @@ private:
 	static sf::Text wavesText;
 	static sf::Text gameOverText;
 	static sf::Text playthegameText;
+	static sf::Text robotronText;
+	static sf::Text hightScoreText;
+	static sf::Text highWaveText;
 
 
 	static int playerScore;
 	static int playerLives;
+	static int highScore;
+	static int highWaveScore;
 	static int waves;
 	static bool gameOver;
 	static bool gameStarted;
