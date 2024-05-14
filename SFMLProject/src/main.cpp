@@ -10,7 +10,7 @@
 int main()
 {
 	//Window
-	sf::RenderWindow window(sf::VideoMode(1000, 1000), "Robotron 2024");
+	sf::RenderWindow window(sf::VideoMode(1000, 1000), "Robotron 2084");
 
 
 	//deltaTime
@@ -19,7 +19,14 @@ int main()
 	float timeSincePhysicsStep = 0.0f;
 
 
+	sf::RectangleShape mainMenuPlayer;
+	sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(342, 164, 24, 24);
 
+	mainMenuPlayer.setSize(AG::Vector2<float>::one * 35);
+	mainMenuPlayer.setTexture(&ResourceManager::GetTexture("Player"));
+	mainMenuPlayer.setTextureRect(mainMenuPlayerTextureUV);
+	mainMenuPlayer.setOrigin(AG::Vector2<float>::one * 35 / 2);
+	mainMenuPlayer.setPosition(500, 450);
 
 	bool spaceKeyPressed = false;
 
@@ -49,6 +56,21 @@ int main()
 				GameManager::RestartGame();
 			}
 
+			//Do player inputs here, for some reason the player would continue to shoot even if the mouse was released, pasing in event as paramater must cause some lag issues
+			if (GameManager::IsGameStarted() && !GameManager::IsGameOver())
+			{
+				// Check for left mouse button press event
+				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+				{
+					GameManager::GetPlayer()->SetIsShooting(true);
+				}
+
+				// Check for left mouse button release event
+				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+				{
+					GameManager::GetPlayer()->SetIsShooting(false);
+				}
+			}
 
 		}
 
@@ -99,7 +121,7 @@ int main()
 
 			///////////Updating////////////////
 
-			GameManager::Update(deltaTime, window, event);
+			GameManager::Update(deltaTime, window);
 
 			GameManager::RemoveMarkedObjectsHelper();
 
@@ -107,6 +129,8 @@ int main()
 		else
 		{
 			window.draw(GameManager::MainMenuText());
+			window.draw(GameManager::MainMenuRobotronText());
+			window.draw(mainMenuPlayer);
 		}
 
 

@@ -16,9 +16,14 @@ sf::Text GameManager::livesText;
 sf::Text GameManager::wavesText;
 sf::Text GameManager::gameOverText;
 sf::Text GameManager::playthegameText;
+sf::Text GameManager::robotronText;
+sf::Text GameManager::hightScoreText;
+sf::Text GameManager::highWaveText;
 
 int GameManager::playerScore = 0;
-int GameManager::playerLives = 100;
+int GameManager::playerLives = 5;
+int GameManager::highScore = 0;
+int GameManager::highWaveScore = 0;
 int GameManager::waveKills = 0;
 int GameManager::waves = 0;
 bool GameManager::gameOver = false;
@@ -309,7 +314,7 @@ void GameManager::RemoveMarkedObjectsHelper()
 
 
 
-void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& event)
+void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 {
 	for (auto& gameObject : GetGameObjectList())
 	{
@@ -320,29 +325,19 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 			if (playerComponent)
 			{
 				playerComponent->Update(deltaTime);
-				playerComponent->CalculateFiringPointRotation(window);
 
-				// Check for left mouse button press event
-				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+				if (!gameOver)
 				{
-					gameObject->SetIsShooting(true);
-				}
+					playerComponent->CalculateFiringPointRotation(window);
 
-				// Check for left mouse button release event
-				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
-				{
-					gameObject->SetIsShooting(false);
-				}
 
-				if (GetPlayer()->GetIsShooting())
-				{
-					playerComponent->Shooting();
+					if (GetPlayer()->GetIsShooting())
+					{
+						playerComponent->Shooting();
+					}
 				}
-
 			}
-
 		}
-
 	}
 
 
@@ -414,7 +409,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window, sf::Event& e
 			}
 			else if (waves >= 40)
 			{
-				CreateEnemyPool(50);
+				CreateEnemyPool(55);
 				AddGameObjectList(GetEnemyList());
 			}
 
@@ -479,7 +474,7 @@ float GameManager::GenerateRandomEnemySpeeds()
 	std::mt19937 gen(rd());
 
 	float minSpeed = 8.0f;
-	float maxSpeed = 15.0f;
+	float maxSpeed = 16.0f;
 
 	if (waves >= 10 && waves < 20)
 	{
@@ -488,18 +483,18 @@ float GameManager::GenerateRandomEnemySpeeds()
 	}
 	else if (waves >= 20 && waves < 30)
 	{
-		minSpeed += 2.0f;
-		maxSpeed += 2.0f;
+		minSpeed += 2.5f;
+		maxSpeed += 2.5f;
 	}
 	else if (waves >= 30 && waves < 35)
 	{
-		minSpeed += 3.0f;
-		maxSpeed += 3.0f;
+		minSpeed += 4.0f;
+		maxSpeed += 4.0f;
 	}
 	else if (waves >= 40)
 	{
-		minSpeed += 4.0f;
-		maxSpeed += 4.0f;
+		minSpeed += 5.5f;
+		maxSpeed += 5.5f;
 	}
 
 	std::uniform_real_distribution<float> dist(minSpeed, maxSpeed);
@@ -613,10 +608,10 @@ void GameManager::CreateWalls()
 	sf::RectangleShape BottomWallShape(HorizontalWallSize);
 	sf::RectangleShape RightWallShape(VerticalWallSize);
 
-	TopWallShape.setFillColor(sf::Color::Green);
-	LeftWallShape.setFillColor(sf::Color::Blue);
-	BottomWallShape.setFillColor(sf::Color::Magenta);
-	RightWallShape.setFillColor(sf::Color::Yellow);
+	TopWallShape.setFillColor(sf::Color::Red);
+	LeftWallShape.setFillColor(sf::Color::Red);
+	BottomWallShape.setFillColor(sf::Color::Red);
+	RightWallShape.setFillColor(sf::Color::Red);
 
 	TopWallShape.setPosition(TopWallPos);
 	LeftWallShape.setPosition(LeftWallPos);
@@ -624,15 +619,10 @@ void GameManager::CreateWalls()
 	RightWallShape.setPosition(RightWallPos);
 
 
-	TopWallShape.setOutlineThickness(3);
-	LeftWallShape.setOutlineThickness(3);
-	BottomWallShape.setOutlineThickness(3);
-	RightWallShape.setOutlineThickness(3);
-
-	TopWallShape.setOutlineColor(sf::Color(255, 255, 255));
-	LeftWallShape.setOutlineColor(sf::Color(255, 255, 255));
-	BottomWallShape.setOutlineColor(sf::Color(255, 255, 255));
-	RightWallShape.setOutlineColor(sf::Color(255, 255, 255));
+	TopWallShape.setOutlineThickness(2);
+	LeftWallShape.setOutlineThickness(2);
+	BottomWallShape.setOutlineThickness(2);
+	RightWallShape.setOutlineThickness(2);
 
 	walls[0]->SetRectangleShape(TopWallShape);
 	walls[1]->SetRectangleShape(LeftWallShape);
@@ -650,22 +640,7 @@ void GameManager::SettingFont()
 	{
 		std::cout << "no font found" << std::endl;
 	}
-}
 
-sf::Text &GameManager::MainMenuText()
-{
-	playthegameText.setFont(font);
-	playthegameText.setString("Press 'Space' To Play");
-	playthegameText.setCharacterSize(15);
-	playthegameText.setOutlineColor(sf::Color::Black);
-	playthegameText.setOutlineThickness(5);
-	playthegameText.setPosition(400, 130);
-
-	return playthegameText;
-}
-
-void GameManager::SettingGameplayText()
-{
 	// Set up score text
 	scoreText.setFont(font);
 	scoreText.setString("Score: " + std::to_string(playerScore));
@@ -690,7 +665,68 @@ void GameManager::SettingGameplayText()
 	wavesText.setOutlineColor(sf::Color::Black);
 	wavesText.setOutlineThickness(5);
 	wavesText.setPosition(450, 52);
+
+
+
+
+
+	//////////////////////Game Over Text/////////////////////
+
+	gameOverText.setFont(font);
+	gameOverText.setString("Game Over !");
+	gameOverText.setCharacterSize(50);
+	gameOverText.setOutlineColor(sf::Color::Black);
+	gameOverText.setOutlineThickness(5);
+	gameOverText.setPosition(230, 100);
+
+	hightScoreText.setFont(font);
+	hightScoreText.setCharacterSize(15);
+	hightScoreText.setOutlineColor(sf::Color::Black);
+	hightScoreText.setOutlineThickness(5);
+	hightScoreText.setPosition(620, 300);
+
+	highWaveText.setFont(font);
+	highWaveText.setCharacterSize(15);
+	highWaveText.setOutlineColor(sf::Color::Black);
+	highWaveText.setOutlineThickness(5);
+	highWaveText.setPosition(620, 330);
 }
+
+sf::Text &GameManager::MainMenuText()
+{
+	playthegameText.setFont(font);
+	playthegameText.setString("Press 'Space' To Play");
+	playthegameText.setCharacterSize(15);
+	playthegameText.setOutlineColor(sf::Color::Black);
+	playthegameText.setOutlineThickness(5);
+	playthegameText.setPosition(340, 200);
+
+	return playthegameText;
+}
+
+sf::Text& GameManager::MainMenuRobotronText()
+{
+	robotronText.setFont(font);
+	robotronText.setString("Robotron 2084");
+	robotronText.setCharacterSize(50);
+	robotronText.setOutlineColor(sf::Color::Black);
+	robotronText.setOutlineThickness(5);
+	robotronText.setPosition(190, 100);
+
+	return robotronText;
+}
+
+void GameManager::SettingGameplayText()
+{
+	scoreText.setPosition(55, 52);
+	wavesText.setPosition(450, 52);
+
+	scoreText.setString("Score: " + std::to_string(playerScore)); 
+	wavesText.setString("Wave: " + std::to_string(waves));
+	livesText.setString("Lives: " + std::to_string(playerLives));
+}
+
+#pragma region UpdateGameplayTexts
 
 void GameManager::UpdateScore(int points)
 {
@@ -708,9 +744,12 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 {
 	if (increaseLives == true)
 	{
-		playerLives += life;
+		if (playerLives < 5)
+		{
+			playerLives += life;
 
-		livesText.setString("Lives: " + std::to_string(playerLives));
+			livesText.setString("Lives: " + std::to_string(playerLives));
+		}
 
 	}
 	else
@@ -731,8 +770,8 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 
 void GameManager::UpdateWaveCounter(int addCount)
 {
-	std::cout << "Kill count" << waveKills << std::endl;
-	std::cout << "Enemy count" <<GetEnemyCount() <<std::endl;
+	std::cout << "Kill count: " << waveKills << std::endl;
+	std::cout << "Enemy count: " <<GetEnemyCount() <<std::endl;
 
 	if (waveKills >= GetEnemyCount())
 	{
@@ -744,6 +783,7 @@ void GameManager::UpdateWaveCounter(int addCount)
 	}
 }
 
+#pragma endregion
 
 int GameManager::GetEnemyCount()
 {
@@ -780,6 +820,8 @@ void GameManager::TextRender(sf::RenderWindow& window)
 		window.draw(GetScoreTexts());
 		window.draw(wavesText);
 		window.draw(playthegameText);
+		window.draw(hightScoreText);
+		window.draw(highWaveText);
 	}
 }
 
@@ -790,7 +832,7 @@ void GameManager::StartGame()
 	gameStarted = true;
 	CreatePlayer();
 	CreateWalls();
-	CreateEnemyPool(20);
+	CreateEnemyPool(30);
 	SettingGameplayText();
 
 	AddGameObjectList(GameManager::GetEnemyList());
@@ -800,12 +842,13 @@ void GameManager::StartGame()
 void GameManager::RestartGame()
 {
 	std::cout << "restart game " << std::endl;
-	CreateEnemyPool(20);
+	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
 	gameOver = false;
 	waves = 0;
 	playerScore = 0;
 	playerLives = 5;
+
 
 	SettingGameplayText();
 }
@@ -815,21 +858,32 @@ void GameManager::GameOver()
 	ClearEnemiesAndResetPlayer();
 	ClearAnyBullets();
 	SetGameOverScreen();
+
+	if (highScore < playerScore)
+	{
+		highScore = playerScore;
+	}
+
+
+	if (highWaveScore < waves)
+	{
+		highWaveScore = waves;
+	}
 }
 
 void GameManager::SetGameOverScreen()
 {
-	gameOverText.setFont(font);
-	gameOverText.setString("Game Over !");
-	gameOverText.setCharacterSize(15);
-	gameOverText.setOutlineColor(sf::Color::Black);
-	gameOverText.setOutlineThickness(5);
-	gameOverText.setPosition(420, 52);
 
 	scoreText.setString("Your Score: " + std::to_string(playerScore));
-	scoreText.setPosition(420, 92);
+	scoreText.setPosition(185, 300);
 
-	wavesText.setString("Your Wave : " + std::to_string(waves));
-	wavesText.setPosition(420, 112);
+	wavesText.setString("Your Wave: " + std::to_string(waves));
+	wavesText.setPosition(185, 330);
+
+
+	hightScoreText.setString("High Score: " + std::to_string(highScore));
+	highWaveText.setString("Highest Wave: " + std::to_string(highWaveScore));
+	playthegameText.setPosition(340, 200);
+
 }
 

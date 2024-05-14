@@ -27,7 +27,7 @@ bool CircleCollider::BulletCollision(Bullet* circleObject, GameObject* rectObjec
 
 void CircleCollider::DrawOutlines(sf::CircleShape& shape)
 {
-	shape.setOutlineThickness(3);
+	shape.setOutlineThickness(2);
 	shape.setOutlineColor(sf::Color(0, 0, 255));
 }
 
