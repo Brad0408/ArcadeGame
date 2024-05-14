@@ -40,15 +40,15 @@ int main()
 
 
 
-	sf::SoundBuffer buffer;
-	if (!buffer.loadFromFile("Audio/Shoot.wav"))
-	{
-		std::cout << "nsdoinbasdas no sound" << std::endl;
-	}
+	//sf::SoundBuffer buffer;
+	//if (!buffer.loadFromFile("Audio/Shoot.wav"))
+	//{
+	//	std::cout << "nsdoinbasdas no sound" << std::endl;
+	//}
 
-	sf::Sound sound;
+	//sf::Sound sound;
 
-	sound.setBuffer(buffer);
+	//sound.setBuffer(buffer);
 	//sound.play();
 
 

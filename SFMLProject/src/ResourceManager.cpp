@@ -3,6 +3,8 @@
 std::unordered_map<std::string, sf::Texture> ResourceManager::Textures;
 std::unordered_map<std::string, sf::SoundBuffer> ResourceManager::SoundBuffers;
 
+std::list<sf::Sound> ResourceManager::Sounds;
+
  
 //Set the key and matching value to the key with the file path
 const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths = 
@@ -16,6 +18,7 @@ const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths
 const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferPaths =
 {
 	{"Shoot", "Audio/Shoot.wav"},
+	{"Respawn", "Audio/respawn.mp3"},
 };
 
 
@@ -79,6 +82,7 @@ sf::Texture& ResourceManager::GetTexture(const std::string& TextureName)
 
 
 
+
 const std::string& ResourceManager::GetSoundBufferPath(const std::string& SoundName)
 {
 	// Check if the sound name exists in the map
@@ -90,7 +94,9 @@ const std::string& ResourceManager::GetSoundBufferPath(const std::string& SoundN
 	else
 	{
 		// Sound path not found
-		std::cout << "Sound buffer path not found" << std::endl;
+		static const std::string empty = "";
+		std::cout << "Sound buffer path not found: " << SoundName << std::endl;
+		return empty;
 	}
 }
 
@@ -124,6 +130,63 @@ sf::SoundBuffer& ResourceManager::GetSoundBuffer(const std::string& SoundName)
 
 
 
+
+void ResourceManager::PlaySound(const std::string& name)
+{
+	// Check if the sound buffer exists
+	if (SoundBuffers.find(name) == SoundBuffers.end())
+	{
+		// Load the sound buffer if it hasn't been loaded yet
+		GetSoundBuffer(name);
+	}
+
+	// Try to find an existing sound that is not currently playing
+	for (auto& sound : Sounds)
+	{
+		if (sound.getStatus() != sf::Sound::Playing)
+		{
+			// Reuse the existing sound
+			sound.setBuffer(SoundBuffers[name]);
+			sound.setVolume(1); // Reset volume if needed
+			sound.play();
+			return;
+		}
+	}
+
+	// If no available sound was found, create a new one
+	sf::Sound newSound;
+	newSound.setBuffer(SoundBuffers[name]);
+	newSound.setVolume(100.0f); // Set volume
+	newSound.play();
+	Sounds.push_back(std::move(newSound));
+}
+
+void ResourceManager::GetListSoundsNames()
+{
+	int index = 0;
+	for (const auto& sound : Sounds)
+	{
+		std::cout << "Sound " << index << ": ";
+		if (sound.getStatus() == sf::Sound::Playing)
+		{
+			std::cout << "Playing";
+		}
+		else if (sound.getStatus() == sf::Sound::Paused)
+		{
+			std::cout << "Paused";
+		}
+		else if (sound.getStatus() == sf::Sound::Stopped)
+		{
+			std::cout << "Stopped";
+		}
+		std::cout << std::endl;
+		++index;
+	}
+}
+
+
+
+
 //Stops memory error when the program is terminated
 void ResourceManager::ClearTextureMap()
 {
@@ -135,29 +198,7 @@ void ResourceManager::ClearSoundBufferMap()
 	SoundBuffers.clear();
 }
 
-
-
-
-
-
-
-
-
 void ResourceManager::PlayMusic(sf::Music& music)
 {
 	music.play();
-}
-
-void ResourceManager::PlaySound(sf::SoundBuffer& buffer)
-{
-	//std::cout << "playerosinbdhuavdlbsaidiasjasd" << std::endl;
-
-	// Create an sf::Sound instance
-	sf::Sound sound;
-
-	// Set the sound buffer
-	sound.setBuffer(buffer);
-
-	// Play the sound
-	sound.play();
 }

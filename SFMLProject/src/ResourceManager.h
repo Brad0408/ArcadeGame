@@ -22,7 +22,9 @@ public:
 	static void PlayMusic(sf::Music& music);
 
 	// Play sound
-	static void PlaySound(sf::SoundBuffer& buffer);
+	static void PlaySound(const std::string& name);
+
+	static void GetListSoundsNames();
 
 
 
@@ -32,6 +34,7 @@ private:
 
 	static const std::unordered_map<std::string, std::string> SoundBufferPaths;
 	static std::unordered_map<std::string, sf::SoundBuffer> SoundBuffers;
+	static std::list<sf::Sound> Sounds;
 	
 
 };

@@ -274,7 +274,7 @@ void GameManager::ClearGameObjectList()
 
 void GameManager::ClearEnemiesAndResetPlayer()
 {
-
+	ResourceManager::PlaySound("Respawn");
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Enemy"
