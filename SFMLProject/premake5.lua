@@ -29,6 +29,7 @@ project "SFMLProject"
     links
     {
         "opengl32",
+		"openal32",
         "freetype",
         "winmm",
         "gdi32",

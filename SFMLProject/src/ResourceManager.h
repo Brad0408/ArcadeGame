@@ -1,7 +1,6 @@
 #pragma once
 #include <Object.h>
 
-class SoundBuffer;
 
 class ResourceManager : public Object
 {
@@ -9,21 +8,21 @@ class ResourceManager : public Object
 public:
 	//Get Texture and sounds path
 	static const std::string& GetTexturePath(const std::string& TextureName);
-	//static const std::string& GetSoundBufferPath(const std::string& SoundName);
+	static const std::string& GetSoundBufferPath(const std::string& SoundName);
 
 	//Get Texture and sounds
 	static sf::Texture& GetTexture(const std::string& TextureName);
-	//static sf::SoundBuffer& GetSoundBuffer(const std::string& SoundName);
+	static sf::SoundBuffer& GetSoundBuffer(const std::string& SoundName);
 
 	//Clears map 'Textures'
 	static void ClearTextureMap();   
 	static void ClearSoundBufferMap();
 
 	// Play music
-	//static void PlayMusic(sf::Music& music);
+	static void PlayMusic(sf::Music& music);
 
 	// Play sound
-	//static void PlaySound(sf::SoundBuffer& buffer);
+	static void PlaySound(sf::SoundBuffer& buffer);
 
 
 
