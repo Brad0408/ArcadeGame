@@ -54,6 +54,9 @@ int main()
 
 
 
+	ResourceManager::CreateSoundBuffers();
+	ResourceManager::CreateMusicTracks();
+	ResourceManager::PlayMusic("MainMenu");
 
 	while (window.isOpen())
 	{
@@ -61,6 +64,7 @@ int main()
 		//Declare event
 		sf::Event event;
 
+	
 
 		while (window.pollEvent(event))
 		{
@@ -105,8 +109,6 @@ int main()
 
 
 		
-
-
 
 
 
@@ -167,7 +169,7 @@ int main()
 
 	//Cleanup At Terimination
 	ResourceManager::ClearTextureMap();
-	ResourceManager::ClearSoundBufferMap();
+	//ResourceManager::ClearSoundBufferMap();
 
 	GameManager::ClearFont();
 	GameManager::ClearAllLists();

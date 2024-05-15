@@ -196,6 +196,7 @@ void GameManager::GenericCollision()
 						// Handle collision between non-wall objects
 						if (!isResetEntities)
 						{
+							ResourceManager::PlaySound("Respawn");
 							ClearEnemiesAndResetPlayer();
 							UpdateLives(1, false);
 							isResetEntities = true;
@@ -274,7 +275,6 @@ void GameManager::ClearGameObjectList()
 
 void GameManager::ClearEnemiesAndResetPlayer()
 {
-	ResourceManager::PlaySound("Respawn");
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Enemy"
@@ -746,6 +746,8 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 	{
 		if (playerLives < 5)
 		{
+			ResourceManager::PlaySound("LivesUp");
+
 			playerLives += life;
 
 			livesText.setString("Lives: " + std::to_string(playerLives));
@@ -760,6 +762,9 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 
 		if (playerLives <= 0)
 		{
+			ResourceManager::StopMusic();
+			ResourceManager::PlayMusic("GameOver");
+
 			playerLives = 0;
 			livesText.setString("Lives: " + std::to_string(playerLives));
 			gameOver = true;
@@ -770,11 +775,13 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 
 void GameManager::UpdateWaveCounter(int addCount)
 {
-	std::cout << "Kill count: " << waveKills << std::endl;
-	std::cout << "Enemy count: " <<GetEnemyCount() <<std::endl;
+	//std::cout << "Kill count: " << waveKills << std::endl;
+	//std::cout << "Enemy count: " <<GetEnemyCount() <<std::endl;
 
 	if (waveKills >= GetEnemyCount())
 	{
+		ResourceManager::PlaySound("WaveUp");
+
 		waves += addCount;
 
 		wavesText.setString("Wave: " + std::to_string(waves));
@@ -829,6 +836,9 @@ void GameManager::StartGame()
 {
 	std::cout << "GAME START" << std::endl;
 
+	ResourceManager::PlaySound("GameStart");
+	ResourceManager::StopMusic();
+	ResourceManager::PlayMusic("Gameplay");
 	gameStarted = true;
 	CreatePlayer();
 	CreateWalls();
@@ -842,6 +852,13 @@ void GameManager::StartGame()
 void GameManager::RestartGame()
 {
 	std::cout << "restart game " << std::endl;
+
+	ResourceManager::PlaySound("GameStart");
+
+	ResourceManager::StopMusic();
+	ResourceManager::PlayMusic("Gameplay");
+
+	GetPlayer()->SetIsShooting(false);
 	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
 	gameOver = false;
@@ -858,6 +875,8 @@ void GameManager::GameOver()
 	ClearEnemiesAndResetPlayer();
 	ClearAnyBullets();
 	SetGameOverScreen();
+	ResourceManager::StopSounds();
+
 
 	if (highScore < playerScore)
 	{
@@ -884,6 +903,5 @@ void GameManager::SetGameOverScreen()
 	hightScoreText.setString("High Score: " + std::to_string(highScore));
 	highWaveText.setString("Highest Wave: " + std::to_string(highWaveScore));
 	playthegameText.setPosition(340, 200);
-
 }
 
