@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Family.h"
 
 //Definition of the static member variable
 std::list<std::unique_ptr<Bullet>> GameManager::BulletObjectsList;
@@ -45,6 +46,11 @@ void GameManager::AddGameObjectList(GameObject* gameObject)
 
 //Add to the gameobject list 
 void GameManager::AddGameObjectList(std::unique_ptr<GameObject> &gameObject)
+{
+	GameObjectsList.push_back(std::move(gameObject));
+}
+
+void GameManager::AddGameObjectList(std::unique_ptr<Family> &gameObject)
 {
 	GameObjectsList.push_back(std::move(gameObject));
 }
@@ -141,8 +147,9 @@ void GameManager::GenericCollision()
 	// Declare objectA outside the inner loop
 	GameObject* objectA = nullptr;
 
-	// Check if player creation is in progress
+
 	bool isResetEntities = false;
+	bool isResetFamily = false;
 
 	// Check for collisions between game objects
 	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
@@ -191,20 +198,34 @@ void GameManager::GenericCollision()
 							BoxCollider::WallCollision(objectA, objectB);
 						}
 					}
+					else if(objectA->GetTag() == "Player" && objectB->GetTag() == "Family")
+					{
+						std::cout << "hit family" << std::endl;
+						objectB->MarkForRemoval();
+
+						if (!isResetFamily)
+						{
+							UpdateScore(250);
+							isResetFamily = true;
+						}
+
+					}
 					else
 					{
 						// Handle collision between non-wall objects
 						if (!isResetEntities)
 						{
-							ClearEnemiesAndResetPlayer();
+							ResourceManager::PlaySound("Respawn");
+							ClearAndResetEntites();
 							UpdateLives(1, false);
 							isResetEntities = true;
 							waveKills = 0;
+							CreateFamily(5);
 						}
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						//GameManager::GetGameObjectListsNames();
+						GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
@@ -222,7 +243,7 @@ void GameManager::BulletCollisions()
 		{
 
 			// Skip collision checks if the bullet belongs to the player
-			if (gameObject->GetTag() == "Player")
+			if (gameObject->GetTag() == "Player" || gameObject->GetTag() == "Family")
 			{
 				continue;
 			}
@@ -272,9 +293,8 @@ void GameManager::ClearGameObjectList()
 	}
 }
 
-void GameManager::ClearEnemiesAndResetPlayer()
+void GameManager::ClearAndResetEntites()
 {
-
 	for (auto& gameObject : GetGameObjectList())
 	{
 		// Check if the current object has the tag "Enemy"
@@ -287,6 +307,10 @@ void GameManager::ClearEnemiesAndResetPlayer()
 			gameObject->SetLocation(500, 450);
 			gameObject->GetRectangleShape().setTextureRect(sf::IntRect(342, 164, 24, 24));
 			gameObject->SetRectangleShape(gameObject->GetRectangleShape());
+		}
+		else if (gameObject->GetTag() == "Family")
+		{
+			gameObject->MarkForRemoval();
 		}
 	}
 }
@@ -431,7 +455,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 
 }
 
-#pragma region SpawningEnemies
+#pragma region SpawningEnemiesAndFamily
 
 std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int numSpawnLocations)
 {
@@ -525,6 +549,28 @@ void GameManager::CreateEnemyPool(int numEnemies)
 
 		AddEnemyObjectsList(std::move(newEnemy));
 
+	}
+}
+
+
+void GameManager::CreateFamily(int numFamilies)
+{
+	std::cout << "Family created: " << numFamilies << std::endl;
+
+	GetGameObjectList().remove_if([](const std::unique_ptr<GameObject>& obj)
+	{
+		//std::cout << "REWMOVE FAIUMTYIL created: "  << std::endl;
+		return obj->GetTag() == "Family";
+	});
+
+	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numFamilies);
+
+	for (const auto& spawnLocation : spawnLocations)
+	{
+		// Create a shared pointer to a dynamically allocated Enemy object
+		std::unique_ptr<Family> newFamily = std::make_unique<Family>(spawnLocation);
+
+		AddGameObjectList(newFamily);
 	}
 }
 
@@ -631,8 +677,11 @@ void GameManager::CreateWalls()
 
 }
 
+
 #pragma endregion
 
+
+#pragma region FontsAndText
 
 void GameManager::SettingFont()
 {
@@ -726,6 +775,10 @@ void GameManager::SettingGameplayText()
 	livesText.setString("Lives: " + std::to_string(playerLives));
 }
 
+
+#pragma endregion
+
+
 #pragma region UpdateGameplayTexts
 
 void GameManager::UpdateScore(int points)
@@ -746,6 +799,8 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 	{
 		if (playerLives < 5)
 		{
+			ResourceManager::PlaySound("LivesUp");
+
 			playerLives += life;
 
 			livesText.setString("Lives: " + std::to_string(playerLives));
@@ -760,6 +815,9 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 
 		if (playerLives <= 0)
 		{
+			ResourceManager::StopMusic();
+			ResourceManager::PlayMusic("GameOver");
+
 			playerLives = 0;
 			livesText.setString("Lives: " + std::to_string(playerLives));
 			gameOver = true;
@@ -770,11 +828,13 @@ void GameManager::UpdateLives(int life, bool increaseLives)
 
 void GameManager::UpdateWaveCounter(int addCount)
 {
-	std::cout << "Kill count: " << waveKills << std::endl;
-	std::cout << "Enemy count: " <<GetEnemyCount() <<std::endl;
+	//std::cout << "Kill count: " << waveKills << std::endl;
+	//std::cout << "Enemy count: " <<GetEnemyCount() <<std::endl;
 
 	if (waveKills >= GetEnemyCount())
 	{
+		ResourceManager::PlaySound("WaveUp");
+
 		waves += addCount;
 
 		wavesText.setString("Wave: " + std::to_string(waves));
@@ -829,10 +889,14 @@ void GameManager::StartGame()
 {
 	std::cout << "GAME START" << std::endl;
 
+	ResourceManager::PlaySound("GameStart");
+	ResourceManager::StopMusic();
+	ResourceManager::PlayMusic("Gameplay");
 	gameStarted = true;
 	CreatePlayer();
 	CreateWalls();
 	CreateEnemyPool(30);
+	CreateFamily(5);
 	SettingGameplayText();
 
 	AddGameObjectList(GameManager::GetEnemyList());
@@ -842,6 +906,13 @@ void GameManager::StartGame()
 void GameManager::RestartGame()
 {
 	std::cout << "restart game " << std::endl;
+
+	ResourceManager::PlaySound("GameStart");
+
+	ResourceManager::StopMusic();
+	ResourceManager::PlayMusic("Gameplay");
+
+	GetPlayer()->SetIsShooting(false);
 	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
 	gameOver = false;
@@ -855,9 +926,11 @@ void GameManager::RestartGame()
 
 void GameManager::GameOver()
 {
-	ClearEnemiesAndResetPlayer();
+	ClearAndResetEntites();
 	ClearAnyBullets();
 	SetGameOverScreen();
+	ResourceManager::StopSounds();
+
 
 	if (highScore < playerScore)
 	{
@@ -884,6 +957,5 @@ void GameManager::SetGameOverScreen()
 	hightScoreText.setString("High Score: " + std::to_string(highScore));
 	highWaveText.setString("Highest Wave: " + std::to_string(highWaveScore));
 	playthegameText.setPosition(340, 200);
-
 }
 

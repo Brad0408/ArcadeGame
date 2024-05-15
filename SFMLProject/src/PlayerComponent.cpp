@@ -205,7 +205,8 @@ void PlayerComponent::Shooting()
 
 		//Put bullet on the list
 		GameManager::AddBulletObjectList(std::move(newBullet));
-		//ResourceManager::PlaySound(ResourceManager::GetSoundBuffer("Shoot"));
+		ResourceManager::PlaySound("Shoot");
+
 
 		m_timeSinceLastShot = 0.0f;
 

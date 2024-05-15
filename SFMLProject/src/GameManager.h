@@ -3,6 +3,7 @@
 
 class Bullet;
 class Enemy;
+class Family;
 
 
 class GameManager : public Object
@@ -10,8 +11,10 @@ class GameManager : public Object
 
 public:
 	static void AddGameObjectList(std::unique_ptr<GameObject> &gameObject);
+	static void AddGameObjectList(std::unique_ptr<Family> &gameObject);
 	static void AddGameObjectList(GameObject* gameObject);
 	static void AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList);
+
 	static void AddBulletObjectList(std::unique_ptr<Bullet> bullet);
 	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
@@ -34,7 +37,7 @@ public:
 
 	static void ClearAllLists();
 	static void ClearGameObjectList();
-	static void ClearEnemiesAndResetPlayer();
+	static void ClearAndResetEntites();
 	static void ClearAnyBullets();
 	static void RemoveMarkedObjectsHelper();
 	static void ClearFont() { font = sf::Font(); }
@@ -49,6 +52,7 @@ public:
 	static float GenerateRandomEnemySpeeds();
 	static void CreatePlayer();
 	static void CreateWalls();
+	static void CreateFamily(int numFamilies);
 
 	static void SettingFont();
 	static void SettingGameplayText();

@@ -2,7 +2,11 @@
 #include <Bullet.h>
 
 
+
+
 #define FIXEDFRAMERATE 0.025f
+
+
 
 
 
@@ -32,12 +36,35 @@ int main()
 
 	GameManager::SettingFont();
 
+
+
+
+
+	//sf::SoundBuffer buffer;
+	//if (!buffer.loadFromFile("Audio/Shoot.wav"))
+	//{
+	//	std::cout << "nsdoinbasdas no sound" << std::endl;
+	//}
+
+	//sf::Sound sound;
+
+	//sound.setBuffer(buffer);
+	//sound.play();
+
+
+
+
+	ResourceManager::CreateSoundBuffers();
+	ResourceManager::CreateMusicTracks();
+	ResourceManager::PlayMusic("MainMenu");
+
 	while (window.isOpen())
 	{
 
 		//Declare event
 		sf::Event event;
 
+	
 
 		while (window.pollEvent(event))
 		{
@@ -82,8 +109,6 @@ int main()
 
 
 		
-
-		//sf::SoundBuffer buffer;
 
 
 

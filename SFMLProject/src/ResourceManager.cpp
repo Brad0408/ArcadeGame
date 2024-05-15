@@ -1,23 +1,39 @@
 #include "ResourceManager.h"
 
 std::unordered_map<std::string, sf::Texture> ResourceManager::Textures;
-//std::unordered_map<std::string, sf::SoundBuffer> ResourceManager::SoundBuffers;
 
+std::unordered_map<std::string, sf::SoundBuffer> ResourceManager::soundBuffers;
+std::vector<std::shared_ptr<sf::Sound>> ResourceManager::activeSounds;
+
+std::unordered_map<std::string, std::shared_ptr<sf::Music>> ResourceManager::musicTracks;
+std::shared_ptr<sf::Music> ResourceManager::currentMusic;
  
 //Set the key and matching value to the key with the file path
 const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths = 
 {
-	{"Player", "Textures/robotronsprites.jpg"},
-	{"Enemy", "Textures/robotronsprites.jpg"},
+	{"Player", "Textures/robotronsprites.png"},
+	{"Enemy", "Textures/robotronsprites.png"},
 	{"Mario", "Textures/mario.jpg"},
 };
 
 
 const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferPaths =
 {
-	{"Shoot", "Audio/Shoot.wav"},
+	{"Shoot", "Audio/Sounds/Shoot.wav"},
+	{"Respawn", "Audio/Sounds/respawn.mp3"},
+	{"LivesUp", "Audio/Sounds/liveup.wav"},
+	{"GameStart", "Audio/Sounds/gameStart.mp3"},
+	{"WaveUp", "Audio/Sounds/WaveUp.wav"},
 };
 
+
+const std::unordered_map<std::string, std::string> ResourceManager::MusicPaths =
+{
+	{"MainMenu", "Audio/Music/MainMenu.mp3"},
+	{"Gameplay", "Audio/Music/gameplay.mp3"},
+	{"GameOver", "Audio/Music/gameover.mp3"},
+
+};
 
 
 
@@ -77,47 +93,125 @@ sf::Texture& ResourceManager::GetTexture(const std::string& TextureName)
 
 
 
-//
-//
-//const std::string& ResourceManager::GetSoundBufferPath(const std::string& SoundName)
-//{
-//	// Check if the sound name exists in the map
-//	if (SoundBufferPaths.find(SoundName) != SoundBufferPaths.end())
-//	{
-//		// Sound path found
-//		return SoundBufferPaths.at(SoundName);
-//	}
-//	else
-//	{
-//		// Sound path not found
-//		std::cout << "Sound buffer path not found" << std::endl;
-//	}
-//}
-//
-//
-//
-//sf::SoundBuffer& ResourceManager::GetSoundBuffer(const std::string& SoundName)
-//{
-//	// Check if the sound buffer is in the map
-//	if (SoundBuffers.find(SoundName) == SoundBuffers.end())
-//	{
-//		// Sound buffer not found, load it from file
-//		sf::SoundBuffer buffer;
-//		if (!buffer.loadFromFile(GetSoundBufferPath(SoundName)))
-//		{
-//			// Error loading sound buffer
-//			std::cout << "Sound buffer not found: " << SoundName << std::endl;
-//		}
-//		else
-//		{
-//			// Move the loaded sound buffer into the map
-//			SoundBuffers.emplace(SoundName, std::move(buffer));
-//		}
-//	}
-//
-//	// Return the sound buffer
-//	return SoundBuffers.at(SoundName);
-//}
+
+
+
+void ResourceManager::CreateSoundBuffers()
+{
+	for (const auto& pair : SoundBufferPaths)
+	{
+		const std::string& key = pair.first;
+		const std::string& path = pair.second;
+
+		sf::SoundBuffer buffer;
+		if (buffer.loadFromFile(path)) 
+		{
+			soundBuffers[key] = std::move(buffer);  // Store the buffer in the map
+			std::cout << "Loaded and stored sound buffer for key: " << key << std::endl;
+		}
+		else 
+		{
+			std::cerr << "Failed to load sound file: " << path << std::endl;
+		}
+	}
+}
+
+void ResourceManager::CreateMusicTracks()
+{
+	for (const auto& pair : MusicPaths) {
+		const std::string& key = pair.first;
+		const std::string& path = pair.second;
+
+		auto music = std::make_shared<sf::Music>();
+		if (music->openFromFile(path)) {
+			musicTracks[key] = music;  // Store the music in the map
+			std::cout << "Loaded and stored music for key: " << key << std::endl;
+		}
+		else {
+			std::cerr << "Failed to load music file: " << path << std::endl;
+		}
+	}
+}
+
+
+
+void ResourceManager::PlaySound(const std::string& key)
+{
+	auto it = soundBuffers.find(key);
+	if (it != soundBuffers.end())
+	{
+		auto sound = std::make_shared<sf::Sound>();
+		sound->setBuffer(it->second);// Set the buffer to the sound
+		sound->setVolume(15);
+		//std::cout << "Setting buffer for sound with key: " << key << std::endl;
+		sound->play();
+		activeSounds.push_back(sound); // Add the sound to the active sounds
+
+		// Remove finished sounds
+		int initialSize = activeSounds.size();
+		activeSounds.erase(std::remove_if(activeSounds.begin(), activeSounds.end(), [](const std::shared_ptr<sf::Sound>& s)
+		{ 
+			return s->getStatus() == sf::Sound::Stopped; 
+		}), activeSounds.end());
+
+
+		if (activeSounds.size() < initialSize)
+		{
+			//std::cout << "Removed finished sounds. Active sounds count: " << activeSounds.size() << std::endl;
+		}
+	}
+	else {
+		std::cout << "Sound buffer not found for key: " << key << std::endl;
+	}
+}
+
+void ResourceManager::StopSounds()
+{
+	// Stop and clear all active sounds
+	for (auto& sound : activeSounds)
+	{
+		sound->stop();
+	}
+	activeSounds.clear();
+}
+
+void ResourceManager::PlayMusic(const std::string& key)
+{
+	// Stop currently playing music if there is any
+	if (currentMusic && currentMusic->getStatus() == sf::Music::Playing) {
+		currentMusic->stop();
+	}
+
+	// Find and play the new music
+	auto it = musicTracks.find(key);
+	if (it != musicTracks.end()) 
+	{
+		currentMusic = it->second;
+		std::cout << "Playing music with key: " << key << std::endl;
+		currentMusic->setVolume(10);
+		currentMusic->setLoop(true);
+		currentMusic->play();
+	}
+	else {
+		std::cout << "Music not found for key: " << key << std::endl;
+	}
+}
+
+void ResourceManager::StopMusic()
+{
+	// Stop the currently playing music
+	if (currentMusic && currentMusic->getStatus() == sf::Music::Playing)
+	{
+		currentMusic->stop();
+		currentMusic = nullptr;
+	}
+}
+
+
+
+
+
+
 
 
 
@@ -129,33 +223,3 @@ void ResourceManager::ClearTextureMap()
 {
 	Textures.clear();
 }
-
-//void ResourceManager::ClearSoundBufferMap()
-//{
-//	SoundBuffers.clear();
-//}
-
-
-
-
-
-
-
-
-
-//void ResourceManager::PlayMusic(sf::Music& music)
-//{
-//	music.play();
-//}
-//
-//void ResourceManager::PlaySound(sf::SoundBuffer& buffer)
-//{
-//	// Create an sf::Sound instance
-//	sf::Sound sound;
-//
-//	// Set the sound buffer
-//	sound.setBuffer(buffer);
-//
-//	// Play the sound
-//	sound.play();
-//}

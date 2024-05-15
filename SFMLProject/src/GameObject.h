@@ -21,7 +21,7 @@ public:
 	GameObject(const GameObject&) = default;
 
 
-	void Update(float deltaTime) {};
+	virtual void Update(float deltaTime) {};
 	virtual void Update(float deltaTime, const AG::Vector2<float>& playerPosition) {};
 
 
