@@ -17,6 +17,16 @@ AnimationComponent::AnimationComponent(GameObject* owner) : Component(owner)
 	{
 		{GruntStates::Moving, {sf::IntRect(148, 235, 24, 24), sf::IntRect(178, 235, 24, 27), sf::IntRect(208, 235, 24, 27)}}
 	};
+
+	
+	m_familyAnimations =
+	{
+		{FamilyStates::Down, {sf::IntRect(355, 0, 24, 28), sf::IntRect(382, 0, 24, 29), sf::IntRect(408, 0, 24, 29)}},
+		{FamilyStates::Up, {sf::IntRect(434, 0, 24, 28), sf::IntRect(460, 0, 24, 29), sf::IntRect(486, 0, 24, 29)}},
+		{FamilyStates::Left, {sf::IntRect(200, 0, 24, 28), sf::IntRect(225, 0, 24, 28), sf::IntRect(252, 0, 24, 28)}},
+		{FamilyStates::Right, {sf::IntRect(278, 0, 24, 28), sf::IntRect(304, 0, 24, 28), sf::IntRect(331, 0, 24, 28)}},
+		{FamilyStates::Idle, {sf::IntRect(355, 0, 24, 28)}}
+	};
 }
 
 AnimationComponent::~AnimationComponent()
@@ -52,5 +62,22 @@ AnimationComponent::GruntStates AnimationComponent::GetGruntState()
 std::unordered_map<AnimationComponent::GruntStates, std::vector<sf::IntRect>>& AnimationComponent::GetGruntAnimationsMap()
 {
 	return m_gruntAnimations;
+}
+
+
+
+void AnimationComponent::SetFamilyAnimation(FamilyStates state)
+{
+	m_currentFamilyState = state;
+}
+
+AnimationComponent::FamilyStates AnimationComponent::GetFamilyState()
+{
+	return m_currentFamilyState;
+}
+
+std::unordered_map<AnimationComponent::FamilyStates, std::vector<sf::IntRect>>& AnimationComponent::GetFamilyAnimationsMap()
+{
+	return m_familyAnimations;
 }
 

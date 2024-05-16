@@ -15,6 +15,15 @@ public:
 		Idle
 	};
 
+	enum class FamilyStates
+	{
+		Down,
+		Up,
+		Left,
+		Right,
+		Idle
+	};
+
 	enum class GruntStates 
 	{
 		Moving
@@ -32,14 +41,23 @@ public:
 
 	void SetGruntAnimation(GruntStates state);
 	GruntStates GetGruntState();
-	std::unordered_map<GruntStates, std::vector<sf::IntRect>>& GetGruntAnimationsMap();
+	std::unordered_map<GruntStates, std::vector<sf::IntRect>> &GetGruntAnimationsMap();
+
+	void SetFamilyAnimation(FamilyStates state);
+	FamilyStates GetFamilyState();
+	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> &GetFamilyAnimationsMap();
 
 
 private:
-	std::unordered_map<PlayerStates, std::vector<sf::IntRect>> m_playerAnimations; // Map to store player animations
-	std::unordered_map<GruntStates, std::vector<sf::IntRect>> m_gruntAnimations;   // Map to store enemy (grunt) animations
-	PlayerStates m_currentPlayerState; // Current player state
-	GruntStates m_currentGruntState;   // Current enemy (grunt) state
+	//Maps to store UV values
+	std::unordered_map<PlayerStates, std::vector<sf::IntRect>> m_playerAnimations;
+	std::unordered_map<GruntStates, std::vector<sf::IntRect>> m_gruntAnimations;  
+	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> m_familyAnimations;  
+
+
+	PlayerStates m_currentPlayerState;
+	GruntStates m_currentGruntState;
+	FamilyStates m_currentFamilyState;
 
 	float m_frameDuration = 0.5f;
 	float m_elapsedTime = 0.0f;
@@ -80,9 +98,6 @@ public:
 		// Return an empty rectangle if the state is not found or there are no frames
 		return sf::IntRect();
 	}
-
-
-
 };
 
 
