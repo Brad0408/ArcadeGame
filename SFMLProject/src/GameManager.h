@@ -33,6 +33,7 @@ public:
 
 	static void GenericCollision();
 	static void BulletCollisions();
+	static void FamilyCollisions();
 
 
 	static void ClearAllLists();
@@ -59,7 +60,7 @@ public:
 	static void UpdateScore(int points);
 	static void UpdateLives(int life, bool increaseLives);
 	static void UpdateWaveCounter(int addCount);
-	static void IncreaseWaveCounter() { waves++;  wavesText.setString("Wave: " + std::to_string(waves)); waveKills = 0; }
+	static void IncreaseWaveCounter() { waves++;  wavesText.setString("Wave: " + std::to_string(waves)); waveKills = 0; }	//Debug
 	static sf::Text& GetScoreTexts() { return scoreText; }
 	static sf::Text& GetLivesTexts() { return livesText; }
 	static sf::Text& MainMenuText();

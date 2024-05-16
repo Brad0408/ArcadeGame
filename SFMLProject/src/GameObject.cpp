@@ -42,3 +42,4 @@ void GameObject::MarkForRemoval()
 {
 	m_shouldRemove = true;
 }
+

@@ -24,7 +24,13 @@ Family::Family(const AG::Vector2<float>& spawnLocation)
 	animationComponent = GetComponent<AnimationComponent>();
 
 
-	direction = AG::Vector2<float>(1.0f, 0.0f);
+	int randDirection = std::rand() % 4; // Random number between 0 and 3
+	switch (randDirection) {
+	case 0: direction = AG::Vector2<float>(-1.0f, 0.0f); break; // Left
+	case 1: direction = AG::Vector2<float>(1.0f, 0.0f); break;  // Right
+	case 2: direction = AG::Vector2<float>(0.0f, -1.0f); break; // Up
+	case 3: direction = AG::Vector2<float>(0.0f, 1.0f); break;  // Down
+	}
 
 }
 
@@ -53,6 +59,35 @@ void Family::Move(float deltaTime)
 	GetLocation().x += direction.x * m_MovementSpeed * deltaTime;
 	GetLocation().y += direction.y * m_MovementSpeed * deltaTime;
 
+
+	bool collisionDetected = false;
+	for (GameObject* wall : GameManager::GetWalls())
+	{
+		BoxCollider* wallCollider = wall->GetComponent<BoxCollider>();
+		BoxCollider* familyCollider = GetComponent<BoxCollider>();
+
+		// Ensure both colliders are valid before checking collision
+		if (wallCollider && familyCollider && wallCollider->CheckCollision(wall, this))
+		{
+			BoxCollider::WallCollision(this, wall);
+			//std::cout << "Wall collision detected, changing direction." << std::endl;
+			//ReverseDirection();
+			collisionDetected = true;
+
+			break; // Exit the loop if a collision is detected
+		}
+	}
+
+	// Only update position if no collision is detected
+	if (!collisionDetected)
+	{
+		SetLocation(GetLocation().x, GetLocation().y);
+	}
+
+
+
+
+
 	// Set the appropriate animation based on the direction
 	if (direction.x < 0)
 	{
@@ -71,9 +106,20 @@ void Family::Move(float deltaTime)
 		animationComponent->SetFamilyAnimation(AnimationComponent::FamilyStates::Down);
 	}
 
+
+
 	// Update the texture rectangle for the current frame
 	m_FamilyRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetFamilyState(), deltaTime, animationComponent->GetFamilyAnimationsMap()));
 	SetRectangleShape(m_FamilyRectangle);
 
+	direction.Normalise();
+	GetMoveDirection() = direction;
+
 	GetRectangleShape().setPosition(GetLocation());
+}
+
+void Family::ReverseDirection()
+{
+	 direction.x = -direction.x;
+    direction.y = -direction.y;
 }

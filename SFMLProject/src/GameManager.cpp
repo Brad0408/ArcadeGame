@@ -147,13 +147,14 @@ void GameManager::GenericCollision()
 	// Declare objectA outside the inner loop
 	GameObject* objectA = nullptr;
 
-
 	bool isResetEntities = false;
 	bool isResetFamily = false;
 
 	// Check for collisions between game objects
 	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
 	{
+
+
 		// Set objectA to the player object if it has not been set yet
 		if ((*it)->GetTag() == "Player" && !objectA)
 		{
@@ -269,6 +270,46 @@ void GameManager::BulletCollisions()
 
 
 					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
+				}
+			}
+		}
+	}
+}
+
+void GameManager::FamilyCollisions()
+{
+	// Check for collisions between game objects
+	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
+	{
+		// Only consider objects with the "Family" tag
+		if ((*it)->GetTag() == "Family")
+		{
+			GameObject* familyObject = it->get();
+			BoxCollider* familyCollider = familyObject->GetComponent<BoxCollider>();
+
+			for (auto jt = GetGameObjectList().begin(); jt != GetGameObjectList().end(); ++jt)
+			{
+				// Only consider objects with the "Wall" tag
+				if ((*jt)->GetTag() == "Wall")
+				{
+					GameObject* wallObject = jt->get();
+					BoxCollider* wallCollider = wallObject->GetComponent<BoxCollider>();
+
+					// Ensure both objects and their colliders are valid before checking collision
+					if (familyObject && wallObject && familyCollider && wallCollider && familyCollider->CheckCollision(familyObject, wallObject))
+					{
+						std::cout << "Wall Collision detected between objects " << familyObject->GetName() << " and " << wallObject->GetName() << std::endl;
+
+						// Handle wall collision by reversing the direction of the Family object
+						Family* family = dynamic_cast<Family*>(familyObject);
+						if (family)
+						{
+							family->ReverseDirection();
+						}
+
+						// Handle the collision (if needed)
+						BoxCollider::WallCollision(familyObject, wallObject);
+					}
 				}
 			}
 		}
@@ -398,8 +439,9 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 		}
 
 
-		GameManager::GenericCollision();
-		GameManager::BulletCollisions();
+		GenericCollision();
+		BulletCollisions();
+		//FamilyCollisions();
 
 
 

@@ -15,6 +15,8 @@ public:
 	void Update(float deltaTime) override;
 	void Move(float deltaTime);
 
+	void ReverseDirection();
+
 private:
 	AG::Vector2<float> m_FamilySize = AG::Vector2<float>::one * 35;
 

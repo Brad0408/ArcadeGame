@@ -188,7 +188,7 @@ void ResourceManager::PlayMusic(const std::string& key)
 	{
 		currentMusic = it->second;
 		std::cout << "Playing music with key: " << key << std::endl;
-		currentMusic->setVolume(10);
+		currentMusic->setVolume(5);
 		currentMusic->setLoop(true);
 		currentMusic->play();
 	}
