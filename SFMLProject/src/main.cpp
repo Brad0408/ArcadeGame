@@ -4,7 +4,7 @@
 
 
 
-#define FIXEDFRAMERATE 0.025f
+#define FIXEDFRAMERATE (1.f/60.f)
 
 
 
@@ -119,6 +119,8 @@ int main()
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
+
+
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
 
@@ -131,7 +133,7 @@ int main()
 
 		if (GameManager::IsGameStarted())
 		{
-
+		
 			/////////////Rendering////////////////
 
 			for (const auto& gameObjectPtr : GameManager::GetGameObjectList())

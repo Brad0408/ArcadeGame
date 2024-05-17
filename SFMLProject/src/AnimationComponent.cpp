@@ -1,7 +1,7 @@
 #include "AnimationComponent.h"
 
 
-
+//Storing Enum state to a vector of IntRect values on the whole sprite sheet
 AnimationComponent::AnimationComponent(GameObject* owner) : Component(owner)
 {
 	m_playerAnimations =
@@ -29,9 +29,7 @@ AnimationComponent::AnimationComponent(GameObject* owner) : Component(owner)
 	};
 }
 
-AnimationComponent::~AnimationComponent()
-{
-}
+///////Player////////
 
 
 void AnimationComponent::SetPlayerAnimation(PlayerStates state)
@@ -39,25 +37,20 @@ void AnimationComponent::SetPlayerAnimation(PlayerStates state)
 	m_currentPlayerState = state;
 }
 
-AnimationComponent::PlayerStates AnimationComponent::GetPlayerState()
-{
-	return m_currentPlayerState;
-}
-
 std::unordered_map<AnimationComponent::PlayerStates, std::vector<sf::IntRect>>& AnimationComponent::GetPlayerAnimationsMap()
 {
 	return m_playerAnimations;
 }
+
+
+///////Grunt////////
+
 
 void AnimationComponent::SetGruntAnimation(GruntStates state)
 {
 	m_currentGruntState = state;
 }
 
-AnimationComponent::GruntStates AnimationComponent::GetGruntState()
-{
-	return m_currentGruntState;
-}
 
 std::unordered_map<AnimationComponent::GruntStates, std::vector<sf::IntRect>>& AnimationComponent::GetGruntAnimationsMap()
 {
@@ -65,16 +58,14 @@ std::unordered_map<AnimationComponent::GruntStates, std::vector<sf::IntRect>>& A
 }
 
 
+///////Family////////
+
 
 void AnimationComponent::SetFamilyAnimation(FamilyStates state)
 {
 	m_currentFamilyState = state;
 }
 
-AnimationComponent::FamilyStates AnimationComponent::GetFamilyState()
-{
-	return m_currentFamilyState;
-}
 
 std::unordered_map<AnimationComponent::FamilyStates, std::vector<sf::IntRect>>& AnimationComponent::GetFamilyAnimationsMap()
 {

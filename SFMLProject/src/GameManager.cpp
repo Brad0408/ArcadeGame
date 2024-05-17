@@ -186,13 +186,13 @@ void GameManager::GenericCollision()
 				// Ensure both colliders are valid before checking collision
 				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
-					std::cout << "CollisionOccured" << std::endl;
+					//std::cout << "CollisionOccured" << std::endl;
 
 
 					// Wall Detection
 					if (objectA->GetTag() == "Wall" || objectB->GetTag() == "Wall")
 					{
-						std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
+						//std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
 						// Handle wall collision
 						for (GameObject* wall : GetWalls())
@@ -270,46 +270,6 @@ void GameManager::BulletCollisions()
 
 
 					//std::cout << "Collision detected between bullet " << bullet << " and " << gameObject->GetName() << std::endl;
-				}
-			}
-		}
-	}
-}
-
-void GameManager::FamilyCollisions()
-{
-	// Check for collisions between game objects
-	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
-	{
-		// Only consider objects with the "Family" tag
-		if ((*it)->GetTag() == "Family")
-		{
-			GameObject* familyObject = it->get();
-			BoxCollider* familyCollider = familyObject->GetComponent<BoxCollider>();
-
-			for (auto jt = GetGameObjectList().begin(); jt != GetGameObjectList().end(); ++jt)
-			{
-				// Only consider objects with the "Wall" tag
-				if ((*jt)->GetTag() == "Wall")
-				{
-					GameObject* wallObject = jt->get();
-					BoxCollider* wallCollider = wallObject->GetComponent<BoxCollider>();
-
-					// Ensure both objects and their colliders are valid before checking collision
-					if (familyObject && wallObject && familyCollider && wallCollider && familyCollider->CheckCollision(familyObject, wallObject))
-					{
-						std::cout << "Wall Collision detected between objects " << familyObject->GetName() << " and " << wallObject->GetName() << std::endl;
-
-						// Handle wall collision by reversing the direction of the Family object
-						Family* family = dynamic_cast<Family*>(familyObject);
-						if (family)
-						{
-							family->ReverseDirection();
-						}
-
-						// Handle the collision (if needed)
-						BoxCollider::WallCollision(familyObject, wallObject);
-					}
 				}
 			}
 		}
@@ -441,7 +401,6 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 
 		GenericCollision();
 		BulletCollisions();
-		//FamilyCollisions();
 
 
 

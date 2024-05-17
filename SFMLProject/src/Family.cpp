@@ -36,7 +36,7 @@ Family::Family(const AG::Vector2<float>& spawnLocation)
 
 void Family::Update(float deltaTime)
 {
-	if (directionChangeClock.getElapsedTime().asSeconds() >= 3.0f) 
+	if (directionChangeClock.getElapsedTime().asSeconds() >= 1.5f) 
 	{
 		// Change direction every 3 seconds
 		int randDirection = std::rand() % 4; // Random number between 0 and 3
@@ -51,7 +51,7 @@ void Family::Update(float deltaTime)
 
 	Move(deltaTime);
 
-	GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
+	//GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
 }
 
 void Family::Move(float deltaTime) 
@@ -120,6 +120,6 @@ void Family::Move(float deltaTime)
 
 void Family::ReverseDirection()
 {
-	 direction.x = -direction.x;
+	direction.x = -direction.x;
     direction.y = -direction.y;
 }

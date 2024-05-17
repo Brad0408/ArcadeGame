@@ -30,21 +30,21 @@ public:
 	};
 
 	AnimationComponent(GameObject* owner);
-	~AnimationComponent();
+	~AnimationComponent() {};
 
 
 
-	// Set the current animation state
+	//Set and get animation states and UV maps
 	void SetPlayerAnimation(PlayerStates state);
-	PlayerStates GetPlayerState();
+	PlayerStates GetPlayerState() { return m_currentPlayerState; }
 	std::unordered_map<PlayerStates, std::vector<sf::IntRect>> &GetPlayerAnimationsMap();
 
 	void SetGruntAnimation(GruntStates state);
-	GruntStates GetGruntState();
+	GruntStates GetGruntState() { return m_currentGruntState; }
 	std::unordered_map<GruntStates, std::vector<sf::IntRect>> &GetGruntAnimationsMap();
 
 	void SetFamilyAnimation(FamilyStates state);
-	FamilyStates GetFamilyState();
+	FamilyStates GetFamilyState() { return m_currentFamilyState; }
 	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> &GetFamilyAnimationsMap();
 
 
@@ -54,7 +54,7 @@ private:
 	std::unordered_map<GruntStates, std::vector<sf::IntRect>> m_gruntAnimations;  
 	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> m_familyAnimations;  
 
-
+	//Enums of states
 	PlayerStates m_currentPlayerState;
 	GruntStates m_currentGruntState;
 	FamilyStates m_currentFamilyState;
@@ -63,39 +63,33 @@ private:
 	float m_elapsedTime = 0.0f;
 
 public:
+	//Gets the current frame based of its Enum state and the map of sf::IntRect associated with it
 	template<typename Enum, typename Map> sf::IntRect GetCurrentFrame(Enum state, float deltaTime, const Map& animations)
 	{
-		// Retrieve the animation frames for the specified player state
+		//Retrieve the animation frames for the specified object state
 		auto it = animations.find(state);
 		if (it != animations.end())
 		{
-			// Get the animation frames for the player state
+			//Get the animation frames for the objects state
 			const std::vector<sf::IntRect>& frames = it->second;
 
-			// Check if there are any frames for the player state
+			//Check if there are any frames for the player state
 			if (!frames.empty())
 			{
-				// Use a static variable to keep track of the current frame index
+				//Get current frame and the max frame
 				static int currentFrameIndex = 0;
-
-				// Get the total number of frames
 				int numFrames = frames.size();
 
-				// Calculate the time per frame (assuming constant frame rate)
+
+				//Update the frame based of deltaTime updates
 				float timePerFrame = m_frameDuration;
-
-				// Update the elapsed time
 				m_elapsedTime += deltaTime;
-
-				// Calculate the current frame index based on elapsed time
 				currentFrameIndex = static_cast<int>(m_elapsedTime / timePerFrame) % numFrames;
 
-				// Return the current frame
+				//Return the current frame
 				return frames[currentFrameIndex];
 			}
 		}
-
-		// Return an empty rectangle if the state is not found or there are no frames
 		return sf::IntRect();
 	}
 };

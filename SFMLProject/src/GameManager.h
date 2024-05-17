@@ -33,7 +33,6 @@ public:
 
 	static void GenericCollision();
 	static void BulletCollisions();
-	static void FamilyCollisions();
 
 
 	static void ClearAllLists();
