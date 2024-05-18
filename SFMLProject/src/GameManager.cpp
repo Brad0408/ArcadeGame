@@ -147,13 +147,14 @@ void GameManager::GenericCollision()
 	// Declare objectA outside the inner loop
 	GameObject* objectA = nullptr;
 
-
 	bool isResetEntities = false;
 	bool isResetFamily = false;
 
 	// Check for collisions between game objects
 	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
 	{
+
+
 		// Set objectA to the player object if it has not been set yet
 		if ((*it)->GetTag() == "Player" && !objectA)
 		{
@@ -185,7 +186,8 @@ void GameManager::GenericCollision()
 				// Ensure both colliders are valid before checking collision
 				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
-					//std::cout << "COLLISION" << std::endl;
+					//std::cout << "CollisionOccured" << std::endl;
+
 
 					// Wall Detection
 					if (objectA->GetTag() == "Wall" || objectB->GetTag() == "Wall")
@@ -225,7 +227,7 @@ void GameManager::GenericCollision()
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						GameManager::GetGameObjectListsNames();
+						//GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
@@ -386,11 +388,19 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 					enemy->Update(deltaTime, GetPlayer()->GetLocation());
 				}
 			}
+			else if (gameObject->GetTag() == "Family")
+			{
+				auto family = dynamic_cast<Family*>(gameObject.get());
+				if (family)
+				{
+					family->Update(deltaTime);
+				}
+			}
 		}
 
 
-		GameManager::GenericCollision();
-		GameManager::BulletCollisions();
+		GenericCollision();
+		BulletCollisions();
 
 
 
@@ -415,26 +425,31 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 			{
 				CreateEnemyPool(30);
 				AddGameObjectList(GetEnemyList());
+				CreateFamily(5);
 			}
 			else if (waves >= 10 && waves < 20)
 			{
 				CreateEnemyPool(35);
 				AddGameObjectList(GetEnemyList());
+				CreateFamily(5);
 			}
 			else if (waves >= 20 && waves < 30)
 			{
 				CreateEnemyPool(40);
 				AddGameObjectList(GetEnemyList());
+				CreateFamily(5);
 			}
 			else if (waves >= 30 && waves < 35)
 			{
 				CreateEnemyPool(45);
 				AddGameObjectList(GetEnemyList());
+				CreateFamily(5);
 			}
 			else if (waves >= 40)
 			{
 				CreateEnemyPool(55);
 				AddGameObjectList(GetEnemyList());
+				CreateFamily(5);
 			}
 
 
@@ -915,6 +930,7 @@ void GameManager::RestartGame()
 	GetPlayer()->SetIsShooting(false);
 	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
+	CreateFamily(5);
 	gameOver = false;
 	waves = 0;
 	playerScore = 0;

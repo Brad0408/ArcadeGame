@@ -13,7 +13,9 @@ public:
 	~Family() {};
 
 	void Update(float deltaTime) override;
-	void Move();
+	void Move(float deltaTime);
+
+	void ReverseDirection();
 
 private:
 	AG::Vector2<float> m_FamilySize = AG::Vector2<float>::one * 35;
@@ -26,8 +28,8 @@ private:
 	float m_MovementSpeed = 10.0f;
 
 
-
-
+	sf::Clock directionChangeClock;
+	AG::Vector2<float> direction;
 
 
 

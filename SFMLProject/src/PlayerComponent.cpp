@@ -80,7 +80,6 @@ void PlayerComponent::Move(float deltaTime)
 
 
 		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Left);
-		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 
 		direction.x = -1.0f;
@@ -91,7 +90,6 @@ void PlayerComponent::Move(float deltaTime)
 
 
 		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Right);
-		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 
 
@@ -103,7 +101,6 @@ void PlayerComponent::Move(float deltaTime)
 
 
 		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Up);
-		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 
 
@@ -115,7 +112,6 @@ void PlayerComponent::Move(float deltaTime)
 
 
 		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Down);
-		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 
 
@@ -128,10 +124,11 @@ void PlayerComponent::Move(float deltaTime)
 	else
 	{
 		animationComponent->SetPlayerAnimation(AnimationComponent::PlayerStates::Idle);
-		m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 		_GameObject->SetRectangleShape(m_PlayerShapeRectangle);
 	}
 
+
+	m_PlayerShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetPlayerState(), deltaTime, animationComponent->GetPlayerAnimationsMap()));
 
 	direction.Normalise();
 

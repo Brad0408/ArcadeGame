@@ -59,6 +59,7 @@ public:
 	virtual void MarkForRemoval();
 	virtual bool ShouldRemove() { return m_shouldRemove; }
 
+
 private:
 	std::string m_Name;
 	bool m_Active;

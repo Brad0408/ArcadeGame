@@ -4,7 +4,7 @@
 
 
 
-#define FIXEDFRAMERATE 0.025f
+#define FIXEDFRAMERATE (1.f/60.f)
 
 
 
@@ -24,7 +24,9 @@ int main()
 
 
 	sf::RectangleShape mainMenuPlayer;
+	mainMenuPlayer.setOutlineThickness(3);
 	sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(342, 164, 24, 24);
+	//sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(331, 0, 24, 28);
 
 	mainMenuPlayer.setSize(AG::Vector2<float>::one * 35);
 	mainMenuPlayer.setTexture(&ResourceManager::GetTexture("Player"));
@@ -117,6 +119,8 @@ int main()
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
+
+
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
 
@@ -129,7 +133,7 @@ int main()
 
 		if (GameManager::IsGameStarted())
 		{
-
+		
 			/////////////Rendering////////////////
 
 			for (const auto& gameObjectPtr : GameManager::GetGameObjectList())
