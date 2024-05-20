@@ -3,6 +3,7 @@
 
 class Bullet;
 class Enemy;
+class Electrode;
 class Family;
 
 
@@ -16,6 +17,7 @@ public:
 	static void AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList);
 
 	static void AddBulletObjectList(std::unique_ptr<Bullet> bullet);
+
 	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
 

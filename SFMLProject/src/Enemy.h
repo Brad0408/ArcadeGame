@@ -8,6 +8,7 @@ public:
 	Enemy(const AG::Vector2<float>& spawnLocation, float speed);
 	~Enemy();
 
+	void Update(float delatTime) override {};
 	void Update(float deltaTime, const AG::Vector2<float>& playerPosition) override;
 	void Move(AG::Vector2<float>& displacement);
 

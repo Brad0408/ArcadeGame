@@ -31,9 +31,4 @@ private:
 	sf::Clock directionChangeClock;
 	AG::Vector2<float> direction;
 
-
-
-
-
-
 };

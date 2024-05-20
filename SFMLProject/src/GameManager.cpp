@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include "Electrode.h"
 #include "Family.h"
 
 //Definition of the static member variable
@@ -202,11 +203,13 @@ void GameManager::GenericCollision()
 					}
 					else if(objectA->GetTag() == "Player" && objectB->GetTag() == "Family")
 					{
-						std::cout << "hit family" << std::endl;
+						//std::cout << "hit family" << std::endl;
+		
 						objectB->MarkForRemoval();
 
 						if (!isResetFamily)
 						{
+							ResourceManager::PlaySound("FamilySaved");
 							UpdateScore(250);
 							isResetFamily = true;
 						}
@@ -227,7 +230,7 @@ void GameManager::GenericCollision()
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						//GameManager::GetGameObjectListsNames();
+						GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
@@ -257,7 +260,7 @@ void GameManager::BulletCollisions()
 			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet.get(), gameObject.get()))
 			{
 				// Mark bullet and object for removal
-				if (gameObject->GetTag() == "Wall")
+				if (gameObject->GetTag() == "Wall" || gameObject->GetTag() == "Electrode")
 				{
 					bullet->MarkForRemoval();
 				}
@@ -297,25 +300,28 @@ void GameManager::ClearGameObjectList()
 
 void GameManager::ClearAndResetEntites()
 {
+	// Define a list of tags that need to be removed
+	std::vector<std::string> tagsToRemove = { "Enemy", "Family", "Electrode" };
+
 	for (auto& gameObject : GetGameObjectList())
 	{
-		// Check if the current object has the tag "Enemy"
-		if (gameObject->GetTag() == "Enemy")
+		std::string tag = gameObject->GetTag();
+
+		// Check if the current object's tag is in the tagsToRemove list
+		if (std::find(tagsToRemove.begin(), tagsToRemove.end(), tag) != tagsToRemove.end())
 		{
 			gameObject->MarkForRemoval();
 		}
-		else if (gameObject->GetTag() == "Player")
+		else if (tag == "Player")
 		{
 			gameObject->SetLocation(500, 450);
 			gameObject->GetRectangleShape().setTextureRect(sf::IntRect(342, 164, 24, 24));
 			gameObject->SetRectangleShape(gameObject->GetRectangleShape());
 		}
-		else if (gameObject->GetTag() == "Family")
-		{
-			gameObject->MarkForRemoval();
-		}
 	}
 }
+
+
 void GameManager::ClearAnyBullets()
 {
 	for (auto& gameObject : GetBulletsList())
@@ -396,6 +402,14 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 					family->Update(deltaTime);
 				}
 			}
+			else if (gameObject->GetTag() == "Electrode")
+			{
+				auto electrode = dynamic_cast<Electrode*>(gameObject.get());
+				if (electrode)
+				{
+					electrode->Update(deltaTime);
+				}
+			}
 		}
 
 
@@ -423,6 +437,14 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 		{
 			if (waves <= 10)
 			{
+				for (const auto& gameObject : GetGameObjectList())
+				{
+					if (gameObject->GetTag() == "Electrode")
+					{
+						gameObject->MarkForRemoval();
+					}
+				}
+
 				CreateEnemyPool(30);
 				AddGameObjectList(GetEnemyList());
 				CreateFamily(5);
@@ -554,6 +576,7 @@ void GameManager::CreateEnemyPool(int numEnemies)
 	EnemyObjectsList.clear();
 
 	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numEnemies);
+	std::vector<AG::Vector2<float>> electrodeSpawnLocations = GenerateRandomSpawnLocations(10);
 
 	for (const auto& spawnLocation : spawnLocations)
 	{
@@ -565,6 +588,19 @@ void GameManager::CreateEnemyPool(int numEnemies)
 		AddEnemyObjectsList(std::move(newEnemy));
 
 	}
+
+
+	
+	for (const auto& spawnLocation : electrodeSpawnLocations)
+	{
+		// Create a shared pointer to a dynamically allocated Enemy object
+		std::unique_ptr<Electrode> newElectrode = std::make_unique<Electrode>(spawnLocation, 0);
+
+		AddEnemyObjectsList(std::move(newElectrode));
+
+	}
+	
+
 }
 
 
@@ -695,7 +731,6 @@ void GameManager::CreateWalls()
 
 #pragma endregion
 
-
 #pragma region FontsAndText
 
 void GameManager::SettingFont()
@@ -792,7 +827,6 @@ void GameManager::SettingGameplayText()
 
 
 #pragma endregion
-
 
 #pragma region UpdateGameplayTexts
 

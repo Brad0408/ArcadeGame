@@ -24,6 +24,7 @@ const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferP
 	{"LivesUp", "Audio/Sounds/liveup.wav"},
 	{"GameStart", "Audio/Sounds/gameStart.mp3"},
 	{"WaveUp", "Audio/Sounds/WaveUp.wav"},
+	{"FamilySaved", "Audio/Sounds/familysaved.wav"},
 };
 
 
