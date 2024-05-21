@@ -11,11 +11,11 @@ std::shared_ptr<sf::Music> ResourceManager::currentMusic;
 //Set the key and matching value to the key with the file path
 const std::unordered_map<std::string, std::string> ResourceManager::TexturePaths = 
 {
+	//I know im using UV values so i dont really need these 2 seperate values, but its there to prove it would work
 	{"Player", "Textures/robotronsprites.png"},
 	{"Enemy", "Textures/robotronsprites.png"},
 	{"Mario", "Textures/mario.jpg"},
 };
-
 
 const std::unordered_map<std::string, std::string> ResourceManager::SoundBufferPaths =
 {
@@ -33,7 +33,6 @@ const std::unordered_map<std::string, std::string> ResourceManager::MusicPaths =
 	{"MainMenu", "Audio/Music/MainMenu.mp3"},
 	{"Gameplay", "Audio/Music/gameplay.mp3"},
 	{"GameOver", "Audio/Music/gameover.mp3"},
-
 };
 
 
@@ -41,7 +40,7 @@ const std::unordered_map<std::string, std::string> ResourceManager::MusicPaths =
 
 
 
-//Returns the texture path by passing in the matching key as a string
+//Returns the texture path by passing in the matching key
 const std::string& ResourceManager::GetTexturePath(const std::string& TextureName) 
 {
 	//Check if the texture name exists in the map
@@ -55,7 +54,7 @@ const std::string& ResourceManager::GetTexturePath(const std::string& TextureNam
 		//If the passed in string value doesnt match any keys within the map do this
 		std::cout<< "Texture path name not found: " << TextureName << ", created Default Texture " << std::endl;
 
-		static const std::string defaultPath = "Textures/robotronsprites.jpg";
+		static const std::string defaultPath = "Textures/robotronsprites.png";
 		return defaultPath;
 	}
 }
@@ -63,51 +62,48 @@ const std::string& ResourceManager::GetTexturePath(const std::string& TextureNam
 
 sf::Texture& ResourceManager::GetTexture(const std::string& TextureName)
 {
-	// Check if the texture is in the map
+	//Check if the texture is in the map
 	auto it = Textures.find(TextureName);
 	if (it == Textures.end())
 	{
-		// Texture not found, load the default texture
+		//Texture not found, load the default texture
 		sf::Texture texture;
 		if (!texture.loadFromFile(GetTexturePath(TextureName)))
 		{
-			// Default texture could not be loaded
+			//Default texture could not be loaded, recreate it
 			std::cout << "Default texture not found: " << TextureName << std::endl;
-			// Load the default texture
-			if (!texture.loadFromFile("Textures/robotronsprites.jpg"))
+			if (!texture.loadFromFile("Textures/robotronsprites.png"))
 			{
-				// Failed to load the default texture, print an error message
 				std::cout << "Failed to load default texture: robotronsprites.jpg" << std::endl;
 			}
 		}
 
-		// Insert the default texture into the map
+		//Insert the default texture into the map
 		Textures.emplace(TextureName, std::move(texture));
 
-		// Return the newly inserted texture
+		//Return the newly inserted texture
 		return Textures.at(TextureName);
 	}
 
-	// Texture found in the map, return it
+	//Texture is found in the map, return it
 	return it->second;
 }
-
-
-
-
 
 
 void ResourceManager::CreateSoundBuffers()
 {
 	for (const auto& pair : SoundBufferPaths)
 	{
+		//Get the key and value
 		const std::string& key = pair.first;
 		const std::string& path = pair.second;
 
+		//Create the buffer from the file path value
 		sf::SoundBuffer buffer;
 		if (buffer.loadFromFile(path)) 
 		{
-			soundBuffers[key] = std::move(buffer);  // Store the buffer in the map
+			//Store the buffer in the map
+			soundBuffers[key] = std::move(buffer);
 			std::cout << "Loaded and stored sound buffer for key: " << key << std::endl;
 		}
 		else 
@@ -119,17 +115,21 @@ void ResourceManager::CreateSoundBuffers()
 
 void ResourceManager::CreateMusicTracks()
 {
-	for (const auto& pair : MusicPaths) {
+	for (const auto& pair : MusicPaths) 
+	{
 		const std::string& key = pair.first;
 		const std::string& path = pair.second;
 
 		auto music = std::make_shared<sf::Music>();
-		if (music->openFromFile(path)) {
-			musicTracks[key] = music;  // Store the music in the map
+		if (music->openFromFile(path)) 
+		{
+			//Store the music in the map after loading it
+			musicTracks[key] = music;
 			std::cout << "Loaded and stored music for key: " << key << std::endl;
 		}
-		else {
-			std::cerr << "Failed to load music file: " << path << std::endl;
+		else
+		{
+			std::cout << "Failed to load music file: " << path << std::endl;
 		}
 	}
 }
@@ -138,17 +138,22 @@ void ResourceManager::CreateMusicTracks()
 
 void ResourceManager::PlaySound(const std::string& key)
 {
+	//Get the sound buffer with the passed in key
 	auto it = soundBuffers.find(key);
 	if (it != soundBuffers.end())
 	{
+		//Creat the sound object
 		auto sound = std::make_shared<sf::Sound>();
-		sound->setBuffer(it->second);// Set the buffer to the sound
-		sound->setVolume(15);
-		//std::cout << "Setting buffer for sound with key: " << key << std::endl;
-		sound->play();
-		activeSounds.push_back(sound); // Add the sound to the active sounds
 
-		// Remove finished sounds
+		//Set the sounds buffer to the value of the key
+		sound->setBuffer(it->second);
+		sound->setVolume(7);
+		sound->play();
+
+		//Add the sound to active sounds
+		activeSounds.push_back(sound);
+
+		//Remove finished sounds from the active sounds vector
 		int initialSize = activeSounds.size();
 		activeSounds.erase(std::remove_if(activeSounds.begin(), activeSounds.end(), [](const std::shared_ptr<sf::Sound>& s)
 		{ 
@@ -156,19 +161,16 @@ void ResourceManager::PlaySound(const std::string& key)
 		}), activeSounds.end());
 
 
-		if (activeSounds.size() < initialSize)
-		{
-			//std::cout << "Removed finished sounds. Active sounds count: " << activeSounds.size() << std::endl;
-		}
 	}
-	else {
+	else
+	{
 		std::cout << "Sound buffer not found for key: " << key << std::endl;
 	}
 }
 
+//Stop all active sounds, for gameover
 void ResourceManager::StopSounds()
 {
-	// Stop and clear all active sounds
 	for (auto& sound : activeSounds)
 	{
 		sound->stop();
@@ -178,45 +180,38 @@ void ResourceManager::StopSounds()
 
 void ResourceManager::PlayMusic(const std::string& key)
 {
-	// Stop currently playing music if there is any
-	if (currentMusic && currentMusic->getStatus() == sf::Music::Playing) {
+	//Stop currently playing music if there is any
+	if (currentMusic && currentMusic->getStatus() == sf::Music::Playing)
+	{
 		currentMusic->stop();
 	}
 
-	// Find and play the new music
+	//Find and play the new music with the key
 	auto it = musicTracks.find(key);
 	if (it != musicTracks.end()) 
 	{
+		//Change the current music to matching value of the new key passed in
 		currentMusic = it->second;
 		std::cout << "Playing music with key: " << key << std::endl;
 		currentMusic->setVolume(5);
 		currentMusic->setLoop(true);
 		currentMusic->play();
 	}
-	else {
+	else 
+	{
 		std::cout << "Music not found for key: " << key << std::endl;
 	}
 }
 
+// Stop the currently playing music
 void ResourceManager::StopMusic()
 {
-	// Stop the currently playing music
 	if (currentMusic && currentMusic->getStatus() == sf::Music::Playing)
 	{
 		currentMusic->stop();
 		currentMusic = nullptr;
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
 //Stops memory error when the program is terminated

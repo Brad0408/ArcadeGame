@@ -1,5 +1,6 @@
 #include "Electrode.h"
 
+//Just a stationarty enemy that will kill the player if touched, doesn't move
 Electrode::Electrode(const AG::Vector2<float>& spawnLocation, float speed) : Enemy(spawnLocation, speed)
 {
 	SetName("Electrode");
@@ -22,10 +23,9 @@ Electrode::Electrode(const AG::Vector2<float>& spawnLocation, float speed) : Ene
 	animationComponent = GetComponent<AnimationComponent>();
 
 	GetComponent<BoxCollider>()->DrawOutlines(GetRectangleShape());
-
-
 }
 
+//Animation update
 void Electrode::Update(float deltaTime)
 {
 	animationComponent->SetElectrodeAnimation(AnimationComponent::ElectrodeStates::Idle);

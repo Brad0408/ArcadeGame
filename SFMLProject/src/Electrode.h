@@ -1,15 +1,13 @@
 #pragma once
 #include <Enemy.h>
 
-
+//Stationary enemy
 class Electrode : public Enemy
 {
 
-
-
 public:
 	Electrode(const AG::Vector2<float>& spawnLocation, float speed);
-	~Electrode() {};
+	~Electrode() {}
 
 	void Update(float deltaTime) override;
 
@@ -21,5 +19,4 @@ private:
 	AnimationComponent* animationComponent;
 
 	sf::IntRect m_ElectrodeTextureUV;
-
 };

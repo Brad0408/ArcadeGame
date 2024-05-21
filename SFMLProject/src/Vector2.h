@@ -10,22 +10,14 @@ namespace AG
 	struct Vector2
 	{
 	public:
-
-		//Define X and Y
 		T x, y;
 
 #pragma region constructors
 
-		//Constructor class
 		Vector2() : x(0), y(0) {}
-
-		//Copy constructor
 		Vector2(const Vector2&) = default;
-
-		//Paramitzed constructor
 		Vector2(T _x, T _y) : x(_x), y(_y) {}
 
-		//Template constructor
 		template<typename U> requires arithmetic<U>
 		explicit Vector2(const Vector2<U>& in) : 
 			x(static_cast<T>(in.x)), y(static_cast<T>(in.y)) {}

@@ -4,7 +4,7 @@
 #include "Electrode.h"
 #include "Family.h"
 
-//Definition of the static member variable
+//List of object types
 std::list<std::unique_ptr<Bullet>> GameManager::BulletObjectsList;
 std::list<std::unique_ptr<GameObject>> GameManager::GameObjectsList;
 std::list<std::unique_ptr<Enemy>> GameManager::EnemyObjectsList;
@@ -38,14 +38,13 @@ bool GameManager::gameStarted = false;
 //Add to gameobject list - for raw pointers to the walls
 void GameManager::AddGameObjectList(GameObject* gameObject)
 {
-	// Create a std::unique_ptr<GameObject> from the raw pointer
+	//Create unqiue from the raw pointer
 	std::unique_ptr<GameObject> gameObjectPtr(gameObject);
 
-	// Store the unique pointer in the list
 	GameObjectsList.push_back(std::move(gameObjectPtr));
 }
 
-//Add to the gameobject list 
+//Overloads
 void GameManager::AddGameObjectList(std::unique_ptr<GameObject> &gameObject)
 {
 	GameObjectsList.push_back(std::move(gameObject));
@@ -62,13 +61,13 @@ void GameManager::AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList
 {
 	for (auto& enemyPtr : enemyList)
 	{
-		// Move the unique pointer's ownership to a shared pointer
+		//Move the objects to the gameobject list
 		std::unique_ptr<GameObject> gameObjectPtr = std::move(enemyPtr);
 
 		AddGameObjectList(gameObjectPtr);
 	}
 
-	// Clear the original list after moving its elements
+	//Clear the original list after moving its elements
 	enemyList.clear();
 }
 
@@ -77,11 +76,10 @@ void GameManager::AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList
 //Add to bullet list
 void GameManager::AddBulletObjectList(std::unique_ptr<Bullet> bullet)
 {
-	// Store the unique pointer in the list
 	BulletObjectsList.push_back(std::move(bullet));
 }
 
-
+//Add to enemy list
 void GameManager::AddEnemyObjectsList(std::unique_ptr<Enemy> enemy)
 {
 	EnemyObjectsList.push_back(std::move(enemy));
@@ -95,9 +93,10 @@ void GameManager::AddEnemyObjectsList(std::unique_ptr<Enemy> enemy)
 
 #pragma region GettingListNames
 
+
+//Call this function to see all all the gameobjects, their names, tags and how many of them exist on the list
 void GameManager::GetGameObjectListsNames()
 {
-	// Map to store the count of objects with each name
 	std::unordered_map<std::string, int> nameCount;
 
 	for (const auto& gameObjectPtr : GetGameObjectList())
@@ -105,19 +104,15 @@ void GameManager::GetGameObjectListsNames()
 		std::string name = gameObjectPtr->GetName();
 		std::string tag = gameObjectPtr->GetTag();
 
-		// Check if the name already exists in the map
 		if (nameCount.find(name) != nameCount.end())
 		{
-			// Increment the count for this name
 			nameCount[name]++;
 		}
 		else
 		{
-			// Add the name to the map with count 1
 			nameCount[name] = 1;
 		}
 
-		// Construct the name with count suffix if necessary
 		std::string displayName = name;
 		if (nameCount[name] > 1)
 		{
@@ -127,7 +122,6 @@ void GameManager::GetGameObjectListsNames()
 		std::cout << "Stored GameObject on the list: " << displayName << " (Tag: " << tag << ")" << std::endl;
 	}
 }
-
 
 
 void GameManager::GetEnemyListNames()
@@ -145,57 +139,54 @@ void GameManager::GetEnemyListNames()
 
 void GameManager::GenericCollision()
 {
-	// Declare objectA outside the inner loop
+	//Object A will always be the player
 	GameObject* objectA = nullptr;
 
 	bool isResetEntities = false;
 	bool isResetFamily = false;
 
-	// Check for collisions between game objects
+	//Check for collisions between game objects
 	for (auto it = GetGameObjectList().begin(); it != GetGameObjectList().end(); ++it)
 	{
-
-
-		// Set objectA to the player object if it has not been set yet
+		//Set objectA to the player
 		if ((*it)->GetTag() == "Player" && !objectA)
 		{
+			//Convert pointer types
 			objectA = it->get();
 		}
 
 		for (auto jt = std::next(it); jt != GetGameObjectList().end(); ++jt)
 		{
-			GameObject* objectB = jt->get(); // Dereference the shared pointer to get the GameObject pointer
+			GameObject* objectB = jt->get();
 
-			// Skip collision checks if both objects are walls
+			//Skip collision checks if both objects are walls
 			if (objectA && objectB && objectA->GetTag() == "Wall" && objectB->GetTag() == "Wall")
 			{
 				continue;
 			}
 
-			// Continue with your collision detection logic here
 			if (objectA && objectB)
 			{
-				// Check for specific conditions before collision detection
+				//Check for specific conditions before collision detection
 				if ((objectA->GetTag() == "Enemy" && objectB->GetTag() == "Enemy") || (objectA->GetTag() == "Player" && objectB->GetTag() == "Player"))
 				{
-					continue; // Skip collision detection between enemies or between players
+					continue; //Skip collision detection between enemies + enemy or between player + player
 				}
 
 				BoxCollider* colliderA = objectA->GetComponent<BoxCollider>();
 				BoxCollider* colliderB = objectB->GetComponent<BoxCollider>();
 
-				// Ensure both colliders are valid before checking collision
+				//Ensure both colliders are valid before checking collision
 				if (colliderA && colliderB && colliderA->CheckCollision(objectA, objectB))
 				{
 					//std::cout << "CollisionOccured" << std::endl;
 
 
-					// Wall Detection
+					//Wall Detection
 					if (objectA->GetTag() == "Wall" || objectB->GetTag() == "Wall")
 					{
 						//std::cout << "Wall Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						// Handle wall collision
 						for (GameObject* wall : GetWalls())
 						{
 							BoxCollider::WallCollision(objectA, objectB);
@@ -217,7 +208,7 @@ void GameManager::GenericCollision()
 					}
 					else
 					{
-						// Handle collision between non-wall objects
+						//Reset everything if the player is killed
 						if (!isResetEntities)
 						{
 							ResourceManager::PlaySound("Respawn");
@@ -230,7 +221,7 @@ void GameManager::GenericCollision()
 
 						//std::cout << "Collision detected between objects " << objectA->GetName() << " and " << objectB->GetName() << std::endl;
 
-						GameManager::GetGameObjectListsNames();
+						//GameManager::GetGameObjectListsNames();
 					}
 				}
 			}
@@ -240,14 +231,14 @@ void GameManager::GenericCollision()
 
 void GameManager::BulletCollisions()
 {
-	// Check for collisions between bullets and other objects
+	//Loop over all the currently active bullets
 	for (const auto& bullet : GetBulletsList())
 	{
-		// Check collision between bullet and other game objects
+		//Loop over all the currently active gameobjects
 		for (const auto& gameObject : GetGameObjectList())
 		{
 
-			// Skip collision checks if the bullet belongs to the player
+			//Family is safe from bullets
 			if (gameObject->GetTag() == "Player" || gameObject->GetTag() == "Family")
 			{
 				continue;
@@ -256,16 +247,16 @@ void GameManager::BulletCollisions()
 			CircleCollider* bulletCollider = bullet->GetComponent<CircleCollider>();
 			BoxCollider* gameObjectCollider = gameObject->GetComponent<BoxCollider>();
 
-			// Ensure both colliders are valid before checking collision
 			if (bulletCollider && gameObjectCollider && bulletCollider->BulletCollision(bullet.get(), gameObject.get()))
 			{
-				// Mark bullet and object for removal
+				//Destroy the bullet if it hits a wall or electrode
 				if (gameObject->GetTag() == "Wall" || gameObject->GetTag() == "Electrode")
 				{
 					bullet->MarkForRemoval();
 				}
 				else
 				{
+					//Destroy what ever the bullet hit
 					gameObject->MarkForRemoval();
 					bullet->MarkForRemoval();
 					UpdateScore(50);
@@ -283,36 +274,22 @@ void GameManager::BulletCollisions()
 
 
 #pragma region ClearingLists
-void GameManager::ClearAllLists()
-{
-	BulletObjectsList.clear();
-	GameObjectsList.clear();
-	EnemyObjectsList.clear();
-}
-
-void GameManager::ClearGameObjectList()
-{
-	for (auto& gameObject : GetGameObjectList())
-	{
-		gameObject->MarkForRemoval();
-	}
-}
 
 void GameManager::ClearAndResetEntites()
 {
-	// Define a list of tags that need to be removed
+	//Tags to remove
 	std::vector<std::string> tagsToRemove = { "Enemy", "Family", "Electrode" };
 
 	for (auto& gameObject : GetGameObjectList())
 	{
 		std::string tag = gameObject->GetTag();
 
-		// Check if the current object's tag is in the tagsToRemove list
 		if (std::find(tagsToRemove.begin(), tagsToRemove.end(), tag) != tagsToRemove.end())
 		{
+			//Remove everything
 			gameObject->MarkForRemoval();
 		}
-		else if (tag == "Player")
+		else if (tag == "Player")  //Just reset the player back to the middle, deleting and recreating the creates 2 instances for some reason
 		{
 			gameObject->SetLocation(500, 450);
 			gameObject->GetRectangleShape().setTextureRect(sf::IntRect(342, 164, 24, 24));
@@ -321,14 +298,14 @@ void GameManager::ClearAndResetEntites()
 	}
 }
 
-
+//Remove bullets for when the game over screen is shown
 void GameManager::ClearAnyBullets()
 {
 	for (auto& gameObject : GetBulletsList())
 	{
 		if (gameObject->GetTag() == "Bullet")
 		{
-			std::cout << "REMOVE BULELTS" << std::endl;
+			//std::cout << "REMOVE BULELTS" << std::endl;
 			gameObject->MarkForRemoval();
 		}
 	}
@@ -336,7 +313,7 @@ void GameManager::ClearAnyBullets()
 #pragma endregion 
 
 
-
+//Template function in header being called to remove all currently marked bullets and objects
 void GameManager::RemoveMarkedObjectsHelper()
 {
 	RemoveMarkedObjectsList<Bullet>(GetBulletsList());
@@ -350,7 +327,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 {
 	for (auto& gameObject : GetGameObjectList())
 	{
-		// Check if the current object has the tag "Player"
+		//Player Update
 		if (gameObject->GetTag() == "Player")
 		{
 			PlayerComponent* playerComponent = gameObject->GetComponent<PlayerComponent>();
@@ -358,6 +335,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 			{
 				playerComponent->Update(deltaTime);
 
+				//Stop drawing the firing point and stop the player from shooting when the game is over
 				if (!gameOver)
 				{
 					playerComponent->CalculateFiringPointRotation(window);
@@ -375,17 +353,21 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 
 	if (!gameOver)
 	{
-		for (auto& bulletPtr : GetBulletsList())
+		//Bullet Update
+		for (auto& bullet : GetBulletsList())
 		{
-			if (bulletPtr)
+			if (bullet)
 			{
-				bulletPtr->Update(deltaTime);
-				bulletPtr->GetComponent<CircleCollider>()->DrawOutlines(bulletPtr->GetCircleShape());
+				bullet->Update(deltaTime);
+
+				//Want outlines to show - prefer how it looks
+				bullet->GetComponent<CircleCollider>()->DrawOutlines(bullet->GetCircleShape());
 			}
 		}
 
 		for (auto& gameObject : GetGameObjectList())
 		{
+			//Enemy Update
 			if (gameObject->GetTag() == "Enemy")
 			{
 				auto enemy = dynamic_cast<Enemy*>(gameObject.get());
@@ -394,6 +376,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 					enemy->Update(deltaTime, GetPlayer()->GetLocation());
 				}
 			}
+			//Family Update
 			else if (gameObject->GetTag() == "Family")
 			{
 				auto family = dynamic_cast<Family*>(gameObject.get());
@@ -402,6 +385,7 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 					family->Update(deltaTime);
 				}
 			}
+			//Electrode Update
 			else if (gameObject->GetTag() == "Electrode")
 			{
 				auto electrode = dynamic_cast<Electrode*>(gameObject.get());
@@ -420,31 +404,26 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 
 		bool enemiesExist = false;
 
-		// Iterate over the game objects to check for enemies
+		//Iterate over the game objects to check for enemies
 		for (const auto& gameObject : GetGameObjectList())
 		{
 			if (gameObject->GetTag() == "Enemy")
 			{
-				// At least one enemy is found
+				//At least one enemy is found - so set it to true
 				enemiesExist = true;
 				break;
 			}
 		}
 
 
-		// Check if no enemies are found
+		//If no enemies are found
 		if (!enemiesExist)
 		{
+			ResetElectrodes();
+
+			//Recreate the enemeis - Decide how many to spawn based on the wave count
 			if (waves <= 10)
 			{
-				for (const auto& gameObject : GetGameObjectList())
-				{
-					if (gameObject->GetTag() == "Electrode")
-					{
-						gameObject->MarkForRemoval();
-					}
-				}
-
 				CreateEnemyPool(30);
 				AddGameObjectList(GetEnemyList());
 				CreateFamily(5);
@@ -473,23 +452,18 @@ void GameManager::Update(float deltaTime, sf::RenderWindow& window)
 				AddGameObjectList(GetEnemyList());
 				CreateFamily(5);
 			}
-
-
-
+			
+			//Everything killed = +1 wave
 			UpdateWaveCounter(1);
 		}
-
-
-
 	}
 	else
 	{
 		GameOver();
 	}
 
-
+	//This renders across all screen, do outside the game loop check
 	TextRender(window);
-
 }
 
 #pragma region SpawningEnemiesAndFamily
@@ -500,27 +474,28 @@ std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int nu
 	AG::Vector2<float> playerLocation = GetPlayer()->GetLocation();
 	float minDistance = 300.0f;
 
-	// Initialize random number generator
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_real_distribution<float> disX(80.0f, 850.0f); // Range for X coordinate
-	std::uniform_real_distribution<float> disY(80.0f, 850.0f); // Range for Y coordinate
+	std::uniform_real_distribution<float> disX(80.0f, 850.0f); //Range for X coordinate
+	std::uniform_real_distribution<float> disY(80.0f, 850.0f); //Range for Y coordinate
 
-	// Generate random spawn locations
+	//Generate random spawn locations
 	for (int i = 0; i < numSpawnLocations; ++i)
 	{
 		float x, y;
 		float distance;
+
 		do
 		{
-			// Generate random coordinates
+			//Generate random coordinates
 			x = disX(gen);
 			y = disY(gen);
 
-			// Calculate distance between player spawn location and current spawn location
+			//Calculate distance between player spawn location and current spawn location
 			distance = std::sqrt((x - playerLocation.x) * (x - playerLocation.x) + (y - playerLocation.y) * (y - playerLocation.y));
+			
 
-			// Check if the distance is greater than the minimum distance
+			//Check if the distance is greater than the minimum distance
 		} while (distance < minDistance);
 
 		spawnLocations.push_back(AG::Vector2<float>(x, y));
@@ -529,6 +504,7 @@ std::vector<AG::Vector2<float>> GameManager::GenerateRandomSpawnLocations(int nu
 	return spawnLocations;
 }
 
+//Generate random speeds based of the wave count
 float GameManager::GenerateRandomEnemySpeeds()
 {
 	std::random_device rd;
@@ -566,6 +542,19 @@ float GameManager::GenerateRandomEnemySpeeds()
 	return generatedSpeed;
 }
 
+//Reset electrode because the player can destroy them
+void GameManager::ResetElectrodes()
+{
+	for (const auto& gameObject : GetGameObjectList())
+	{
+		if (gameObject->GetTag() == "Electrode")
+		{
+			gameObject->MarkForRemoval();
+		}
+	}
+}
+
+//Creates enemies
 void GameManager::CreateEnemyPool(int numEnemies)
 {
 	std::cout << "Enemies created: " << numEnemies << std::endl;
@@ -576,8 +565,9 @@ void GameManager::CreateEnemyPool(int numEnemies)
 	EnemyObjectsList.clear();
 
 	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numEnemies);
-	std::vector<AG::Vector2<float>> electrodeSpawnLocations = GenerateRandomSpawnLocations(10);
+	std::vector<AG::Vector2<float>> electrodeSpawnLocations = GenerateRandomSpawnLocations(7);
 
+	//Creating grunts
 	for (const auto& spawnLocation : spawnLocations)
 	{
 		float enemySpeed = GenerateRandomEnemySpeeds();
@@ -589,36 +579,34 @@ void GameManager::CreateEnemyPool(int numEnemies)
 
 	}
 
-
-	
+	//Creating Electrodes
 	for (const auto& spawnLocation : electrodeSpawnLocations)
 	{
 		// Create a shared pointer to a dynamically allocated Enemy object
 		std::unique_ptr<Electrode> newElectrode = std::make_unique<Electrode>(spawnLocation, 0);
 
 		AddEnemyObjectsList(std::move(newElectrode));
-
 	}
 	
-
 }
 
-
+//Creating family
 void GameManager::CreateFamily(int numFamilies)
 {
 	std::cout << "Family created: " << numFamilies << std::endl;
 
+	//Because family wont be killed by the player - clean the exiting ones of the screen when +1 wave
 	GetGameObjectList().remove_if([](const std::unique_ptr<GameObject>& obj)
 	{
-		//std::cout << "REWMOVE FAIUMTYIL created: "  << std::endl;
+		//std::cout << "REWMOVE FAIUMTYIL "  << std::endl;
 		return obj->GetTag() == "Family";
 	});
 
 	std::vector<AG::Vector2<float>> spawnLocations = GenerateRandomSpawnLocations(numFamilies);
 
+	//Create/Recreate family 
 	for (const auto& spawnLocation : spawnLocations)
 	{
-		// Create a shared pointer to a dynamically allocated Enemy object
 		std::unique_ptr<Family> newFamily = std::make_unique<Family>(spawnLocation);
 
 		AddGameObjectList(newFamily);
@@ -628,37 +616,34 @@ void GameManager::CreateFamily(int numFamilies)
 #pragma endregion
 
 #pragma region Player
+
+//Create player
 void GameManager::CreatePlayer()
 {
 	std::cout << "PLAYER CREATED" << std::endl;
 
-	// Check if a player object already exists
+	//Check if a player object already exists
 	if (!player)
 	{
-		// Create a unique pointer to a new player object
 		player = std::make_unique<GameObject>();
 
 		player->AddComponent<PlayerComponent>();
 
-
-		// Add the player object to the GameObjectsList
 		AddGameObjectList(player);
 	}
 	else
 	{
-		std::cout << "already a aplayer" << std::endl;
+		std::cout << "already a player" << std::endl;
 	}
 }
 
-
+//Gets reference to the player
 std::unique_ptr<GameObject>& GameManager::GetPlayer()
 {
 	for (auto& gameObject : GetGameObjectList())
 	{
-		// Check if the current object has the tag "Player"
 		if (gameObject->GetTag() == "Player")
 		{
-			// Return a reference to the player object
 			return gameObject;
 		}
 	}
@@ -671,9 +656,9 @@ std::unique_ptr<GameObject>& GameManager::GetPlayer()
 
 #pragma region Walls
 
+//Create walls
 void GameManager::CreateWalls()
 {
-
 	std::array<std::string, 4> wallNames = { "TopWall", "LeftWall", "BottomWall", "RightWall" };
 
 	for (int i = 0; i < 4; ++i)
@@ -690,7 +675,7 @@ void GameManager::CreateWalls()
 	float BottomPadding = 960.0f;
 	float RightPadding = 960.0f;
 
-	//Define the size and locations of the wall
+	//Location and sizes
 	AG::Vector2<float> VerticalWallSize = AG::Vector2<float>(15, 1000);
 	AG::Vector2<float> HorizontalWallSize = AG::Vector2<float>(1000, 15);
 
@@ -733,6 +718,7 @@ void GameManager::CreateWalls()
 
 #pragma region FontsAndText
 
+//Loads font - Also sets each text to that font and other sets
 void GameManager::SettingFont()
 {
 	if (!font.loadFromFile("Fonts/PublicPixel.ttf"))
@@ -740,7 +726,7 @@ void GameManager::SettingFont()
 		std::cout << "no font found" << std::endl;
 	}
 
-	// Set up score text
+	//Set up score text
 	scoreText.setFont(font);
 	scoreText.setString("Score: " + std::to_string(playerScore));
 	scoreText.setCharacterSize(15);
@@ -748,7 +734,7 @@ void GameManager::SettingFont()
 	scoreText.setOutlineThickness(5);
 	scoreText.setPosition(55, 52);
 
-	// Set up lives text
+	//Set up lives text
 	livesText.setFont(font);
 	livesText.setString("Lives: " + std::to_string(playerLives));
 	livesText.setCharacterSize(15);
@@ -757,7 +743,7 @@ void GameManager::SettingFont()
 	livesText.setPosition(810, 52);
 
 
-	// Set up lives text
+	//Set up waves text
 	wavesText.setFont(font);
 	wavesText.setString("Wave: " + std::to_string(waves));
 	wavesText.setCharacterSize(15);
@@ -765,12 +751,9 @@ void GameManager::SettingFont()
 	wavesText.setOutlineThickness(5);
 	wavesText.setPosition(450, 52);
 
-
-
-
-
 	//////////////////////Game Over Text/////////////////////
 
+	//Set up gameover text
 	gameOverText.setFont(font);
 	gameOverText.setString("Game Over !");
 	gameOverText.setCharacterSize(50);
@@ -778,12 +761,14 @@ void GameManager::SettingFont()
 	gameOverText.setOutlineThickness(5);
 	gameOverText.setPosition(230, 100);
 
+	//Set the highscore text
 	hightScoreText.setFont(font);
 	hightScoreText.setCharacterSize(15);
 	hightScoreText.setOutlineColor(sf::Color::Black);
 	hightScoreText.setOutlineThickness(5);
 	hightScoreText.setPosition(620, 300);
 
+	//Set the highest wave text
 	highWaveText.setFont(font);
 	highWaveText.setCharacterSize(15);
 	highWaveText.setOutlineColor(sf::Color::Black);
@@ -803,6 +788,7 @@ sf::Text &GameManager::MainMenuText()
 	return playthegameText;
 }
 
+//Main menu title screen
 sf::Text& GameManager::MainMenuRobotronText()
 {
 	robotronText.setFont(font);
@@ -815,8 +801,10 @@ sf::Text& GameManager::MainMenuRobotronText()
 	return robotronText;
 }
 
+
 void GameManager::SettingGameplayText()
 {
+	//Change the position of the score and wave text
 	scoreText.setPosition(55, 52);
 	wavesText.setPosition(450, 52);
 
@@ -898,17 +886,13 @@ int GameManager::GetEnemyCount()
 {
 	int enemyCount = 0;
 
-	// Iterate through the gameObjectsL list
 	for (const auto& gameObject : GetGameObjectList())
 	{
-		// Check if the game object's tag is "Enemy"
 		if (gameObject->GetTag() == "Enemy")
 		{
-			// Increment the enemy count
 			enemyCount++;
 		}
 	}
-
 	return enemyCount;
 }
 
@@ -939,39 +923,36 @@ void GameManager::StartGame()
 	std::cout << "GAME START" << std::endl;
 
 	ResourceManager::PlaySound("GameStart");
-	ResourceManager::StopMusic();
+	ResourceManager::StopMusic(); //Stop main menu music
 	ResourceManager::PlayMusic("Gameplay");
 	gameStarted = true;
 	CreatePlayer();
 	CreateWalls();
-	CreateEnemyPool(30);
 	CreateFamily(5);
 	SettingGameplayText();
 
+	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
-	
 }
 
 void GameManager::RestartGame()
 {
-	std::cout << "restart game " << std::endl;
+	std::cout << "Restart Game " << std::endl;
 
 	ResourceManager::PlaySound("GameStart");
-
-	ResourceManager::StopMusic();
+	ResourceManager::StopMusic(); //Stop game over music
 	ResourceManager::PlayMusic("Gameplay");
 
 	GetPlayer()->SetIsShooting(false);
 	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
 	CreateFamily(5);
+	SettingGameplayText();
+
 	gameOver = false;
 	waves = 0;
 	playerScore = 0;
 	playerLives = 5;
-
-
-	SettingGameplayText();
 }
 
 void GameManager::GameOver()
@@ -981,7 +962,7 @@ void GameManager::GameOver()
 	SetGameOverScreen();
 	ResourceManager::StopSounds();
 
-
+	//Set the highscores and highest waves
 	if (highScore < playerScore)
 	{
 		highScore = playerScore;
@@ -996,7 +977,7 @@ void GameManager::GameOver()
 
 void GameManager::SetGameOverScreen()
 {
-
+	//Shifts the location of the text from gameplay to the new locations for the game over screen
 	scoreText.setString("Your Score: " + std::to_string(playerScore));
 	scoreText.setPosition(185, 300);
 

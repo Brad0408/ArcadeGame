@@ -35,7 +35,7 @@ public:
 	};
 
 	AnimationComponent(GameObject* owner);
-	~AnimationComponent() {};
+	~AnimationComponent() {}
 
 
 
@@ -82,10 +82,9 @@ public:
 		auto it = animations.find(state);
 		if (it != animations.end())
 		{
-			//Get the animation frames for the objects state
+			//Get the animation frames for the objects state and store in a vector
 			const std::vector<sf::IntRect>& frames = it->second;
 
-			//Check if there are any frames for the player state
 			if (!frames.empty())
 			{
 				//Get current frame and the max frame

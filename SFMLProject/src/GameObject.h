@@ -11,25 +11,23 @@ class GameObject : public Object
 {
 
 public:
-	//Construtor
 	GameObject();
 
-	//Deconstructor
-	~GameObject();
+	~GameObject() {}
 
 	//Copy Constructor
 	GameObject(const GameObject&) = default;
 
 
-	virtual void Update(float deltaTime) {};
-	virtual void Update(float deltaTime, const AG::Vector2<float>& playerPosition) {};
+	virtual void Update(float deltaTime) {}
+	virtual void Update(float deltaTime, const AG::Vector2<float>& playerPosition) {}
 
 
 
 	inline void SetName(std::string newName) { m_Name = newName; }
 	inline std::string GetName() { return m_Name; }
 
-	void SetActive(bool newActive) {};
+	void SetActive(bool newActive) {}
 	inline bool GetActive() { return m_Active; }
 
 	inline void SetTag(std::string newTag) { m_Tag = newTag; }
@@ -52,10 +50,11 @@ public:
 	AG::Vector2<float>& GetLocation() { return m_location; }
 	AG::Vector2<float>& GetMoveDirection() { return m_MoveDirection; }
 
-
+	//Player Shooting
 	void SetIsShooting(bool isShooting);
 	bool GetIsShooting() { return m_IsShooting; }
 
+	//Object cleanup
 	virtual void MarkForRemoval();
 	virtual bool ShouldRemove() { return m_shouldRemove; }
 
@@ -88,21 +87,21 @@ public:
 	//TEMPLATED FUNCTIONS NEED IMPLEMENTATION WITHIN THE HEADER FILE, WHERE ITS INSTANSTIATED OR THE COMPILER WILL HATE YOU
 
 
-	//Template functions that only 'component' can be used with them
 	//Gets the component
 	template<class T> requires isComponent<T> T* GetComponent()
 	{
 		T* returnComp = nullptr;
 
-		// Iterate over the components attached to the GameObject
+		//Iterate over the components attached to the GameObject
 		for (int i = 0; i < m_Components.size(); i++)
 		{
-			// Check if the component is not null
+			//Check if the component is not null
 			if (m_Components[i])
 			{
-				// Attempt to cast to type T
+				
 				T* castComp = dynamic_cast<T*>(m_Components[i].get());
-				// If the cast is successful and the pointer is not null, set returnComp and break
+
+				//If the cast is successful and the pointer is not null, set returnComp and break
 				if (castComp != nullptr)
 				{
 					returnComp = castComp;
@@ -111,7 +110,7 @@ public:
 			}
 		}
 
-		// Returns the pointer to the component
+		//Returns the pointer to the component
 		return returnComp;
 	}
 
@@ -149,7 +148,6 @@ public:
 		//Component not found or not removed
 		return false;
 	}
-
 };
 
 

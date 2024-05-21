@@ -5,12 +5,13 @@
 class Bullet;
 class AnimationComponent;
 
+//Essentially a player class but done as a component instead
 class PlayerComponent : public Component
 {
 
 public:
 	PlayerComponent(GameObject* owner);
-	~PlayerComponent();
+	~PlayerComponent() {}
 
 
 	void Move(float deltaTime);
@@ -19,7 +20,6 @@ public:
 	void CreateFiringPoint();
 	void CalculateFiringPointRotation(sf::RenderWindow &window);
 	const AG::Vector2<float> &GetFirePointLocation();
-	float &GetFiringPointRotation();
 	AG::Vector2<float> &GetMousePosition();
 	AG::Vector2<float> CalculateDirection();
 

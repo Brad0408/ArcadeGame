@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <cstdlib>
 
+//Object.h is created with a UUID
+
 namespace AG
 {
 

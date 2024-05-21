@@ -1,9 +1,6 @@
 #include <Event.h>
 #include <Bullet.h>
 
-
-
-
 #define FIXEDFRAMERATE (1.f/60.f)
 
 
@@ -17,16 +14,15 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1000, 1000), "Robotron 2084");
 
 
-	//deltaTime
+	//deltaTime declare
 	std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 	float deltaTime = 0.0f;
 	float timeSincePhysicsStep = 0.0f;
 
-
+	//Creating the player sprite for the main menu
 	sf::RectangleShape mainMenuPlayer;
 	mainMenuPlayer.setOutlineThickness(3);
 	sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(342, 164, 24, 24);
-	//sf::IntRect mainMenuPlayerTextureUV = sf::IntRect(331, 0, 24, 28);
 
 	mainMenuPlayer.setSize(AG::Vector2<float>::one * 35);
 	mainMenuPlayer.setTexture(&ResourceManager::GetTexture("Player"));
@@ -34,67 +30,50 @@ int main()
 	mainMenuPlayer.setOrigin(AG::Vector2<float>::one * 35 / 2);
 	mainMenuPlayer.setPosition(500, 450);
 
+	//Check for loading from main menu to gameplay
 	bool spaceKeyPressed = false;
 
+
+
 	GameManager::SettingFont();
-
-
-
-
-
-	//sf::SoundBuffer buffer;
-	//if (!buffer.loadFromFile("Audio/Shoot.wav"))
-	//{
-	//	std::cout << "nsdoinbasdas no sound" << std::endl;
-	//}
-
-	//sf::Sound sound;
-
-	//sound.setBuffer(buffer);
-	//sound.play();
-
-
-
-
 	ResourceManager::CreateSoundBuffers();
 	ResourceManager::CreateMusicTracks();
 	ResourceManager::PlayMusic("MainMenu");
 
+
 	while (window.isOpen())
 	{
-
-		//Declare event
 		sf::Event event;
-
-	
 
 		while (window.pollEvent(event))
 		{
-			//if the event type if closing the window - close the window
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
 			}
+
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !spaceKeyPressed)
 			{
+				//Start the game once
 				GameManager::StartGame();
-				spaceKeyPressed = true; // Set the flag to true to indicate that the space key has been pressed
+				spaceKeyPressed = true;
 			}
 			else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && spaceKeyPressed && GameManager::IsGameOver())
 			{
+				//Restart the game if the game is over
 				GameManager::RestartGame();
 			}
 
-			//Do player inputs here, for some reason the player would continue to shoot even if the mouse was released, pasing in event as paramater must cause some lag issues
+			//Do player inputs here, for some reason the player would continue to shoot even if the mouse was released, pasing in event as paramater must not work well
 			if (GameManager::IsGameStarted() && !GameManager::IsGameOver())
 			{
-				// Check for left mouse button press event
+				//Left click to shoot
 				if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 				{
 					GameManager::GetPlayer()->SetIsShooting(true);
 				}
 
-				// Check for left mouse button release event
+				//Release to stop shooting
 				if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
 				{
 					GameManager::GetPlayer()->SetIsShooting(false);
@@ -103,6 +82,7 @@ int main()
 
 		}
 
+		//delaTime calculate
 		std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 		deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - lastTime).count() / 100000.0f;
 		lastTime = now;
@@ -119,7 +99,9 @@ int main()
 		timeSincePhysicsStep += deltaTime;
 		while (timeSincePhysicsStep > FIXEDFRAMERATE)
 		{
-
+			//Game runs extremely slow when these are called in the fixed frame frate - doing through update instead
+			//GameManager::GenericCollision();
+			//GameManager::BulletCollisions();
 
 			timeSincePhysicsStep -= FIXEDFRAMERATE;
 		}
@@ -151,32 +133,25 @@ int main()
 			///////////Updating////////////////
 
 			GameManager::Update(deltaTime, window);
-
 			GameManager::RemoveMarkedObjectsHelper();
 
 		}
 		else
 		{
+			//Draw the main menu when the game is not active
 			window.draw(GameManager::MainMenuText());
 			window.draw(GameManager::MainMenuRobotronText());
 			window.draw(mainMenuPlayer);
 		}
 
 
-
-
 		//Display whats actually been rendered
 		window.display();
-
-
 	}
 
-	//Cleanup At Terimination
+	//Memory Cleanup At Terimination
 	ResourceManager::ClearTextureMap();
-	//ResourceManager::ClearSoundBufferMap();
-
 	GameManager::ClearFont();
-	GameManager::ClearAllLists();
 
 
 	return 0;
