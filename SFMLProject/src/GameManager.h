@@ -3,6 +3,7 @@
 
 class Bullet;
 class Enemy;
+class Electrode;
 class Family;
 
 
@@ -16,6 +17,7 @@ public:
 	static void AddGameObjectList(std::list<std::unique_ptr<Enemy>>& enemyList);
 
 	static void AddBulletObjectList(std::unique_ptr<Bullet> bullet);
+
 	static void AddEnemyObjectsList(std::unique_ptr<Enemy> enemy);
 
 
@@ -34,9 +36,6 @@ public:
 	static void GenericCollision();
 	static void BulletCollisions();
 
-
-	static void ClearAllLists();
-	static void ClearGameObjectList();
 	static void ClearAndResetEntites();
 	static void ClearAnyBullets();
 	static void RemoveMarkedObjectsHelper();
@@ -50,6 +49,7 @@ public:
 	static std::vector<AG::Vector2<float>> GenerateRandomSpawnLocations(int numSpawnLocations);
 	static void CreateEnemyPool(int numEnemies);
 	static float GenerateRandomEnemySpeeds();
+	static void ResetElectrodes();
 	static void CreatePlayer();
 	static void CreateWalls();
 	static void CreateFamily(int numFamilies);
@@ -131,18 +131,24 @@ public:
 	//		});
 	//}
 
-	template <class T> requires isGameObject<T> static void RemoveMarkedObjectsVector(std::vector<T*>& objects)
-	{
-		auto it = std::remove_if(objects.begin(), objects.end(), [](T* object)
-			{
-				if (object && object->ShouldRemove())
-				{
-					delete object;
-					return true;
-				}
-				return false;
-			});
 
-		objects.erase(it, objects.end());
-	}
+
+
+	//Obselete old vector removeal
+	// 
+	// 
+	//template <class T> requires isGameObject<T> static void RemoveMarkedObjectsVector(std::vector<T*>& objects)
+	//{
+	//	auto it = std::remove_if(objects.begin(), objects.end(), [](T* object)
+	//		{
+	//			if (object && object->ShouldRemove())
+	//			{
+	//				delete object;
+	//				return true;
+	//			}
+	//			return false;
+	//		});
+
+	//	objects.erase(it, objects.end());
+	//}
 };

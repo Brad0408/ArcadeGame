@@ -27,6 +27,12 @@ AnimationComponent::AnimationComponent(GameObject* owner) : Component(owner)
 		{FamilyStates::Right, {sf::IntRect(278, 0, 24, 28), sf::IntRect(304, 0, 24, 28), sf::IntRect(331, 0, 24, 28)}},
 		{FamilyStates::Idle, {sf::IntRect(355, 0, 24, 28)}}
 	};
+
+
+	m_electrodeAnimations =
+	{
+		{ElectrodeStates::Idle, {sf::IntRect(58, 234, 24, 24), sf::IntRect(86, 234, 24, 24), sf::IntRect(118, 234, 24, 24)}},
+	};
 }
 
 ///////Player////////
@@ -70,5 +76,21 @@ void AnimationComponent::SetFamilyAnimation(FamilyStates state)
 std::unordered_map<AnimationComponent::FamilyStates, std::vector<sf::IntRect>>& AnimationComponent::GetFamilyAnimationsMap()
 {
 	return m_familyAnimations;
+}
+
+
+
+///////Electrodes////////
+
+
+
+void AnimationComponent::SetElectrodeAnimation(ElectrodeStates state)
+{
+	m_currentElectrodeState = state;
+}
+
+std::unordered_map<AnimationComponent::ElectrodeStates, std::vector<sf::IntRect>>& AnimationComponent::GetElectrodeAnimationsMap()
+{
+	return m_electrodeAnimations;
 }
 

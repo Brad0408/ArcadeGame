@@ -29,8 +29,13 @@ public:
 		Moving
 	};
 
+	enum class ElectrodeStates
+	{
+		Idle
+	};
+
 	AnimationComponent(GameObject* owner);
-	~AnimationComponent() {};
+	~AnimationComponent() {}
 
 
 
@@ -48,18 +53,25 @@ public:
 	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> &GetFamilyAnimationsMap();
 
 
+	void SetElectrodeAnimation(ElectrodeStates state);
+	ElectrodeStates GetElectrodeState() { return m_currentElectrodeState; }
+	std::unordered_map<ElectrodeStates, std::vector<sf::IntRect>>& GetElectrodeAnimationsMap();
+
+
 private:
 	//Maps to store UV values
 	std::unordered_map<PlayerStates, std::vector<sf::IntRect>> m_playerAnimations;
 	std::unordered_map<GruntStates, std::vector<sf::IntRect>> m_gruntAnimations;  
 	std::unordered_map<FamilyStates, std::vector<sf::IntRect>> m_familyAnimations;  
+	std::unordered_map<ElectrodeStates, std::vector<sf::IntRect>> m_electrodeAnimations;  
 
 	//Enums of states
 	PlayerStates m_currentPlayerState;
 	GruntStates m_currentGruntState;
 	FamilyStates m_currentFamilyState;
+	ElectrodeStates m_currentElectrodeState;
 
-	float m_frameDuration = 0.5f;
+	float m_frameDuration = 1.0f;
 	float m_elapsedTime = 0.0f;
 
 public:
@@ -70,10 +82,9 @@ public:
 		auto it = animations.find(state);
 		if (it != animations.end())
 		{
-			//Get the animation frames for the objects state
+			//Get the animation frames for the objects state and store in a vector
 			const std::vector<sf::IntRect>& frames = it->second;
 
-			//Check if there are any frames for the player state
 			if (!frames.empty())
 			{
 				//Get current frame and the max frame

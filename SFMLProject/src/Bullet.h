@@ -5,9 +5,8 @@ class Bullet : public GameObject
 {
 
 public:
-
 	Bullet(const AG::Vector2<float>& position, const float& velocity, const AG::Vector2<float> &direction);
-	~Bullet();
+	~Bullet() {}
 
 	void Update(float deltaTime);
 	sf::CircleShape& GetCircleShape();

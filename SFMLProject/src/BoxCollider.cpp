@@ -4,13 +4,8 @@ BoxCollider::BoxCollider(GameObject* owner) : ColliderComponent (owner)
 {
 }
 
-BoxCollider::~BoxCollider()
-{
-}
 
-
-
-
+//Just checks collision between two objects by checking if their shapes intersect
 bool BoxCollider::CheckCollision(GameObject* objectOne, GameObject* objectTwo)
 {
 	sf::RectangleShape rectOne = objectOne->GetRectangleShape();
@@ -26,7 +21,7 @@ bool BoxCollider::CheckCollision(GameObject* objectOne, GameObject* objectTwo)
 }
 
 
-
+//More inteserection checks - Wall collision will push the object in the opposite direction they are moving to replicate a wall
 bool BoxCollider::WallCollision(GameObject* objectOne, GameObject* objectTwo)
 {
 	sf::FloatRect playerBounds = objectOne->GetRectangleShape().getGlobalBounds();
@@ -38,10 +33,10 @@ bool BoxCollider::WallCollision(GameObject* objectOne, GameObject* objectTwo)
 		float overlapX = intersection.width;
 		float overlapY = intersection.height;
 
-		// Determine the direction of player movement
+		//Get the direction the object is going in
 		AG::Vector2<float> moveDirection = objectOne->GetMoveDirection();
 
-		// Calculate displacement needed to move the player out of the wall
+		//Calculate displacement needed to move the object out of the wall
 		float displacementX = 0.0f;
 		float displacementY = 0.0f;
 
@@ -63,10 +58,12 @@ bool BoxCollider::WallCollision(GameObject* objectOne, GameObject* objectTwo)
 			displacementY = -overlapY;
 		}
 
-		// Apply the displacement to move the player out of the wall
+		//Apply the displacement to move the object out of the wall
 		AG::Vector2<float> currentPosition = objectOne->GetLocation();
 		currentPosition.x -= displacementX;
 		currentPosition.y -= displacementY;
+
+		//Set the objects new position based on the wall pushing it the oppsosite way
 		objectOne->SetLocation(currentPosition.x, currentPosition.y);
 
 		return true; 
@@ -80,15 +77,5 @@ void BoxCollider::DrawOutlines(sf::RectangleShape& shape)
 {
 	shape.setOutlineThickness(3);
 	shape.setOutlineColor(sf::Color(0, 0, 255));
-}
-
-void BoxCollider::SetGlobalBounds(sf::FloatRect &bounds) 
-{
-	m_Bounds = bounds;
-}
-
-sf::FloatRect BoxCollider::GetGlobalBounds()
-{
-	return m_Bounds;
 }
 

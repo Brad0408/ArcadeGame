@@ -2,19 +2,18 @@
 #include <GameObject.h>
 
 
-
+//Gives the player bonus points if they save them by colliding
 class Family : public GameObject
 {
 
-
-
 public:
 	Family(const AG::Vector2<float>& spawnLocation);
-	~Family() {};
+	~Family() {}
 
 	void Update(float deltaTime) override;
 	void Move(float deltaTime);
 
+	//Not working
 	void ReverseDirection();
 
 private:
@@ -27,13 +26,7 @@ private:
 
 	float m_MovementSpeed = 10.0f;
 
-
 	sf::Clock directionChangeClock;
 	AG::Vector2<float> direction;
-
-
-
-
-
 
 };

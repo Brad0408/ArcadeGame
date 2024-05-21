@@ -1,6 +1,6 @@
 #include "Bullet.h"
 
-
+//Create a bullet with a posisiton, velocity and the direction its moving in based of the mouse position
 Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const AG::Vector2<float> &direction)
 {
 	m_BulletShape.setRadius(m_BulletRadius);
@@ -22,30 +22,22 @@ Bullet::Bullet(const AG::Vector2<float>& position, const float &velocity, const 
 
 
 	m_direction.Normalise();
-
-	//m_shouldRemove = false;
 }
 
-Bullet::~Bullet()
-{
-
-}
 
 void Bullet::Update(float deltaTime)
 {
+	//If any stray bullets get pass the walls despawn them
 	m_lifespan -= deltaTime;
 
-
+	//Update its position
 	m_position += m_direction * m_velocity * deltaTime;
-
-
 	m_BulletShape.setPosition(m_position);
 
 
 	if (m_lifespan <= 0.0)
 	{
-		std::cout << "Expired" << std::endl;
-		//GameManager::RemoveBullet(this);
+		std::cout << "Bullet Expired" << std::endl;
 		if (this)
 		{
 			this->MarkForRemoval();

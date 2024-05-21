@@ -7,11 +7,6 @@ GameObject::GameObject()
 	//std::cout << "GameObject Constructed" << std::endl;
 }
 
-GameObject::~GameObject()
-{
-	
-}
-
 
 void GameObject::SetRectangleShape(sf::RectangleShape &shape)
 {
@@ -38,6 +33,7 @@ void GameObject::SetIsShooting(bool isShooting)
 }
 
 
+//Used for cleanup - In GameManager.h is RemoveMarkedObjectsList() which is checking for this bool switch
 void GameObject::MarkForRemoval()
 {
 	m_shouldRemove = true;

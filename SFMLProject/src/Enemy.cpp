@@ -1,5 +1,6 @@
 #include "Enemy.h"
 
+//Used to create the grunt enemies
 Enemy::Enemy(const AG::Vector2<float>& spawnLocation, float speed)
 {
 	SetName("Enemy");
@@ -17,7 +18,6 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation, float speed)
 
 
 
-
 	AddComponent<BoxCollider>();
 	AddComponent<AnimationComponent>();
 	animationComponent = GetComponent<AnimationComponent>();
@@ -25,23 +25,18 @@ Enemy::Enemy(const AG::Vector2<float>& spawnLocation, float speed)
 	m_MovementSpeed = speed;
 }
 
-
-Enemy::~Enemy()
-{
-}
-
-
+//Update used to find the players location and move towards it
 void Enemy::Update(float deltaTime, const AG::Vector2<float>& playerPosition)
 {
 	animationComponent->SetGruntAnimation(AnimationComponent::GruntStates::Moving);
 	m_EnemyShapeRectangle.setTextureRect(animationComponent->GetCurrentFrame(animationComponent->GetGruntState(), deltaTime, animationComponent->GetGruntAnimationsMap()));
 	SetRectangleShape(m_EnemyShapeRectangle);
 
-	// Calculate direction vector towards the player
+	//Calculate direction vector towards the player
 	AG::Vector2<float> direction = playerPosition - GetLocation();
-	direction.Normalise(); // Normalize the direction vector to get a unit vector
+	direction.Normalise();
 
-	// Move the enemy towards the player's position
+	//Move the enemy towards the players position
 	AG::Vector2<float> displacement = direction * m_MovementSpeed * deltaTime;
 	Move(displacement);
 
