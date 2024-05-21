@@ -213,6 +213,15 @@ void ResourceManager::StopMusic()
 	}
 }
 
+void ResourceManager::AudioCleanup()
+{
+	musicTracks.clear();
+	currentMusic = nullptr;
+
+	soundBuffers.clear();
+	activeSounds.clear();
+}
+
 
 //Stops memory error when the program is terminated
 void ResourceManager::ClearTextureMap()

@@ -16,6 +16,7 @@ public:
 
 	static void PlayMusic(const std::string& key);
 	static void StopMusic();
+	static void AudioCleanup();
 
 	static void CreateSoundBuffers();
 	static void CreateMusicTracks();

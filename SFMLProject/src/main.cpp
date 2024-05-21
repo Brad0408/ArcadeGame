@@ -153,6 +153,9 @@ int main()
 	ResourceManager::ClearTextureMap();
 	GameManager::ClearFont();
 
+	//Needed in Release mode
+	ResourceManager::AudioCleanup();
+
 
 	return 0;
 }
