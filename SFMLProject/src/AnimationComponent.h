@@ -88,14 +88,14 @@ public:
 			if (!frames.empty())
 			{
 				//Get current frame and the max frame
-				static int currentFrameIndex = 0;
-				int numFrames = frames.size();
+				static size_t currentFrameIndex = 0;
+				size_t numFrames = frames.size();
 
 
 				//Update the frame based of deltaTime updates
 				float timePerFrame = m_frameDuration;
 				m_elapsedTime += deltaTime;
-				currentFrameIndex = static_cast<int>(m_elapsedTime / timePerFrame) % numFrames;
+				currentFrameIndex = static_cast<size_t>(m_elapsedTime / timePerFrame) % numFrames;
 
 				//Return the current frame
 				return frames[currentFrameIndex];

@@ -947,12 +947,13 @@ void GameManager::RestartGame()
 	CreateEnemyPool(30);
 	AddGameObjectList(GameManager::GetEnemyList());
 	CreateFamily(5);
-	SettingGameplayText();
 
 	gameOver = false;
 	waves = 0;
 	playerScore = 0;
 	playerLives = 5;
+
+	SettingGameplayText();
 }
 
 void GameManager::GameOver()
