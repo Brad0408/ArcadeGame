@@ -12,4 +12,4 @@ Also using C++ 20 and its 'concepts' to create the components that go into my EC
 
 
 
-[![Demo CountPages alpha](https://img.youtube.com/vi/OkE2VeRM4mE/0.jpg)](https://youtu.be/adypIm5LvcQ)
+[![Demo CountPages alpha](https://i9.ytimg.com/vi_webp/adypIm5LvcQ/mq2.webp?sqp=CICtuLIG-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGH8gEygTMA8=&rs=AOn4CLBkIalNpwzaB7I0Ib6RaztJFp6s5Q)](https://youtu.be/adypIm5LvcQ)
