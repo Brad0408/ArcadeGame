@@ -1,6 +1,8 @@
 # Robotron 2084 Recreation
 
-For code go to (SFMLProject -> src) or (https://tinyurl.com/3r4nevhp) ([GameManager.cpp](https://github.com/Brad0408/ArcadeGame/blob/main/SFMLProject/src/GameManager.cpp) is a large part of this project)
+For code go to (SFMLProject -> src) or (https://tinyurl.com/3r4nevhp)
+
+[GameManager.cpp](https://github.com/Brad0408/ArcadeGame/blob/main/SFMLProject/src/GameManager.cpp) is a large part of this project
 
 Recreating the arcade game "Robotron 2084" (https://youtu.be/l800GL6NQPY?t=205) through the SFML framework
 
