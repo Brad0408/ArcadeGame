@@ -1,4 +1,4 @@
-CURRENTLY A WIP
+# Robotron 2084 Recreation
 
 For code go to (SFMLProject -> src) or (https://tinyurl.com/3r4nevhp)
 
