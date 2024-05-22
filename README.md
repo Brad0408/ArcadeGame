@@ -12,3 +12,5 @@ Also using C++ 20 and its 'concepts' to create the components that go into my EC
 
 
 ![Check Out My Recreation!] (https://youtu.be/adypIm5LvcQ)
+
+[![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)](https://www.youtube.com/watch?v=ek1j272iAmc)
