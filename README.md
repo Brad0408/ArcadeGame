@@ -10,6 +10,6 @@ This project is aiming to recreating the game but through a modern day ECS struc
 
 Also using C++ 20 and its 'concepts' to create the components that go into my ECS structure and learnig different pointer types to deal with memory managment
 
-<ins> Here is some gameplay </ins>
+<ins> Here is some gameplay below ! </ins>
 
 [![Robotron](https://i.ytimg.com/vi/adypIm5LvcQ/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGH8gEygTMA8=&amp;rs=AOn4CLBGf-b7ap22g0jiwROJa1cqly0JDQ)](https://youtu.be/adypIm5LvcQ)
