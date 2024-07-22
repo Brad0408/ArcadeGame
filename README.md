@@ -28,7 +28,7 @@ Now there are additional steps to get the audio working
 1) Go to SFMLProject -> vendor -> SFML-2.6.0 -> bin
 2) Copy the 'openal32' file from this location
 3) Go back to the root and go to bin -> Debug-windows-x86_64 or Release (depending on what mode you have it on in the project) -> SFMLProject -> Copy the 'openal32' file next to the executable
-
+4) The game will now run in visual studio
 
 
 ## Gameplay
