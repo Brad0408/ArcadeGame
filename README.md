@@ -22,7 +22,7 @@ Once downloaded extract from zip and run "SFMLProject" to play the game.
 
 1) Clone of the main branch
 2) Double click the .bat file to generate project files
-3) Open the projec with the .sln file in the root directory
+3) Open the project with the .sln file in the root directory
 
 Now there are additional steps to get the audio working
 1) Go to SFMLProject -> vendor -> SFML-2.6.0 -> bin
