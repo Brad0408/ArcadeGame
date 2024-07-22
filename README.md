@@ -11,9 +11,23 @@ This project is aiming to recreating the game but through a modern day ECS struc
 Also using C++ 20 and its 'concepts' to create the components that go into my ECS structure and learnig different pointer types to deal with memory managment
 
 
-## Build + Compile
+## Playable Build
 
 Playable Build Here - https://1drv.ms/u/s!AibVxcIqqiJcit5eReGAsPVRnEHH0g?e=tztyKl
+
+Once downloaded extract from compression and run "SFMLProject" to play the game.
+
+
+## Cloning + Compile
+
+1) Clone of the main branch
+2) Double click the .bat file to generate project files
+3) Open the projec with the .sln file in the root directory
+
+Now there are additional steps to get the audio working
+1) Go to SFMLProject -> vendor -> SFML-2.6.0 -> bin
+2) Copy the 'openal32' file from this location
+3) Go back to the root and go to bin -> Debug-windows-x86_64 or Release (depending on what mode you have it on in the project) -> SFMLProject -> Copy the 'openal32' file next to the executable
 
 
 
