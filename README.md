@@ -11,6 +11,12 @@ This project is aiming to recreating the game but through a modern day ECS struc
 Also using C++ 20 and its 'concepts' to create the components that go into my ECS structure and learnig different pointer types to deal with memory managment
 
 
+## Build + Compile
+
+Playable Build Here - https://1drv.ms/u/s!AibVxcIqqiJcit5eReGAsPVRnEHH0g?e=tztyKl
+
+
+
 ## Gameplay
 
 <ins> Here is some gameplay below ! </ins>
