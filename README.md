@@ -15,7 +15,7 @@ Also using C++ 20 and its 'concepts' to create the components that go into my EC
 
 Playable Build Here - https://1drv.ms/u/s!AibVxcIqqiJcit5eReGAsPVRnEHH0g?e=tztyKl
 
-Once downloaded extract from compression and run "SFMLProject" to play the game.
+Once downloaded extract from zip and run "SFMLProject" to play the game.
 
 
 ## Cloning + Compile
